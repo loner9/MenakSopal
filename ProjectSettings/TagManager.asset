@@ -11,11 +11,11 @@ TagManager:
   - 
   - Water
   - UI
-  - WorldBound
-  - Obstacle
   - Enemy
-  - NPC
+  - Level
   - Player
+  - 
+  - 
   - 
   - 
   - 
@@ -40,18 +40,6 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
-    locked: 0
-  - name: House
-    uniqueID: 2873371641
-    locked: 0
-  - name: Windows
-    uniqueID: 3155239063
-    locked: 0
-  - name: Fence
-    uniqueID: 2829854489
-    locked: 0
-  - name: Grass
-    uniqueID: 2199150875
     locked: 0
   m_RenderingLayers:
   - Default
