@@ -26,13 +26,11 @@ public class FieldOfViewDetector : MonoBehaviour
     public bool TargetDetected;
     private NavMeshAgent agent;
     
-    // Public property to get the nearest detected target
    
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         
-        // If this is a 2D project using NavMeshAgent, make sure it works in 2D space
         if (agent != null)
         {
             agent.updateRotation = false;
@@ -40,30 +38,13 @@ public class FieldOfViewDetector : MonoBehaviour
         }
     }
 
-    // Public property to get all detected targets
     public List<Transform> TargetsInView => targetsInView;
     
     private void Update()
     {
-        // Update facing direction based on the object's forward direction
         UpdateFacingDirection();
     }
     
-    // public void UpdateFacingDirection()
-    // {
-    //     // Default: use the object's right vector as forward
-    //     facingDirection = transform.right;
-        
-    //     // If the object has a Rigidbody2D and is moving, use its velocity
-    //     Rigidbody2D rb = GetComponent<Rigidbody2D>();
-    //     if (rb != null && rb.velocity.sqrMagnitude > 0.1f)
-    //     {
-    //         facingDirection = rb.velocity.normalized;
-    //     }
-        
-    //     // If it has a NavMeshAgent component, this would be handled in a separate script
-    //     // that would call SetFacingDirection
-    // }
 
     void UpdateFacingDirection()
     {
