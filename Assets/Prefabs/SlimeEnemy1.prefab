@@ -12,13 +12,8 @@ GameObject:
   - component: {fileID: 4925247250270924373}
   - component: {fileID: 760791564191878639}
   - component: {fileID: 1793895098901568473}
-  - component: {fileID: 8852402318781029760}
-  - component: {fileID: 7072367434485509356}
-  - component: {fileID: 3647973236235859377}
-  - component: {fileID: 3013846381965709179}
-  - component: {fileID: -4315353456757253170}
-  - component: {fileID: 2165184923843700175}
-  m_Layer: 9
+  - component: {fileID: -1116640058634811589}
+  m_Layer: 6
   m_Name: SlimeEnemy1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -143,11 +138,11 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDamping: 0
+  m_Mass: 10
+  m_LinearDamping: 25
   m_AngularDamping: 0.05
   m_GravityScale: 0
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: c4c38a89f18464b44893a5f3cbf48a38, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -158,51 +153,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!95 &8852402318781029760
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8452021381122464877}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 1874061a0f0a8c648928f7e73adbb349, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
---- !u!195 &7072367434485509356
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8452021381122464877}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 2.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 1
-  m_BaseOffset: 0.5
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 0
---- !u!114 &3647973236235859377
+--- !u!114 &-1116640058634811589
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -211,69 +162,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8452021381122464877}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36b3f357f2bfa424ca72d6f35e28e70e, type: 3}
+  m_Script: {fileID: 11500000, guid: d5782fa40c9e436f827ed67d5e502e5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewRadius: 3
-  viewAngle: 37
-  targetMask:
-    serializedVersion: 2
-    m_Bits: 1024
-  detectionCheckInterval: 0.2
-  showDebugVisuals: 1
-  fovColor: {r: 1, g: 1, b: 1, a: 0.2}
-  targetDetectedColor: {r: 1, g: 0, b: 0, a: 0.4}
-  TargetDetected: 0
---- !u!114 &3013846381965709179
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8452021381122464877}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5f93bdc43102104fa92f7a5e8dc8b78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 128
-  targetMask:
-    serializedVersion: 2
-    m_Bits: 1024
-  maxDetectionDistance: 2
-  viewAngle: 37
-  showDebugRay: 1
---- !u!114 &-4315353456757253170
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8452021381122464877}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d3edde33fa0f87438c1990042eaf608, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentState: 0
-  waypoints: []
-  waypointReachedThreshold: 1
-  waitTime: 1
-  detector: {fileID: 0}
-  maxCombatRange: 2
-  attackCooldown: 1.5
---- !u!114 &2165184923843700175
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8452021381122464877}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1c8476fabfdb88d4cb34804568de541a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animationEnded: 0
+  baseStats:
+    statsChangeType: 2
+    maxHealth: 5
+    speed: 2
+    attackConfig: {fileID: 11400000, guid: 0cf96b9cba974f14e8b302e35d6a1dbb, type: 2}
