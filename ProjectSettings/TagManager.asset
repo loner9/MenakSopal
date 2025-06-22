@@ -3,7 +3,11 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Enemy
+  - PlayerHBox
+  - EnemyHBox
+  - Player
   layers:
   - Default
   - TransparentFX
@@ -14,11 +18,11 @@ TagManager:
   - Enemy
   - Level
   - Player
-  - 
-  - 
-  - 
-  - 
-  - 
+  - PlayerHitbox
+  - EnemyHitBox
+  - PlayerDamageBox
+  - EnemyDamageBox
+  - Npc
   - 
   - 
   - 

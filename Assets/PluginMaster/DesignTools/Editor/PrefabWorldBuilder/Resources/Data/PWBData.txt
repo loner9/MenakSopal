@@ -468,7 +468,10 @@
                     "EditorOnly",
                     "MainCamera",
                     "Player",
-                    "GameController"
+                    "GameController",
+                    "Enemy",
+                    "PlayerHBox",
+                    "EnemyHBox"
                 ],
                 "_slopeFilter": {
                     "_v1": 0.0,
@@ -635,7 +638,10 @@
                 "EditorOnly",
                 "MainCamera",
                 "Player",
-                "GameController"
+                "GameController",
+                "Enemy",
+                "PlayerHBox",
+                "EnemyHBox"
             ],
             "_slopeFilter": {
                 "_v1": 0.0,
@@ -2174,7 +2180,10 @@
                     "EditorOnly",
                     "MainCamera",
                     "Player",
-                    "GameController"
+                    "GameController",
+                    "Enemy",
+                    "PlayerHBox",
+                    "EnemyHBox"
                 ]
             }
         ],
@@ -2203,7 +2212,10 @@
                 "EditorOnly",
                 "MainCamera",
                 "Player",
-                "GameController"
+                "GameController",
+                "Enemy",
+                "PlayerHBox",
+                "EnemyHBox"
             ]
         }
     },
