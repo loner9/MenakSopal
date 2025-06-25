@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckable, IAnimationHandler, IKnockbackable
 {
     [field: SerializeField] public float MaxHealth { get; set; } = 100f;
-    public float CurrentHealth { get; set; }
+    [field: SerializeField] public float CurrentHealth { get; set; }
     public Rigidbody2D rb { get; set; }
 
     public EnemyStateMachine StateMachine { get; set; }
@@ -14,16 +14,16 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
     public EnemyAttackState AttackState { get; set; }
     public EnemyChaseState ChaseState { get; set; }
     public EnemyKnockbackState KnockbackState { get; set; }
-    public bool isAggroed { get; set ; }
+    public bool isAggroed { get; set; }
     public bool isInAttackRange { get; set; }
-    public Animator animator { get ; set ; }
+    public Animator animator { get; set; }
 
     [Header("Knockback Settings")]
-    [SerializeField] private float knockbackResistance = 1f;
-    
+    [field: SerializeField] private float knockbackResistance = 1f;
+
     private KnockbackHandler knockbackHandler;
 
-    [field: SerializeField]protected float speed = 2.5f;
+    [field: SerializeField] protected float speed = 2.5f;
 
     [field: InspectorName("Pathfinder")]
     Pathfinder<Vector2> pathfinder;
@@ -33,7 +33,7 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
     [field: SerializeField] bool searchShortcut = false;
     [field: SerializeField] bool snapToGrid = false;
     List<Vector2> path;
-    public List<Vector2> pathLeftToGo {get; set;} = new List<Vector2>();
+    public List<Vector2> pathLeftToGo { get; set; } = new List<Vector2>();
     // [SerializeField] Transform initialPosition;
     // [SerializeField] float stoppingDistance = 0.5f;
 
@@ -50,20 +50,14 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
         KnockbackState = new EnemyKnockbackState(this, StateMachine);
     }
 
-    public void Damage(float damageAmount)
-    {
-        CurrentHealth -= damageAmount;
-        if (CurrentHealth <= 0f){
-            Die();
-        }
-    }
+    // public void Damage(float damageAmount)
+    // {
+    //     CurrentHealth -= damageAmount;
+    //     if (CurrentHealth <= 0f){
+    //         Die();
+    //     }
+    // }
 
-    // Method to handle enemy death
-    public void Die()
-    {
-        Debug.Log("Enemy has died.");
-        Destroy(gameObject);
-    }
 
     public void MoveEnemy(Vector2 velocity)
     {
@@ -88,21 +82,34 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
     }
 
     // Update is called once per frame
-    void Update()
+    protected virtual void Update()
     {
-        StateMachine.CurrentEnemyState.FrameUpdate();
-
-        for (int i = 0; i < pathLeftToGo.Count - 1; i++) //visualize your path in the sceneview
+        // Only update state machine if enemy is alive and has a valid state
+        if (StateMachine != null && StateMachine.CurrentEnemyState != null && CurrentHealth > 0)
         {
-            Debug.DrawLine(pathLeftToGo[i], pathLeftToGo[i + 1]);
+            StateMachine.CurrentEnemyState.FrameUpdate();
+        }
+
+        // Only draw pathfinding lines if enemy is alive
+        if (CurrentHealth > 0)
+        {
+            for (int i = 0; i < pathLeftToGo.Count - 1; i++) //visualize your path in the sceneview
+            {
+                Debug.DrawLine(pathLeftToGo[i], pathLeftToGo[i + 1]);
+            }
         }
     }
 
     void FixedUpdate()
     {
-        StateMachine.CurrentEnemyState.PhysicsUpdate();
+        // Only update physics if enemy is alive and has a valid state
+        if (StateMachine != null && StateMachine.CurrentEnemyState != null && CurrentHealth > 0)
+        {
+            StateMachine.CurrentEnemyState.PhysicsUpdate();
+        }
 
-        if (pathLeftToGo.Count > 0)
+        // Only process pathfinding if enemy is alive
+        if (CurrentHealth > 0 && pathLeftToGo.Count > 0)
         {
             Vector3 dir = (Vector3)pathLeftToGo[0] - transform.position;
             Vector2 newPosition = rb.position + (Vector2)(dir.normalized * speed);
@@ -122,7 +129,15 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
 
     private void AnimationTriggerEvent(AnimationTriggerType triggerType)
     {
-        StateMachine.CurrentEnemyState.AnimationTriggerEvent(triggerType);
+        // Only process animation events if enemy is alive and has a valid state
+        if (StateMachine != null && StateMachine.CurrentEnemyState != null && CurrentHealth > 0)
+        {
+            StateMachine.CurrentEnemyState.AnimationTriggerEvent(triggerType);
+        }
+        else
+        {
+            Debug.Log($"Animation event {triggerType} ignored - enemy is dead or state machine is null");
+        }
     }
 
     public void setAggroStatus(bool isAggroed)
@@ -163,7 +178,8 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
         EnemyDamage,
         PlayFootstepSound,
         AttackStart,
-        AttackEnd
+        AttackEnd,
+        KnockbackEnd
     }
 
     #endregion
@@ -244,14 +260,15 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
 
     #endregion
 
-    void OnDrawGizmos(){
+    void OnDrawGizmos()
+    {
         Gizmos.DrawWireSphere(transform.position, RandomMovementRange);
     }
 
     #region IKnockbackable Implementation
 
     public bool IsKnockedBack => knockbackHandler != null && knockbackHandler.IsKnockedBack;
-    
+
     public float KnockbackResistance => knockbackResistance;
 
     public void ApplyKnockback(Vector2 knockbackDirection, float knockbackForce, float duration)
@@ -267,6 +284,75 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
 
         // Apply knockback through handler
         knockbackHandler.ApplyKnockback(knockbackDirection, knockbackForce, duration);
+    }
+
+    #endregion
+
+    #region IDamageable Implementation
+
+    public void Damage(float damageAmount)
+    {
+        if (CurrentHealth <= 0) return; // Already dead
+
+        CurrentHealth -= damageAmount;
+        Debug.Log($"{gameObject.name} took {damageAmount} damage. Health: {CurrentHealth}/{MaxHealth}");
+
+        // Trigger damage animation if available
+        if (animator != null)
+        {
+            animator.SetTrigger("Damaged");
+        }
+
+        // If currently being knocked back, don't interrupt it with other state changes
+        if (StateMachine.CurrentEnemyState == KnockbackState && CurrentHealth >= 0)
+        {
+            Debug.Log($"{gameObject.name} damaged while in knockback - maintaining knockback state");
+        }
+
+        // Check if enemy should die
+        if (CurrentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    public void Die()
+    {
+        Debug.Log($"{gameObject.name} has died!");
+
+        // Trigger death animation if available
+        if (animator != null)
+        {
+            animator.SetTrigger("Dead");
+        }
+
+        // Stop all enemy behavior
+        if (StateMachine != null)
+        {
+            StateMachine.ChangeState(null); // Stop state machine
+        }
+
+        // Disable colliders and movement
+        Collider2D[] colliders = GetComponents<Collider2D>();
+        foreach (var col in colliders)
+        {
+            col.enabled = false;
+        }
+
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.bodyType = RigidbodyType2D.Static;
+        }
+
+        // Destroy after a delay to allow death animation
+        // Destroy(gameObject, 2f);
+    }
+
+    public void DestroyEnemy()
+    {
+        Debug.Log($"{gameObject.name} is being destroyed");
+        Destroy(gameObject,0.2f);
     }
 
     #endregion

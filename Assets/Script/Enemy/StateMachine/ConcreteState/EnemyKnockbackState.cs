@@ -7,6 +7,7 @@ public class EnemyKnockbackState : EnemyState
     private readonly int IsMoving = Animator.StringToHash("IsMoving");
     private readonly int XValue = Animator.StringToHash("X");
     private readonly int YValue = Animator.StringToHash("Y");
+    private float stateEnterTime;
     
     public EnemyKnockbackState(Enemy enemy, EnemyStateMachine enemyStateMachine) : base(enemy, enemyStateMachine)
     {
@@ -25,6 +26,9 @@ public class EnemyKnockbackState : EnemyState
     public override void EnterState()
     {
         base.EnterState();
+        
+        // Record the time when entering knockback state
+        stateEnterTime = Time.time;
         
         // Stop all movement and pathfinding
         enemy.pathLeftToGo.Clear();
@@ -46,21 +50,17 @@ public class EnemyKnockbackState : EnemyState
             knockbackHandler.StopKnockback();
         }
         
-        Debug.Log("Enemy exited knockback state");
+        // Reset animation parameters for smooth transition
+        enemy.animator.SetBool(IsMoving, false);
+        enemy.animator.SetFloat(XValue, 0f);
+        enemy.animator.SetFloat(YValue, 0f);
+        
+        Debug.Log("Enemy exited knockback state - animation parameters cleared");
     }
     
     public override void FrameUpdate()
     {
         base.FrameUpdate();
-        
-        // Check if knockback is finished
-        if (knockbackHandler != null && !knockbackHandler.IsKnockedBack)
-        {
-            // Return to previous state or default to idle
-            EnemyState nextState = previousState ?? enemy.IdleState;
-            enemyStateMachine.ChangeState(nextState);
-            return;
-        }
         
         // Update animation based on knockback direction
         if (knockbackHandler != null && knockbackHandler.IsKnockedBack)
@@ -73,12 +73,8 @@ public class EnemyKnockbackState : EnemyState
             }
         }
         
-        // Check for aggro during knockback (enemy can still detect player)
-        if (enemy.isAggroed && !knockbackHandler.IsKnockedBack)
-        {
-            // If aggro is triggered and knockback is finished, go to chase
-            enemyStateMachine.ChangeState(enemy.ChaseState);
-        }
+        // Note: State transition is now handled by animation events, not timers
+        // The knockback animation should have an animation event that calls OnKnockbackAnimationEnd()
     }
     
     public override void PhysicsUpdate()
@@ -94,12 +90,34 @@ public class EnemyKnockbackState : EnemyState
     {
         base.AnimationTriggerEvent(triggerType);
         
-        // Handle specific animation events during knockback if needed
+        // Handle specific animation events during knockback
         switch (triggerType)
         {
             case Enemy.AnimationTriggerType.EnemyDamage:
                 // Enemy is taking damage during knockback - this is handled by damage system
                 break;
+                
+            case Enemy.AnimationTriggerType.KnockbackEnd:
+                OnKnockbackAnimationEnd();
+                break;
+        }
+    }
+    
+    // Method to be called when knockback animation ends (via animation event)
+    public void OnKnockbackAnimationEnd()
+    {
+        Debug.Log($"{enemy.gameObject.name} knockback animation ended via animation event");
+        
+        // Check if enemy should chase player or return to previous state
+        if (enemy.isAggroed)
+        {
+            enemyStateMachine.ChangeState(enemy.ChaseState);
+        }
+        else
+        {
+            // Return to previous state or default to idle
+            EnemyState nextState = previousState ?? enemy.IdleState;
+            enemyStateMachine.ChangeState(nextState);
         }
     }
 }

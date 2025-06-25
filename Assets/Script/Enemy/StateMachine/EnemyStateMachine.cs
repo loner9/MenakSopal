@@ -12,8 +12,16 @@ public class EnemyStateMachine
 
     public void ChangeState(EnemyState newState)
     {
-        CurrentEnemyState.ExitState();
+        if (CurrentEnemyState != null)
+        {
+            CurrentEnemyState.ExitState();
+        }
+        
         CurrentEnemyState = newState;
-        CurrentEnemyState.EnterState();
+        
+        if (CurrentEnemyState != null)
+        {
+            CurrentEnemyState.EnterState();
+        }
     }
 }

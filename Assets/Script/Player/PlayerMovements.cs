@@ -14,6 +14,8 @@ public class PlayerMovements : MonoBehaviour, IKnockbackable
     private Rigidbody2D rb2d;
     private Vector2 moveDirection;
     private float lastX;
+    private float lastY;
+    private Vector2 lastCardinalDirection = Vector2.down; // Store the actual cardinal direction
     private float StaminaRegenTimer = 0.0f;
     private const float StaminaDecreasePerFrame = 55.0f;
     private const float StaminaIncreasePerFrame = 25.0f;
@@ -25,6 +27,7 @@ public class PlayerMovements : MonoBehaviour, IKnockbackable
     PlayerAnimation playerAnimation;
     Player player;
     private KnockbackHandler knockbackHandler;
+    private PlayerAttack playerAttack;
 
 
     private void Awake()
@@ -33,6 +36,7 @@ public class PlayerMovements : MonoBehaviour, IKnockbackable
         playerActions = new PlayerActions();
         rb2d = GetComponent<Rigidbody2D>();
         playerAnimation = GetComponent<PlayerAnimation>();
+        playerAttack = GetComponent<PlayerAttack>();
         
         // Initialize or add KnockbackHandler component
         knockbackHandler = GetComponent<KnockbackHandler>();
@@ -45,6 +49,7 @@ public class PlayerMovements : MonoBehaviour, IKnockbackable
     void Start()
     {
         lastX = 1;
+        lastY = -1; // Default facing down
         currentSpeed = walkSpeed;
     }
 
@@ -78,8 +83,9 @@ public class PlayerMovements : MonoBehaviour, IKnockbackable
 
     private void ReadMovement()
     {
-        // Don't read input if being knocked back
-        if (knockbackHandler != null && knockbackHandler.IsKnockedBack)
+        // Don't read input if being knocked back or attacking
+        if ((knockbackHandler != null && knockbackHandler.IsKnockedBack) || 
+            (playerAttack != null && playerAttack.IsAttacking))
         {
             moveDirection = Vector2.zero;
             playerAnimation.setMovingAnimation(false);
@@ -126,6 +132,31 @@ public class PlayerMovements : MonoBehaviour, IKnockbackable
             lastX = moveDirection.x;
         }
 
+        if (moveDirection.y != 0)
+        {
+            if (player.Stats.health <= 0)
+            {
+                return;
+            }
+            lastY = moveDirection.y;
+        }
+
+        // Update attack system with facing direction (cardinal directions only)
+        if (playerAttack != null)
+        {
+            if (moveDirection != Vector2.zero)
+            {
+                // Calculate and store the cardinal direction when moving
+                lastCardinalDirection = GetCardinalDirection(moveDirection);
+                playerAttack.UpdateFacingDirection(lastCardinalDirection);
+            }
+            else
+            {
+                // Use stored cardinal direction when not moving (no reprocessing)
+                playerAttack.UpdateFacingDirection(lastCardinalDirection);
+            }
+        }
+
         if (moveDirection == Vector2.zero)
         {
             playerAnimation.setMovingAnimation(false);
@@ -168,4 +199,31 @@ public class PlayerMovements : MonoBehaviour, IKnockbackable
     }
 
     #endregion
+
+    private Vector2 GetCardinalDirection(Vector2 direction)
+    {
+        if (direction == Vector2.zero) return Vector2.down; // Default fallback
+        
+        // Get absolute values to determine which axis is stronger
+        float absX = Mathf.Abs(direction.x);
+        float absY = Mathf.Abs(direction.y);
+        
+        // Special case: prioritize horizontal when moving down diagonally
+        if (direction.y < 0 && absX > 0)
+        {
+            return direction.x > 0 ? Vector2.right : Vector2.left;
+        }
+        
+        // Normal prioritization for other directions
+        if (absX > absY)
+        {
+            // Horizontal movement is stronger
+            return direction.x > 0 ? Vector2.right : Vector2.left;
+        }
+        else
+        {
+            // Vertical movement is stronger (or equal)
+            return direction.y > 0 ? Vector2.up : Vector2.down;
+        }
+    }
 }

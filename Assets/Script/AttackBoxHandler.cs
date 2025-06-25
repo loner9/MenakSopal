@@ -7,6 +7,11 @@ public class AttackBoxHandler : MonoBehaviour
     [SerializeField] private float knockbackForce = 12f;
     [SerializeField] private float knockbackDuration = 0.4f;
     
+    // Public properties for other components to access
+    public float AttackDamage => attackDamage;
+    public float KnockbackForce => knockbackForce;
+    public float KnockbackDuration => knockbackDuration;
+    
     private GameObject player;
     
     void Start()
@@ -16,28 +21,9 @@ public class AttackBoxHandler : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Enemy"))
-        {
-            // Get enemy components
-            IDamageable enemyDamageable = collision.GetComponent<IDamageable>();
-            IKnockbackable enemyKnockback = collision.GetComponent<IKnockbackable>();
-            
-            if (enemyDamageable != null)
-            {
-                // Apply damage
-                enemyDamageable.Damage(attackDamage);
-                Debug.Log($"Player attacked {collision.name} for {attackDamage} damage");
-            }
-            
-            if (enemyKnockback != null && player != null)
-            {
-                // Calculate knockback direction (away from player)
-                Vector2 knockbackDirection = (collision.transform.position - player.transform.position).normalized;
-                
-                // Apply knockback
-                enemyKnockback.ApplyKnockback(knockbackDirection, knockbackForce, knockbackDuration);
-                Debug.Log($"Applied knockback to {collision.name}");
-            }
-        }
+        Debug.Log($"AttackBox collision detected with: {collision.name}, Tag: {collision.tag}");
+        
+        // Note: Enemy hit detection is now handled by EnemyHit component on enemies
+        // This component only handles the attack box mechanics
     }
 }
