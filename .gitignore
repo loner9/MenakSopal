@@ -70,4 +70,13 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Custom ignored folders
+Assets/Aoiti/
+Assets/ExternalAsset/
+Assets/FastScriptReaload/
+Assets/PluginMaster/
+Assets/Prefabs/
+
 CLAUDE.md
+Assets/Aoiti/Example/2DGrid/walls.mat
