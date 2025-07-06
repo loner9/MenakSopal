@@ -698,7 +698,7 @@ PlayerSettings:
   webGLCloseOnQuit: 0
   webWasm2023: 0
   scriptingDefineSymbols:
-    Standalone: PWB_BIRP
+    Standalone: PWB_BIRP;PWB_URP
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
