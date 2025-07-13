@@ -8,6 +8,7 @@ TagManager:
   - PlayerHBox
   - EnemyHBox
   - Player
+  - Lamps
   layers:
   - Default
   - TransparentFX
