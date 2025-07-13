@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Aoiti.Pathfinding;
+using UnityEngine.UI;
 
 public class NPC : MonoBehaviour
 {
@@ -19,17 +20,36 @@ public class NPC : MonoBehaviour
     public float moveSpeed = 1.5f;
     public float runSpeed = 3f;
     
-    [Header("Animation")]
+    [Header("Animation & Appearance")]
     public Animator animator;
+    public string SpriteSheetName = "chara_01"; // Default sprite sheet
+    public SpriteRenderer spriteRenderer;
+    
+    [Header("Status Bubble System")]
+    public GameObject bubblePrefab; // Assign a UI bubble prefab
+    public Transform bubbleParent; // Parent transform for bubble (usually Canvas)
+    public Vector3 bubbleOffset = new Vector3(0, 1.5f, 0); // Offset above NPC head
+    
+    [Header("Bubble Status Images")]
+    public Sprite workingBubbleSprite;
+    public Sprite sleepingBubbleSprite;
+    public Sprite idleBubbleSprite;
+    public Sprite walkingBubbleSprite;
+    public Sprite fleeingBubbleSprite;
     
     [Header("Pathfinding")]
     public LayerMask obstacleLayerMask = -1;
     
-    // Animation parameter hashes
-    private readonly int IsMoving = Animator.StringToHash("IsMoving");
-    private readonly int XValue = Animator.StringToHash("X");
-    private readonly int YValue = Animator.StringToHash("Y");
-    private readonly int NPCState = Animator.StringToHash("NPCState");
+    // Animation system variables
+    private Vector2 movement;
+    private Vector2 previousPosition;
+    private string LoadedSpriteSheetName;
+    private Dictionary<string, Sprite> spriteSheet;
+    
+    // Bubble system variables
+    private GameObject currentBubble;
+    private Image bubbleImage;
+    private bool bubbleVisible = false;
     
     // Components
     public Rigidbody2D rb { get; private set; }
@@ -88,6 +108,10 @@ public class NPC : MonoBehaviour
         InteractState = new NPCInteractState(this, StateMachine);
         SleepState = new NPCSleepState(this, StateMachine);
         FleeState = new NPCFleeState(this, StateMachine);
+        
+        previousPosition = transform.position;
+        LoadSpriteSheet();
+        InitializeBubbleSystem();
     }
     
     private void Start()
@@ -96,6 +120,16 @@ public class NPC : MonoBehaviour
         
         if (animator == null)
             animator = GetComponent<Animator>();
+            
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+        
+        // Initialize animation
+        if (animator != null)
+        {
+            animator.SetFloat("speed", 0);
+            animator.SetInteger("orientation", 4); // Default facing down
+        }
         
         // Find player
         GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
@@ -125,6 +159,7 @@ public class NPC : MonoBehaviour
         }
         
         CheckPlayerProximity();
+        UpdateBubblePosition();
         
         // Debug pathfinding
         for (int i = 0; i < pathLeftToGo.Count - 1; i++)
@@ -139,7 +174,183 @@ public class NPC : MonoBehaviour
         {
             StateMachine.CurrentNPCState.PhysicsUpdate();
         }
+        
+        // Calculate movement for animation
+        movement.x = transform.position.x - previousPosition.x;
+        movement.y = transform.position.y - previousPosition.y;
+        previousPosition = transform.position;
+        
+        UpdateAnimation();
     }
+    
+    private void LateUpdate()
+    {
+        // Handle sprite sheet swapping if needed
+        if (spriteRenderer != null && spriteSheet != null && LoadedSpriteSheetName == SpriteSheetName)
+        {
+            if (spriteRenderer.sprite != null && spriteSheet.ContainsKey(spriteRenderer.sprite.name))
+            {
+                spriteRenderer.sprite = spriteSheet[spriteRenderer.sprite.name];
+            }
+        }
+        
+        // Check if sprite sheet name changed
+        if (LoadedSpriteSheetName != SpriteSheetName)
+        {
+            LoadSpriteSheet();
+        }
+    }
+    
+    #region Animation System
+    private void UpdateAnimation()
+    {
+        if (animator == null) return;
+        
+        // Set speed parameter
+        float speed = Mathf.Abs(movement.x) + Mathf.Abs(movement.y);
+        animator.SetFloat("speed", speed);
+        
+        // Set orientation parameter based on movement direction
+        if (movement.x > 0.01f)
+            animator.SetInteger("orientation", 6); // Right
+        else if (movement.x < -0.01f)
+            animator.SetInteger("orientation", 2); // Left
+        else if (movement.y > 0.01f)
+            animator.SetInteger("orientation", 0); // Up
+        else if (movement.y < -0.01f)
+            animator.SetInteger("orientation", 4); // Down
+        // If no movement, keep current orientation
+    }
+    
+    public void SetAnimationDirection(Vector2 direction)
+    {
+        if (animator == null) return;
+        
+        // Force set direction without movement (for interactions, work, etc.)
+        if (direction.x > 0.01f)
+            animator.SetInteger("orientation", 6); // Right
+        else if (direction.x < -0.01f)
+            animator.SetInteger("orientation", 2); // Left
+        else if (direction.y > 0.01f)
+            animator.SetInteger("orientation", 0); // Up
+        else if (direction.y < -0.01f)
+            animator.SetInteger("orientation", 4); // Down
+    }
+    
+    private void LoadSpriteSheet()
+    {
+        // Load sprites from Resources folder
+        string spritesheetfolder = "Characters/";
+        string spritesheetfilepath = spritesheetfolder + SpriteSheetName + "/spritesheet";
+        var sprites = Resources.LoadAll<Sprite>(spritesheetfilepath);
+        
+        if (sprites.Length == 0)
+        {
+            Debug.LogWarning($"Could not load sprite sheet: {spritesheetfilepath}. Using default.");
+            spritesheetfilepath = spritesheetfolder + "chara_01/spritesheet";
+            sprites = Resources.LoadAll<Sprite>(spritesheetfilepath);
+        }
+        
+        if (sprites.Length > 0)
+        {
+            spriteSheet = new Dictionary<string, Sprite>();
+            foreach (var sprite in sprites)
+            {
+                spriteSheet[sprite.name] = sprite;
+            }
+        }
+        
+        LoadedSpriteSheetName = SpriteSheetName;
+    }
+    #endregion
+    
+    #region Bubble Status System
+    private void InitializeBubbleSystem()
+    {
+        if (bubbleParent == null)
+        {
+            // Try to find canvas
+            Canvas canvas = FindObjectOfType<Canvas>();
+            if (canvas != null)
+                bubbleParent = canvas.transform;
+        }
+        
+        CreateBubble();
+    }
+    
+    private void CreateBubble()
+    {
+        if (bubblePrefab == null || bubbleParent == null) return;
+        
+        currentBubble = Instantiate(bubblePrefab, bubbleParent);
+        bubbleImage = currentBubble.GetComponent<Image>();
+        
+        if (bubbleImage == null)
+            bubbleImage = currentBubble.GetComponentInChildren<Image>();
+        
+        currentBubble.SetActive(false);
+    }
+    
+    private void UpdateBubblePosition()
+    {
+        if (currentBubble == null || bubbleParent == null) return;
+        
+        // Convert world position to screen position
+        Vector3 worldPos = transform.position + bubbleOffset;
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
+        
+        // Convert screen position to canvas position
+        RectTransform canvasRect = bubbleParent.GetComponent<RectTransform>();
+        Vector2 canvasPos;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect, screenPos, Camera.main, out canvasPos);
+        
+        currentBubble.transform.localPosition = canvasPos;
+    }
+    
+    public void ShowStatusBubble(NPCBehavior behavior)
+    {
+        if (currentBubble == null || bubbleImage == null) return;
+        
+        Sprite bubbleSprite = GetBubbleSpriteForBehavior(behavior);
+        if (bubbleSprite != null)
+        {
+            bubbleImage.sprite = bubbleSprite;
+            currentBubble.SetActive(true);
+            bubbleVisible = true;
+        }
+    }
+    
+    public void HideStatusBubble()
+    {
+        if (currentBubble != null)
+        {
+            currentBubble.SetActive(false);
+            bubbleVisible = false;
+        }
+    }
+    
+    private Sprite GetBubbleSpriteForBehavior(NPCBehavior behavior)
+    {
+        switch (behavior)
+        {
+            case NPCBehavior.Work:
+                return workingBubbleSprite;
+            case NPCBehavior.Sleep:
+                return sleepingBubbleSprite;
+            case NPCBehavior.Idle:
+                return idleBubbleSprite;
+            case NPCBehavior.Walk:
+                return walkingBubbleSprite;
+            case NPCBehavior.Flee:
+                return fleeingBubbleSprite;
+            case NPCBehavior.Interact:
+                return null; // Don't show bubble during interaction
+            default:
+                return idleBubbleSprite;
+        }
+    }
+    #endregion
     
     #region Pathfinding
     public float GetDistance(Vector2 A, Vector2 B)
@@ -188,19 +399,6 @@ public class NPC : MonoBehaviour
     public void MoveNPC(Vector2 velocity)
     {
         rb.linearVelocity = velocity;
-        
-        // Update animation parameters
-        if (animator != null)
-        {
-            bool isMoving = velocity.sqrMagnitude > 0.01f;
-            animator.SetBool(IsMoving, isMoving);
-            
-            if (isMoving)
-            {
-                animator.SetFloat(XValue, velocity.normalized.x);
-                animator.SetFloat(YValue, velocity.normalized.y);
-            }
-        }
     }
     
     public Vector2 GetMovementToDestination()
@@ -317,6 +515,9 @@ public class NPC : MonoBehaviour
     {
         if (!canInteract) return;
         
+        // Hide bubble during interaction
+        HideStatusBubble();
+        
         OnInteractionStart?.Invoke(this);
         Debug.Log($"Started interaction with {npcName}");
     }
@@ -325,6 +526,23 @@ public class NPC : MonoBehaviour
     {
         OnInteractionEnd?.Invoke(this);
         Debug.Log($"Ended interaction with {npcName}");
+        
+        // Show appropriate bubble after interaction ends
+        UpdateBubbleForCurrentState();
+    }
+    
+    private void UpdateBubbleForCurrentState()
+    {
+        if (StateMachine.CurrentNPCState == IdleState)
+            ShowStatusBubble(NPCBehavior.Idle);
+        else if (StateMachine.CurrentNPCState == WorkState)
+            ShowStatusBubble(NPCBehavior.Work);
+        else if (StateMachine.CurrentNPCState == SleepState)
+            ShowStatusBubble(NPCBehavior.Sleep);
+        else if (StateMachine.CurrentNPCState == WalkState)
+            ShowStatusBubble(NPCBehavior.Walk);
+        else if (StateMachine.CurrentNPCState == FleeState)
+            ShowStatusBubble(NPCBehavior.Flee);
     }
     #endregion
     
@@ -371,6 +589,11 @@ public class NPC : MonoBehaviour
         {
             dayNightCycle.OnTimeOfDayChanged -= OnTimeOfDayChanged;
         }
+        
+        if (currentBubble != null)
+        {
+            Destroy(currentBubble);
+        }
     }
     
     private void OnDrawGizmosSelected()
@@ -387,5 +610,9 @@ public class NPC : MonoBehaviour
             Gizmos.color = Color.cyan;
             Gizmos.DrawWireSphere(scheduleData.nightPosition, 0.5f);
         }
+        
+        // Draw bubble position
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireSphere(transform.position + bubbleOffset, 0.2f);
     }
 }

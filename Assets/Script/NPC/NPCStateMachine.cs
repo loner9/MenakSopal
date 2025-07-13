@@ -105,10 +105,20 @@ public class NPCIdleState : NPCState
         idleTimer = 0f;
         npc.MoveNPC(Vector2.zero);
         
+        // Show idle bubble
+        npc.ShowStatusBubble(NPCBehavior.Idle);
+        
+        // Set animation speed to 0 for idle
         if (npc.animator != null)
         {
-            npc.animator.SetBool("IsMoving", false);
+            npc.animator.SetFloat("speed", 0f);
         }
+    }
+
+    public override void ExitState()
+    {
+        base.ExitState();
+        npc.HideStatusBubble();
     }
 
     public override void FrameUpdate()
@@ -138,8 +148,6 @@ public class NPCIdleState : NPCState
 
 public class NPCWalkState : NPCState
 {
-    private readonly int IsMoving = Animator.StringToHash("IsMoving");
-    
     public NPCWalkState(NPC npc, NPCStateMachine npcStateMachine) : base(npc, npcStateMachine)
     {
     }
@@ -148,16 +156,15 @@ public class NPCWalkState : NPCState
     {
         base.EnterState();
         
-        if (npc.animator != null)
-        {
-            npc.animator.SetBool(IsMoving, true);
-        }
+        // Show walking bubble
+        npc.ShowStatusBubble(NPCBehavior.Walk);
     }
 
     public override void ExitState()
     {
         base.ExitState();
         npc.MoveNPC(Vector2.zero);
+        npc.HideStatusBubble();
     }
 
     public override void FrameUpdate()
@@ -212,21 +219,20 @@ public class NPCWorkState : NPCState
         workTimer = 0f;
         isWorking = true;
         
+        // Show working bubble
+        npc.ShowStatusBubble(NPCBehavior.Work);
+        
         // Face work station or work direction
         if (npc.scheduleData?.workStation != null)
         {
             Vector2 workDirection = (npc.scheduleData.workStation.position - npc.transform.position).normalized;
-            if (npc.animator != null)
-            {
-                npc.animator.SetFloat("X", workDirection.x);
-                npc.animator.SetFloat("Y", workDirection.y);
-            }
+            npc.SetAnimationDirection(workDirection);
         }
         
-        // Play work animation
-        if (npc.animator != null && !string.IsNullOrEmpty(npc.scheduleData?.dayAnimation))
+        // Set animation to idle work animation (speed = 0 but facing direction)
+        if (npc.animator != null)
         {
-            npc.animator.SetTrigger(npc.scheduleData.dayAnimation);
+            npc.animator.SetFloat("speed", 0f);
         }
         
         npc.AnimationTriggerEvent(NPC.AnimationTriggerType.WorkStart);
@@ -236,6 +242,7 @@ public class NPCWorkState : NPCState
     {
         base.ExitState();
         isWorking = false;
+        npc.HideStatusBubble();
         npc.AnimationTriggerEvent(NPC.AnimationTriggerType.WorkEnd);
     }
 
@@ -283,10 +290,14 @@ public class NPCSleepState : NPCState
         
         isSleeping = true;
         
-        // Play sleep animation
-        if (npc.animator != null && !string.IsNullOrEmpty(npc.scheduleData?.nightAnimation))
+        // Show sleeping bubble
+        npc.ShowStatusBubble(NPCBehavior.Sleep);
+        
+        // Set animation to idle sleeping position (speed = 0, facing down usually)
+        if (npc.animator != null)
         {
-            npc.animator.SetTrigger(npc.scheduleData.nightAnimation);
+            npc.animator.SetFloat("speed", 0f);
+            npc.animator.SetInteger("orientation", 4); // Facing down for sleep
         }
         
         // Disable interaction during sleep (unless specified otherwise)
@@ -303,6 +314,7 @@ public class NPCSleepState : NPCState
         base.ExitState();
         isSleeping = false;
         npc.canInteract = true; // Re-enable interaction
+        npc.HideStatusBubble();
         npc.AnimationTriggerEvent(NPC.AnimationTriggerType.SleepEnd);
     }
 
@@ -340,15 +352,19 @@ public class NPCInteractState : NPCState
         
         interactionTimer = 0f;
         
+        // Don't show bubble during interaction - it's handled in StartInteraction()
+        
         // Face the player
         if (npc.player != null)
         {
             Vector2 directionToPlayer = (npc.player.position - npc.transform.position).normalized;
-            if (npc.animator != null)
-            {
-                npc.animator.SetFloat("X", directionToPlayer.x);
-                npc.animator.SetFloat("Y", directionToPlayer.y);
-            }
+            npc.SetAnimationDirection(directionToPlayer);
+        }
+        
+        // Set animation to idle (speed = 0 but facing player)
+        if (npc.animator != null)
+        {
+            npc.animator.SetFloat("speed", 0f);
         }
         
         // Trigger interaction start
@@ -379,11 +395,7 @@ public class NPCInteractState : NPCState
         if (npc.player != null && npc.isPlayerInRange)
         {
             Vector2 directionToPlayer = (npc.player.position - npc.transform.position).normalized;
-            if (npc.animator != null)
-            {
-                npc.animator.SetFloat("X", directionToPlayer.x);
-                npc.animator.SetFloat("Y", directionToPlayer.y);
-            }
+            npc.SetAnimationDirection(directionToPlayer);
         }
     }
 
@@ -399,7 +411,6 @@ public class NPCFleeState : NPCState
 {
     private float fleeTimer;
     private readonly float maxFleeTime = 5f;
-    private readonly int IsMoving = Animator.StringToHash("IsMoving");
     
     public NPCFleeState(NPC npc, NPCStateMachine npcStateMachine) : base(npc, npcStateMachine)
     {
@@ -411,16 +422,15 @@ public class NPCFleeState : NPCState
         
         fleeTimer = 0f;
         
-        if (npc.animator != null)
-        {
-            npc.animator.SetBool(IsMoving, true);
-        }
+        // Show flee bubble
+        npc.ShowStatusBubble(NPCBehavior.Flee);
     }
 
     public override void ExitState()
     {
         base.ExitState();
         npc.MoveNPC(Vector2.zero);
+        npc.HideStatusBubble();
     }
 
     public override void FrameUpdate()
