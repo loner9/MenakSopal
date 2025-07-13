@@ -46,8 +46,8 @@ public class NPC : MonoBehaviour
     private string LoadedSpriteSheetName;
     private Dictionary<string, Sprite> spriteSheet;
     
-    // Bubble system variables
-    private GameObject currentBubble;
+    // Bubble system variables  
+    public GameObject currentBubble { get; private set; } // Public access for interaction system
     private Image bubbleImage;
     private bool bubbleVisible = false;
     
@@ -133,8 +133,7 @@ public class NPC : MonoBehaviour
         
         // Find player
         GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
-        if (playerGO != null)
-            player = playerGO.transform;
+        if (playerGO != null) player = playerGO.transform;
         
         // Find day/night cycle
         dayNightCycle = FindObjectOfType<DayNightCycle>();
@@ -515,8 +514,7 @@ public class NPC : MonoBehaviour
     {
         if (!canInteract) return;
         
-        // Hide bubble during interaction
-        HideStatusBubble();
+        // Don't hide bubble during interaction - let interaction system handle it
         
         OnInteractionStart?.Invoke(this);
         Debug.Log($"Started interaction with {npcName}");
@@ -531,7 +529,27 @@ public class NPC : MonoBehaviour
         UpdateBubbleForCurrentState();
     }
     
-    private void UpdateBubbleForCurrentState()
+    // Method to show conversation bubble during dialogue
+    public void ShowConversationBubble(Sprite conversationSprite)
+    {
+        if (conversationSprite != null)
+        {
+            ShowStatusBubble(conversationSprite);
+        }
+    }
+    
+    // Overloaded method to show bubble with sprite directly
+    public void ShowStatusBubble(Sprite bubbleSprite)
+    {
+        if (currentBubble == null || bubbleImage == null || bubbleSprite == null) return;
+        
+        bubbleImage.sprite = bubbleSprite;
+        currentBubble.SetActive(true);
+        bubbleVisible = true;
+    }
+    
+    // Make UpdateBubbleForCurrentState public for interaction system access
+    public void UpdateBubbleForCurrentState()
     {
         if (StateMachine.CurrentNPCState == IdleState)
             ShowStatusBubble(NPCBehavior.Idle);

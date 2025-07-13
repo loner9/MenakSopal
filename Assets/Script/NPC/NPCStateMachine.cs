@@ -352,7 +352,7 @@ public class NPCInteractState : NPCState
         
         interactionTimer = 0f;
         
-        // Don't show bubble during interaction - it's handled in StartInteraction()
+        // Keep bubble visible during interaction - interaction system will handle conversation bubbles
         
         // Face the player
         if (npc.player != null)

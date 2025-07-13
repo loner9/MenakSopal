@@ -13,6 +13,10 @@ public class DialogueEntry
     public TimeOfDay[] availableTimesOfDay;
     public bool isRepeatable = true;
     public string[] requiredFlags; // For quest system integration
+    
+    [Header("Conversation Bubble")]
+    [Tooltip("Specific bubble sprite to show during this dialogue. If null, uses default conversation bubble.")]
+    public Sprite conversationBubbleSprite;
 }
 
 [CreateAssetMenu(fileName = "New Dialogue", menuName = "NPC/Dialogue Data")]
@@ -22,6 +26,10 @@ public class DialogueData : ScriptableObject
     public DialogueEntry[] dialogueEntries;
     public DialogueEntry[] greetings;
     public DialogueEntry[] farewells;
+    
+    [Header("Default Conversation Bubble")]
+    [Tooltip("Default bubble sprite for this NPC's conversations if no specific bubble is set.")]
+    public Sprite defaultConversationBubble;
 }
 
 public class NPCInteractionSystem : MonoBehaviour
@@ -42,12 +50,22 @@ public class NPCInteractionSystem : MonoBehaviour
     public GameObject interactionPrompt;
     public TextMeshProUGUI promptText;
     
+    [Header("Default Conversation Bubbles")]
+    [Tooltip("Default bubble sprite shown when talking to NPCs if no specific bubble is defined.")]
+    public Sprite defaultInteractionBubble;
+    [Tooltip("Alternative conversation bubbles for different types of interactions.")]
+    public Sprite questionBubbleSprite;
+    public Sprite exclamationBubbleSprite;
+    public Sprite heartBubbleSprite;
+    public Sprite angerBubbleSprite;
+    
     private NPC currentNPC;
     private DialogueData currentDialogue;
     private int currentDialogueIndex = 0;
     private bool isInDialogue = false;
     private Transform player;
     private List<string> gameFlags = new List<string>(); // Simple flag system
+    private Sprite originalNPCBubble; // Store original bubble to restore later
     
     public System.Action<NPC> OnDialogueStart;
     public System.Action<NPC> OnDialogueEnd;
@@ -166,6 +184,9 @@ public class NPCInteractionSystem : MonoBehaviour
         currentDialogueIndex = 0;
         isInDialogue = true;
         
+        // Store original bubble state
+        originalNPCBubble = GetCurrentNPCBubbleSprite();
+        
         // Hide interaction prompt
         if (interactionPrompt != null)
             interactionPrompt.SetActive(false);
@@ -246,6 +267,9 @@ public class NPCInteractionSystem : MonoBehaviour
         if (dialoguePanel != null)
             dialoguePanel.SetActive(false);
         
+        // Restore original NPC bubble
+        RestoreOriginalNPCBubble();
+        
         // Show interaction prompt again if still near NPC
         UpdateInteractionPrompt();
         
@@ -266,6 +290,9 @@ public class NPCInteractionSystem : MonoBehaviour
     {
         if (entry == null) return;
         
+        // Update NPC bubble based on dialogue entry
+        UpdateNPCConversationBubble(entry);
+        
         // Update UI
         if (speakerNameText != null)
             speakerNameText.text = entry.speakerName;
@@ -277,6 +304,52 @@ public class NPCInteractionSystem : MonoBehaviour
         
         // Update button visibility
         UpdateDialogueButtons();
+    }
+    
+    private void UpdateNPCConversationBubble(DialogueEntry entry)
+    {
+        if (currentNPC == null) return;
+        
+        Sprite bubbleToShow = null;
+        
+        // Priority order: dialogue-specific > dialogue data default > system default
+        if (entry.conversationBubbleSprite != null)
+        {
+            bubbleToShow = entry.conversationBubbleSprite;
+        }
+        else if (currentDialogue.defaultConversationBubble != null)
+        {
+            bubbleToShow = currentDialogue.defaultConversationBubble;
+        }
+        else if (defaultInteractionBubble != null)
+        {
+            bubbleToShow = defaultInteractionBubble;
+        }
+        
+        // Show the conversation bubble
+        if (bubbleToShow != null)
+        {
+            currentNPC.ShowConversationBubble(bubbleToShow);
+        }
+    }
+    
+    private Sprite GetCurrentNPCBubbleSprite()
+    {
+        if (currentNPC == null || currentNPC.currentBubble == null) return null;
+        
+        Image bubbleImage = currentNPC.currentBubble.GetComponent<Image>();
+        if (bubbleImage == null)
+            bubbleImage = currentNPC.currentBubble.GetComponentInChildren<Image>();
+        
+        return bubbleImage?.sprite;
+    }
+    
+    private void RestoreOriginalNPCBubble()
+    {
+        if (currentNPC == null) return;
+        
+        // Restore to the state-appropriate bubble
+        currentNPC.UpdateBubbleForCurrentState();
     }
     
     private IEnumerator TypewriterEffect(string text)
@@ -375,12 +448,15 @@ public class NPCInteractionSystem : MonoBehaviour
                     speakerName = npc.npcName,
                     dialogueText = dialogue,
                     availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Night, TimeOfDay.Sunrise, TimeOfDay.Sunset },
-                    isRepeatable = true
+                    isRepeatable = true,
+                    conversationBubbleSprite = null // Will use default
                 };
                 entries.Add(entry);
             }
             
             tempDialogue.dialogueEntries = entries.ToArray();
+            // Set default conversation bubble if available
+            tempDialogue.defaultConversationBubble = defaultInteractionBubble;
             return tempDialogue;
         }
         
@@ -422,6 +498,35 @@ public class NPCInteractionSystem : MonoBehaviour
     public List<string> GetGameFlags()
     {
         return new List<string>(gameFlags);
+    }
+    
+    // Methods for external control of conversation bubbles
+    public void ShowConversationBubble(Sprite bubbleSprite)
+    {
+        if (currentNPC != null && bubbleSprite != null)
+        {
+            currentNPC.ShowConversationBubble(bubbleSprite);
+        }
+    }
+    
+    public void ShowQuestionBubble()
+    {
+        ShowConversationBubble(questionBubbleSprite);
+    }
+    
+    public void ShowExclamationBubble()
+    {
+        ShowConversationBubble(exclamationBubbleSprite);
+    }
+    
+    public void ShowHeartBubble()
+    {
+        ShowConversationBubble(heartBubbleSprite);
+    }
+    
+    public void ShowAngerBubble()
+    {
+        ShowConversationBubble(angerBubbleSprite);
     }
     
     // For save/load system
