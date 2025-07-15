@@ -55,13 +55,15 @@ public class NPC : MonoBehaviour
     public Rigidbody2D rb { get; private set; }
     
     // State Machine
-    public NPCStateMachine StateMachine { get; private set; }
-    public NPCIdleState IdleState { get; private set; }
-    public NPCWalkState WalkState { get; private set; }
-    public NPCWorkState WorkState { get; private set; }
-    public NPCInteractState InteractState { get; private set; }
-    public NPCSleepState SleepState { get; private set; }
-    public NPCFleeState FleeState { get; private set; }
+public NPCStateMachine StateMachine { get; private set; }
+public NPCIdleState IdleState { get; private set; }
+public NPCWalkState WalkState { get; private set; }
+public NPCWorkState WorkState { get; private set; }
+public NPCInteractState InteractState { get; private set; }
+public NPCSleepState SleepState { get; private set; }
+public NPCFleeState FleeState { get; private set; }
+public NPCPatrolState PatrolState { get; private set; }
+public NPCGoHomeState GoHomeState { get; private set; }
     
     // Pathfinding
     public Pathfinder<Vector2> pathfinder;
@@ -108,6 +110,8 @@ public class NPC : MonoBehaviour
         InteractState = new NPCInteractState(this, StateMachine);
         SleepState = new NPCSleepState(this, StateMachine);
         FleeState = new NPCFleeState(this, StateMachine);
+        PatrolState = new NPCPatrolState(this, StateMachine);
+        GoHomeState = new NPCGoHomeState(this, StateMachine);
         
         previousPosition = transform.position;
         LoadSpriteSheet();
@@ -133,7 +137,8 @@ public class NPC : MonoBehaviour
         
         // Find player
         GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
-        if (playerGO != null) player = playerGO.transform;
+        if (playerGO != null)
+            player = playerGO.transform;
         
         // Find day/night cycle
         dayNightCycle = FindObjectOfType<DayNightCycle>();
@@ -146,8 +151,20 @@ public class NPC : MonoBehaviour
         // Initialize pathfinder
         pathfinder = new Pathfinder<Vector2>(GetDistance, GetNeighbourNodes, 1000);
         
-        // Start with appropriate state based on time of day
-        StateMachine.Initialize(GetStateForTimeOfDay(currentTimeOfDay));
+        // Start with appropriate state based on current activity
+        NPCBehavior currentActivity = GetCurrentActivity();
+        if (currentActivity == NPCBehavior.Walk)
+        {
+            StateMachine.Initialize(PatrolState);
+        }
+        else if (ShouldGoHome())
+        {
+            StateMachine.Initialize(GoHomeState);
+        }
+        else
+        {
+            StateMachine.Initialize(GetStateForTimeOfDay(currentTimeOfDay));
+        }
     }
     
     private void Update()
@@ -181,23 +198,16 @@ public class NPC : MonoBehaviour
         
         UpdateAnimation();
     }
-    
+
     private void LateUpdate()
     {
-        // Handle sprite sheet swapping if needed
-        if (spriteRenderer != null && spriteSheet != null && LoadedSpriteSheetName == SpriteSheetName)
-        {
-            if (spriteRenderer.sprite != null && spriteSheet.ContainsKey(spriteRenderer.sprite.name))
-            {
-                spriteRenderer.sprite = spriteSheet[spriteRenderer.sprite.name];
-            }
-        }
-        
         // Check if sprite sheet name changed
         if (LoadedSpriteSheetName != SpriteSheetName)
         {
             LoadSpriteSheet();
         }
+        
+        this.spriteRenderer.sprite = this.spriteSheet[this.spriteRenderer.sprite.name];
     }
     
     #region Animation System
@@ -425,11 +435,32 @@ public class NPC : MonoBehaviour
     {
         currentTimeOfDay = newTimeOfDay;
         
-        // Change behavior based on time of day
-        NPCState newState = GetStateForTimeOfDay(newTimeOfDay);
-        if (newState != StateMachine.CurrentNPCState)
+        // Check if we need to change behavior
+        if (ShouldGoHome() && StateMachine.CurrentNPCState != GoHomeState)
         {
-            StateMachine.ChangeState(newState);
+            StateMachine.ChangeState(GoHomeState);
+        }
+        else
+        {
+            // Update activity based on new time
+            NPCBehavior newActivity = GetCurrentActivity();
+            if (newActivity == NPCBehavior.Walk && StateMachine.CurrentNPCState != PatrolState)
+            {
+                StateMachine.ChangeState(PatrolState);
+            }
+            else if (newActivity != NPCBehavior.Walk && StateMachine.CurrentNPCState == PatrolState)
+            {
+                StateMachine.ChangeState(IdleState);
+            }
+            else
+            {
+                // For other state changes, use the original logic
+                NPCState newState = GetStateForTimeOfDay(newTimeOfDay);
+                if (newState != StateMachine.CurrentNPCState && StateMachine.CurrentNPCState != InteractState)
+                {
+                    StateMachine.ChangeState(newState);
+                }
+            }
         }
     }
     
@@ -475,6 +506,81 @@ public class NPC : MonoBehaviour
             default:
                 return transform.position;
         }
+    }
+    
+    // New helper methods for simplified system
+    public NPCBehavior GetCurrentActivity()
+    {
+        if (scheduleData == null)
+            return NPCBehavior.Idle;
+        
+        // Check if we should be active at night
+        if (IsNightTime() && !scheduleData.activeAtNight)
+        {
+            return NPCBehavior.Walk; // Will trigger going home
+        }
+        
+        // Get activity based on time of day
+        if (IsNightTime() && scheduleData.activeAtNight)
+        {
+            return scheduleData.nightBehavior;
+        }
+        else
+        {
+            return scheduleData.dayBehavior;
+        }
+    }
+    
+    public PatrolPoint[] GetCurrentPatrolPoints()
+    {
+        if (scheduleData == null)
+            return null;
+        
+        if (IsNightTime() && scheduleData.activeAtNight)
+        {
+            return scheduleData.nightPatrolPoints;
+        }
+        else
+        {
+            return scheduleData.dayPatrolPoints;
+        }
+    }
+    
+    public Vector2 GetCurrentPosition()
+    {
+        if (scheduleData == null)
+            return transform.position;
+        
+        if (IsNightTime() && scheduleData.activeAtNight)
+        {
+            return scheduleData.nightPosition;
+        }
+        else
+        {
+            return scheduleData.dayPosition;
+        }
+    }
+    
+    public Vector2 GetHomePosition()
+    {
+        if (scheduleData == null)
+            return transform.position;
+        
+        return scheduleData.homePosition;
+    }
+    
+    public bool ShouldGoHome()
+    {
+        return IsNightTime() && !scheduleData.activeAtNight;
+    }
+    
+    private bool IsNightTime()
+    {
+        if (dayNightCycle == null)
+            return false;
+        
+        float currentHour = dayNightCycle.CurrentTime;
+        return currentHour >= scheduleData.nightStartHour || currentHour < scheduleData.dayStartHour;
     }
     #endregion
     
@@ -620,17 +726,67 @@ public class NPC : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, interactionRange);
         
-        // Draw scheduled positions
+        // Draw scheduled positions if available
         if (scheduleData != null)
         {
+            // Day position
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(scheduleData.dayPosition, 0.5f);
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawWireSphere(scheduleData.nightPosition, 0.5f);
+            
+            // Night position (if active at night)
+            if (scheduleData.activeAtNight)
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawWireSphere(scheduleData.nightPosition, 0.5f);
+            }
+            
+            // Home position
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(scheduleData.homePosition, 0.3f);
+            
+            // Day patrol points
+            if (scheduleData.dayPatrolPoints != null && scheduleData.dayPatrolPoints.Length > 0)
+            {
+                Gizmos.color = Color.green;
+                for (int i = 0; i < scheduleData.dayPatrolPoints.Length; i++)
+                {
+                    Gizmos.DrawWireSphere(scheduleData.dayPatrolPoints[i].position, 0.3f);
+                    
+                    // Draw connections between patrol points
+                    if (i < scheduleData.dayPatrolPoints.Length - 1)
+                    {
+                        Gizmos.DrawLine(scheduleData.dayPatrolPoints[i].position, scheduleData.dayPatrolPoints[i + 1].position);
+                    }
+                    else
+                    {
+                        // Connect last to first
+                        Gizmos.DrawLine(scheduleData.dayPatrolPoints[i].position, scheduleData.dayPatrolPoints[0].position);
+                    }
+                }
+            }
+            
+            // Night patrol points (if active at night)
+            if (scheduleData.activeAtNight && scheduleData.nightPatrolPoints != null && scheduleData.nightPatrolPoints.Length > 0)
+            {
+                Gizmos.color = Color.magenta;
+                for (int i = 0; i < scheduleData.nightPatrolPoints.Length; i++)
+                {
+                    Gizmos.DrawWireSphere(scheduleData.nightPatrolPoints[i].position, 0.25f);
+                    
+                    if (i < scheduleData.nightPatrolPoints.Length - 1)
+                    {
+                        Gizmos.DrawLine(scheduleData.nightPatrolPoints[i].position, scheduleData.nightPatrolPoints[i + 1].position);
+                    }
+                    else
+                    {
+                        Gizmos.DrawLine(scheduleData.nightPatrolPoints[i].position, scheduleData.nightPatrolPoints[0].position);
+                    }
+                }
+            }
         }
         
         // Draw bubble position
-        Gizmos.color = Color.magenta;
+        Gizmos.color = Color.white;
         Gizmos.DrawWireSphere(transform.position + bubbleOffset, 0.2f);
     }
 }

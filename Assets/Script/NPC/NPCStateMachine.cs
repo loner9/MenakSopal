@@ -56,29 +56,6 @@ public class NPCState
     }
 }
 
-// Schedule Data ScriptableObject
-[System.Serializable]
-public class NPCScheduleData
-{
-    [Header("Day Schedule")]
-    public Vector2 dayPosition;
-    public NPCBehavior dayBehavior = NPCBehavior.Work;
-    public string dayAnimation = "Work";
-    
-    [Header("Night Schedule")]
-    public Vector2 nightPosition;
-    public NPCBehavior nightBehavior = NPCBehavior.Sleep;
-    public string nightAnimation = "Sleep";
-    
-    [Header("Work Settings")]
-    public Transform workStation;
-    public float workDuration = 5f;
-    
-    [Header("Interaction Settings")]
-    public string[] dialogues;
-    public bool availableAtNight = false;
-}
-
 public enum NPCBehavior
 {
     Idle,
@@ -452,6 +429,221 @@ public class NPCFleeState : NPCState
             {
                 npcStateMachine.ChangeState(npc.GetStateForTimeOfDay(npc.currentTimeOfDay));
             }
+        }
+    }
+}
+
+// PATROL STATE - For walking between points
+public class NPCPatrolState : NPCState
+{
+    private int currentPatrolIndex = 0;
+    private float pauseTimer = 0f;
+    private bool isPaused = false;
+    private PatrolPoint[] currentPatrolPoints;
+    
+    public NPCPatrolState(NPC npc, NPCStateMachine npcStateMachine) : base(npc, npcStateMachine)
+    {
+    }
+
+    public override void EnterState()
+    {
+        base.EnterState();
+        
+        // Get current patrol points based on time of day
+        currentPatrolPoints = npc.GetCurrentPatrolPoints();
+        
+        if (currentPatrolPoints == null || currentPatrolPoints.Length == 0)
+        {
+            // No patrol points, go to idle
+            npcStateMachine.ChangeState(npc.IdleState);
+            return;
+        }
+        
+        // Start at first patrol point or find nearest
+        currentPatrolIndex = FindNearestPatrolPoint();
+        isPaused = false;
+        pauseTimer = 0f;
+        
+        // Move to first destination
+        MoveToCurrentPatrolPoint();
+        
+        Debug.Log($"NPC {npc.npcName}: Starting patrol with {currentPatrolPoints.Length} points");
+    }
+
+    public override void ExitState()
+    {
+        base.ExitState();
+        npc.MoveNPC(Vector2.zero);
+        npc.HideStatusBubble();
+    }
+
+    public override void FrameUpdate()
+    {
+        base.FrameUpdate();
+        
+        // Check if we should stop patrolling
+        if (npc.GetCurrentActivity() != NPCBehavior.Walk)
+        {
+            npcStateMachine.ChangeState(npc.IdleState);
+            return;
+        }
+        
+        if (npc.ShouldGoHome())
+        {
+            npcStateMachine.ChangeState(npc.GoHomeState);
+            return;
+        }
+        
+        if (isPaused)
+        {
+            // Handle pause at patrol point
+            pauseTimer -= Time.deltaTime;
+            if (pauseTimer <= 0f)
+            {
+                // Move to next patrol point
+                currentPatrolIndex = (currentPatrolIndex + 1) % currentPatrolPoints.Length;
+                MoveToCurrentPatrolPoint();
+                isPaused = false;
+            }
+        }
+        else
+        {
+            // Check if we've reached the current patrol point
+            if (!npc.hasDestination)
+            {
+                // Reached destination, start pause
+                PatrolPoint currentPoint = currentPatrolPoints[currentPatrolIndex];
+                pauseTimer = currentPoint.pauseDuration;
+                isPaused = true;
+                
+                // Show activity bubble for this point
+                npc.ShowStatusBubble(currentPoint.activityAtPoint);
+                
+                // Set animation to idle during pause
+                if (npc.animator != null)
+                {
+                    npc.animator.SetFloat("speed", 0f);
+                }
+            }
+        }
+    }
+
+    public override void PhysicsUpdate()
+    {
+        base.PhysicsUpdate();
+        
+        if (!isPaused && npc.hasDestination)
+        {
+            Vector2 movement = npc.GetMovementToDestination();
+            npc.MoveNPC(movement);
+        }
+        else
+        {
+            npc.MoveNPC(Vector2.zero);
+        }
+    }
+    
+    private void MoveToCurrentPatrolPoint()
+    {
+        if (currentPatrolPoints != null && currentPatrolIndex < currentPatrolPoints.Length)
+        {
+            Vector2 destination = currentPatrolPoints[currentPatrolIndex].position;
+            npc.GetMoveCommand(destination);
+            
+            // Show walking bubble
+            npc.ShowStatusBubble(NPCBehavior.Walk);
+        }
+    }
+    
+    private int FindNearestPatrolPoint()
+    {
+        if (currentPatrolPoints == null || currentPatrolPoints.Length == 0)
+            return 0;
+        
+        int nearestIndex = 0;
+        float nearestDistance = Vector2.Distance(npc.transform.position, currentPatrolPoints[0].position);
+        
+        for (int i = 1; i < currentPatrolPoints.Length; i++)
+        {
+            float distance = Vector2.Distance(npc.transform.position, currentPatrolPoints[i].position);
+            if (distance < nearestDistance)
+            {
+                nearestDistance = distance;
+                nearestIndex = i;
+            }
+        }
+        
+        return nearestIndex;
+    }
+}
+
+// GO HOME STATE - For going home before despawning
+public class NPCGoHomeState : NPCState
+{
+    private bool reachedHome = false;
+    
+    public NPCGoHomeState(NPC npc, NPCStateMachine npcStateMachine) : base(npc, npcStateMachine)
+    {
+    }
+
+    public override void EnterState()
+    {
+        base.EnterState();
+        
+        reachedHome = false;
+        
+        // Get home position from schedule
+        Vector2 homePosition = npc.GetHomePosition();
+        npc.GetMoveCommand(homePosition);
+        
+        // Show walking home bubble (could be same as walk or different)
+        npc.ShowStatusBubble(NPCBehavior.Walk);
+        
+        Debug.Log($"NPC {npc.npcName}: Going home for the night");
+    }
+
+    public override void ExitState()
+    {
+        base.ExitState();
+        npc.MoveNPC(Vector2.zero);
+        npc.HideStatusBubble();
+    }
+
+    public override void FrameUpdate()
+    {
+        base.FrameUpdate();
+        
+        // Check if we've reached home
+        if (!npc.hasDestination && !reachedHome)
+        {
+            reachedHome = true;
+            
+            // Notify NPC Manager to despawn this NPC
+            NPCManager npcManager = UnityEngine.Object.FindObjectOfType<NPCManager>();
+            if (npcManager != null)
+            {
+                npcManager.DespawnNPC(npc);
+            }
+            else
+            {
+                // Fallback - just disable the NPC
+                npc.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public override void PhysicsUpdate()
+    {
+        base.PhysicsUpdate();
+        
+        if (npc.hasDestination && !reachedHome)
+        {
+            Vector2 movement = npc.GetMovementToDestination();
+            npc.MoveNPC(movement);
+        }
+        else
+        {
+            npc.MoveNPC(Vector2.zero);
         }
     }
 }
