@@ -337798,17 +337798,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   npcName: Jono
   npcType: 0
-  scheduleData:
-    dayPosition: {x: 0, y: 0}
-    dayBehavior: 4
-    dayAnimation: Walk
-    nightPosition: {x: 0, y: 0}
-    nightBehavior: 3
-    nightAnimation: Sleep
-    workStation: {fileID: 0}
-    workDuration: 5
-    dialogues: []
-    availableAtNight: 0
+  scheduleData: {fileID: 0}
   interactionRange: 1.2
   canInteract: 1
   moveSpeed: 1.5

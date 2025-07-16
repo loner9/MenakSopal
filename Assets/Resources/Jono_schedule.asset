@@ -12,21 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1bf30c825a1d3944a1b6264cdf20cff, type: 3}
   m_Name: Jono_schedule
   m_EditorClassIdentifier: 
-  scheduleName: Default Schedule
+  scheduleName: NPC Jono Schedule
   scheduleDescription: Description of this schedule...
   dayPosition: {x: 0, y: 0}
-  dayBehavior: 2
+  dayBehavior: 1
   dayAnimation: Work
-  dayPatrolPoints: []
+  dayPatrolPoints:
+  - position: {x: 0, y: 0}
+    pauseDuration: 0.1
+    activityAtPoint: 0
   activeAtNight: 0
-  homePosition: {x: 0, y: 0}
+  homePosition: {x: 28, y: -2}
   nightPosition: {x: 0, y: 0}
   nightBehavior: 3
   nightAnimation: Sleep
   nightPatrolPoints: []
   workStation: {fileID: 0}
   workDuration: 5
-  dialogues: []
+  dialogues:
+  - Hei
   availableAtNight: 0
   dayStartHour: 6
   nightStartHour: 20
