@@ -4,34 +4,6 @@ using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 
-[System.Serializable]
-public class DialogueEntry
-{
-    public string speakerName;
-    [TextArea(3, 5)]
-    public string dialogueText;
-    public TimeOfDay[] availableTimesOfDay;
-    public bool isRepeatable = true;
-    public string[] requiredFlags; // For quest system integration
-    
-    [Header("Conversation Bubble")]
-    [Tooltip("Specific bubble sprite to show during this dialogue. If null, uses default conversation bubble.")]
-    public Sprite conversationBubbleSprite;
-}
-
-[CreateAssetMenu(fileName = "New Dialogue", menuName = "NPC/Dialogue Data")]
-public class DialogueData : ScriptableObject
-{
-    public string npcName;
-    public DialogueEntry[] dialogueEntries;
-    public DialogueEntry[] greetings;
-    public DialogueEntry[] farewells;
-    
-    [Header("Default Conversation Bubble")]
-    [Tooltip("Default bubble sprite for this NPC's conversations if no specific bubble is set.")]
-    public Sprite defaultConversationBubble;
-}
-
 public class NPCInteractionSystem : MonoBehaviour
 {
     [Header("UI References")]
@@ -40,16 +12,34 @@ public class NPCInteractionSystem : MonoBehaviour
     public TextMeshProUGUI dialogueText;
     public Button continueButton;
     public Button endButton;
-    
+
+    [Header("Adventure Book UI")]
+    [Tooltip("Main dialogue frame from your Adventure Book assets (2_0 sprite)")]
+    public Image dialogueBoxImage;
+    [Tooltip("Canvas for dialogue UI (for animations)")]
+    public GameObject dialogueCanvas;
+
+    [Header("Adventure Book Sprites")]
+    [Tooltip("Main dialogue frame from 2.png sprite 2_0")]
+    public Sprite adventureBookFrame;
+    [Tooltip("Button sprites from your UI assets")]
+    public Sprite continueButtonSprite;
+    public Sprite endButtonSprite;
+
     [Header("Interaction")]
     public KeyCode interactKey = KeyCode.E;
     public LayerMask npcLayerMask = -1;
     public float interactionRange = 2f;
-    
+
     [Header("Visual Feedback")]
     public GameObject interactionPrompt;
     public TextMeshProUGUI promptText;
-    
+
+    [Header("Adventure Book Settings")]
+    public float typewriterSpeed = 0.03f;
+    public float bookOpenSpeed = 0.5f;
+    public bool enableBookAnimations = true;
+
     [Header("Default Conversation Bubbles")]
     [Tooltip("Default bubble sprite shown when talking to NPCs if no specific bubble is defined.")]
     public Sprite defaultInteractionBubble;
@@ -58,46 +48,99 @@ public class NPCInteractionSystem : MonoBehaviour
     public Sprite exclamationBubbleSprite;
     public Sprite heartBubbleSprite;
     public Sprite angerBubbleSprite;
-    
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip bookOpenSound;
+    public AudioClip bookCloseSound;
+    public AudioClip pageFlipSound;
+
     private NPC currentNPC;
     private DialogueData currentDialogue;
     private int currentDialogueIndex = 0;
     private bool isInDialogue = false;
+    private bool isTyping = false;
     private Transform player;
     private List<string> gameFlags = new List<string>(); // Simple flag system
     private Sprite originalNPCBubble; // Store original bubble to restore later
-    
+    private Coroutine typingCoroutine;
+    private DayNightCycle dayNightCycle;
+
+    public bool IsInDialogue => isInDialogue;
+
     public System.Action<NPC> OnDialogueStart;
     public System.Action<NPC> OnDialogueEnd;
-    
+
     private void Start()
     {
-        // Find player
+        // Find required components
         GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
         if (playerGO != null)
             player = playerGO.transform;
-        
+
+        dayNightCycle = FindObjectOfType<DayNightCycle>();
+
         // Setup UI
-        if (dialoguePanel != null)
-            dialoguePanel.SetActive(false);
-            
-        if (interactionPrompt != null)
-            interactionPrompt.SetActive(false);
-        
+        // SetupAdventureBookUI();
+
         // Setup buttons
         if (continueButton != null)
             continueButton.onClick.AddListener(ContinueDialogue);
-            
+
         if (endButton != null)
             endButton.onClick.AddListener(EndDialogue);
     }
-    
+
+    private void SetupAdventureBookUI()
+    {
+        // Hide dialogue initially
+        if (dialogueCanvas != null)
+            dialogueCanvas.SetActive(false);
+
+        if (dialoguePanel != null)
+            dialoguePanel.SetActive(false);
+
+        if (interactionPrompt != null)
+            interactionPrompt.SetActive(false);
+
+        // Apply Adventure Book styling
+        // if (dialogueBoxImage != null && adventureBookFrame != null)
+        // {
+        //     dialogueBoxImage.sprite = adventureBookFrame;
+        //     dialogueBoxImage.type = Image.Type.Sliced;
+        // }
+
+        // Style buttons if sprites provided
+        if (continueButton != null && continueButtonSprite != null)
+        {
+            continueButton.image.sprite = continueButtonSprite;
+        }
+
+        if (endButton != null && endButtonSprite != null)
+        {
+            endButton.image.sprite = endButtonSprite;
+        }
+
+        // Style speaker name text for adventure theme
+        if (speakerNameText != null)
+        {
+            speakerNameText.color = new Color(1f, 0.84f, 0f, 1f); // Gold color
+            speakerNameText.fontStyle = FontStyles.Bold;
+        }
+
+        // Style dialogue text
+        if (dialogueText != null)
+        {
+            dialogueText.color = new Color(0.18f, 0.11f, 0.08f, 1f); // Dark brown
+        }
+    }
+
     private void Update()
     {
         if (!isInDialogue)
         {
             CheckForNearbyNPCs();
-            
+
             if (Input.GetKeyDown(interactKey) && currentNPC != null)
             {
                 StartDialogue(currentNPC);
@@ -105,27 +148,32 @@ public class NPCInteractionSystem : MonoBehaviour
         }
         else
         {
-            // Handle dialogue input
-            if (Input.GetKeyDown(interactKey) || Input.GetKeyDown(KeyCode.Space))
+            // Skip typing animation
+            if (isTyping && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(interactKey)))
+            {
+                SkipTypewriter();
+            }
+            // Continue dialogue
+            else if (!isTyping && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(interactKey)))
             {
                 ContinueDialogue();
             }
-            
-            if (Input.GetKeyDown(KeyCode.Escape))
+            // End dialogue
+            else if (Input.GetKeyDown(KeyCode.Escape))
             {
                 EndDialogue();
             }
         }
     }
-    
+
     private void CheckForNearbyNPCs()
     {
         if (player == null) return;
-        
+
         Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(player.position, interactionRange, npcLayerMask);
         NPC nearestNPC = null;
         float nearestDistance = float.MaxValue;
-        
+
         foreach (var collider in nearbyColliders)
         {
             NPC npc = collider.GetComponent<NPC>();
@@ -139,7 +187,7 @@ public class NPCInteractionSystem : MonoBehaviour
                 }
             }
         }
-        
+
         // Update current NPC and prompt
         if (nearestNPC != currentNPC)
         {
@@ -147,7 +195,7 @@ public class NPCInteractionSystem : MonoBehaviour
             UpdateInteractionPrompt();
         }
     }
-    
+
     private void UpdateInteractionPrompt()
     {
         if (interactionPrompt != null)
@@ -166,11 +214,11 @@ public class NPCInteractionSystem : MonoBehaviour
             }
         }
     }
-    
+
     public void StartDialogue(NPC npc)
     {
         if (npc == null || isInDialogue) return;
-        
+
         // Get dialogue data from NPC
         DialogueData dialogueData = GetDialogueForNPC(npc);
         if (dialogueData == null)
@@ -178,25 +226,102 @@ public class NPCInteractionSystem : MonoBehaviour
             Debug.LogWarning($"No dialogue data found for NPC: {npc.npcName}");
             return;
         }
-        
+
         currentNPC = npc;
         currentDialogue = dialogueData;
         currentDialogueIndex = 0;
         isInDialogue = true;
-        
+
         // Store original bubble state
         originalNPCBubble = GetCurrentNPCBubbleSprite();
-        
+
         // Hide interaction prompt
         if (interactionPrompt != null)
             interactionPrompt.SetActive(false);
-        
-        // Show dialogue panel
+
+        // Play dialogue start sound
+        PlayAudioClip(dialogueData.dialogueStartSound ?? bookOpenSound);
+
+        // Show dialogue with adventure book animation
+        if (enableBookAnimations)
+        {
+            StartCoroutine(OpenBookAnimation());
+        }
+        else
+        {
+            // Show dialogue immediately
+            if (dialogueCanvas != null)
+                dialogueCanvas.SetActive(true);
+            if (dialoguePanel != null)
+                dialoguePanel.SetActive(true);
+            DisplayFirstDialogue();
+        }
+
+        // Notify systems
+        OnDialogueStart?.Invoke(npc);
+
+        // Force NPC to interaction state if not already
+        if (npc.StateMachine.CurrentNPCState != npc.InteractState)
+        {
+            npc.StateMachine.ChangeState(npc.InteractState);
+        }
+
+        Debug.Log($"Started dialogue with {npc.npcName}");
+    }
+
+    private IEnumerator OpenBookAnimation()
+    {
+        // Show canvas
+        if (dialogueCanvas != null)
+            dialogueCanvas.SetActive(true);
+
+        // Show panel
         if (dialoguePanel != null)
             dialoguePanel.SetActive(true);
-        
+
+        // Animate book opening
+        if (dialogueBoxImage != null)
+        {
+            Transform bookTransform = dialogueBoxImage.transform;
+
+            // Start closed
+            bookTransform.localScale = new Vector3(0f, 1f, 1f);
+            bookTransform.localRotation = Quaternion.Euler(0, 0, -5f);
+
+            // Animate to open
+            float elapsedTime = 0f;
+            Vector3 targetScale = Vector3.one;
+            Quaternion targetRotation = Quaternion.identity;
+
+            while (elapsedTime < bookOpenSpeed)
+            {
+                elapsedTime += Time.deltaTime;
+                float progress = elapsedTime / bookOpenSpeed;
+
+                // Ease out animation
+                float easedProgress = 1f - Mathf.Pow(1f - progress, 3f);
+
+                bookTransform.localScale = Vector3.Lerp(new Vector3(0f, 1f, 1f), targetScale, easedProgress);
+                bookTransform.localRotation = Quaternion.Lerp(Quaternion.Euler(0, 0, -5f), targetRotation, easedProgress);
+
+                yield return null;
+            }
+
+            bookTransform.localScale = targetScale;
+            bookTransform.localRotation = targetRotation;
+        }
+
+        // Display first dialogue
+        yield return new WaitForSeconds(0.2f);
+        DisplayFirstDialogue();
+    }
+
+    private void DisplayFirstDialogue()
+    {
+        TimeOfDay currentTime = dayNightCycle != null ? dayNightCycle.CurrentTimeOfDay : TimeOfDay.Day;
+
         // Start with greeting if available
-        DialogueEntry[] availableGreetings = GetAvailableDialogues(currentDialogue.greetings);
+        DialogueEntry[] availableGreetings = currentDialogue.GetAvailableDialogues(currentDialogue.greetings, currentTime, gameFlags);
         if (availableGreetings.Length > 0)
         {
             DisplayDialogue(availableGreetings[0]);
@@ -204,7 +329,7 @@ public class NPCInteractionSystem : MonoBehaviour
         else
         {
             // Start with first available dialogue
-            DialogueEntry[] availableDialogues = GetAvailableDialogues(currentDialogue.dialogueEntries);
+            DialogueEntry[] availableDialogues = currentDialogue.GetAvailableDialogues(currentDialogue.dialogueEntries, currentTime, gameFlags);
             if (availableDialogues.Length > 0)
             {
                 DisplayDialogue(availableDialogues[0]);
@@ -215,26 +340,22 @@ public class NPCInteractionSystem : MonoBehaviour
                 return;
             }
         }
-        
-        // Notify systems
-        OnDialogueStart?.Invoke(npc);
-        
-        // Force NPC to interaction state if not already
-        if (npc.StateMachine.CurrentNPCState != npc.InteractState)
-        {
-            npc.StateMachine.ChangeState(npc.InteractState);
-        }
     }
-    
+
     public void ContinueDialogue()
     {
-        if (!isInDialogue || currentDialogue == null) return;
-        
+        if (!isInDialogue || currentDialogue == null || isTyping) return;
+
+        // Play page flip sound
+        PlayAudioClip(pageFlipSound);
+
         currentDialogueIndex++;
-        
+
+        TimeOfDay currentTime = dayNightCycle != null ? dayNightCycle.CurrentTimeOfDay : TimeOfDay.Day;
+
         // Get available dialogues for current time
-        DialogueEntry[] availableDialogues = GetAvailableDialogues(currentDialogue.dialogueEntries);
-        
+        DialogueEntry[] availableDialogues = currentDialogue.GetAvailableDialogues(currentDialogue.dialogueEntries, currentTime, gameFlags);
+
         if (currentDialogueIndex < availableDialogues.Length)
         {
             DisplayDialogue(availableDialogues[currentDialogueIndex]);
@@ -242,7 +363,7 @@ public class NPCInteractionSystem : MonoBehaviour
         else
         {
             // Check for farewell
-            DialogueEntry[] availableFarewells = GetAvailableDialogues(currentDialogue.farewells);
+            DialogueEntry[] availableFarewells = currentDialogue.GetAvailableDialogues(currentDialogue.farewells, currentTime, gameFlags);
             if (availableFarewells.Length > 0)
             {
                 DisplayDialogue(availableFarewells[0]);
@@ -255,190 +376,205 @@ public class NPCInteractionSystem : MonoBehaviour
             }
         }
     }
-    
+
     public void EndDialogue()
     {
         if (!isInDialogue) return;
-        
+
         isInDialogue = false;
         currentDialogueIndex = 0;
-        
-        // Hide dialogue panel
+
+        // Stop any typing animation
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+            isTyping = false;
+        }
+
+        // Play book close sound
+        PlayAudioClip(bookCloseSound);
+
+        // Adventure book closing animation
+        if (enableBookAnimations)
+        {
+            StartCoroutine(CloseBookAnimation());
+        }
+        else
+        {
+            // Hide dialogue immediately
+            if (dialoguePanel != null)
+                dialoguePanel.SetActive(false);
+            if (dialogueCanvas != null)
+                dialogueCanvas.SetActive(false);
+
+            FinishEndDialogue();
+        }
+    }
+
+    private IEnumerator CloseBookAnimation()
+    {
+        if (dialogueBoxImage != null)
+        {
+            Transform bookTransform = dialogueBoxImage.transform;
+
+            float elapsedTime = 0f;
+            Vector3 startScale = Vector3.one;
+            Quaternion startRotation = Quaternion.identity;
+
+            while (elapsedTime < bookOpenSpeed * 0.7f) // Faster close
+            {
+                elapsedTime += Time.deltaTime;
+                float progress = elapsedTime / (bookOpenSpeed * 0.7f);
+
+                bookTransform.localScale = Vector3.Lerp(startScale, new Vector3(0f, 1f, 1f), progress);
+                bookTransform.localRotation = Quaternion.Lerp(startRotation, Quaternion.Euler(0, 0, 5f), progress);
+
+                yield return null;
+            }
+        }
+
+        // Hide UI
         if (dialoguePanel != null)
             dialoguePanel.SetActive(false);
-        
+        if (dialogueCanvas != null)
+            dialogueCanvas.SetActive(false);
+
+        FinishEndDialogue();
+    }
+
+    private void FinishEndDialogue()
+    {
         // Restore original NPC bubble
         RestoreOriginalNPCBubble();
-        
+
         // Show interaction prompt again if still near NPC
         UpdateInteractionPrompt();
-        
+
         // Notify systems
         OnDialogueEnd?.Invoke(currentNPC);
-        
+
+        Debug.Log($"Ended dialogue with {(currentNPC != null ? currentNPC.npcName : "unknown NPC")}");
+
         currentNPC = null;
         currentDialogue = null;
     }
-    
+
     private IEnumerator EndDialogueAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
         EndDialogue();
     }
-    
+
     private void DisplayDialogue(DialogueEntry entry)
     {
         if (entry == null) return;
-        
+
         // Update NPC bubble based on dialogue entry
         UpdateNPCConversationBubble(entry);
-        
+
         // Update UI
         if (speakerNameText != null)
-            speakerNameText.text = entry.speakerName;
-        
+            speakerNameText.text = entry.speakerName.ToUpper();
+
         if (dialogueText != null)
         {
-            StartCoroutine(TypewriterEffect(entry.dialogueText));
+            if (typingCoroutine != null)
+                StopCoroutine(typingCoroutine);
+
+            typingCoroutine = StartCoroutine(TypewriterEffect(entry.dialogueText, entry.pauseAfterDialogue));
         }
-        
+
         // Update button visibility
         UpdateDialogueButtons();
     }
-    
-    private void UpdateNPCConversationBubble(DialogueEntry entry)
+
+    private IEnumerator TypewriterEffect(string text, float pauseAfter = 0f)
     {
-        if (currentNPC == null) return;
-        
-        Sprite bubbleToShow = null;
-        
-        // Priority order: dialogue-specific > dialogue data default > system default
-        if (entry.conversationBubbleSprite != null)
-        {
-            bubbleToShow = entry.conversationBubbleSprite;
-        }
-        else if (currentDialogue.defaultConversationBubble != null)
-        {
-            bubbleToShow = currentDialogue.defaultConversationBubble;
-        }
-        else if (defaultInteractionBubble != null)
-        {
-            bubbleToShow = defaultInteractionBubble;
-        }
-        
-        // Show the conversation bubble
-        if (bubbleToShow != null)
-        {
-            currentNPC.ShowConversationBubble(bubbleToShow);
-        }
-    }
-    
-    private Sprite GetCurrentNPCBubbleSprite()
-    {
-        if (currentNPC == null || currentNPC.currentBubble == null) return null;
-        
-        Image bubbleImage = currentNPC.currentBubble.GetComponent<Image>();
-        if (bubbleImage == null)
-            bubbleImage = currentNPC.currentBubble.GetComponentInChildren<Image>();
-        
-        return bubbleImage?.sprite;
-    }
-    
-    private void RestoreOriginalNPCBubble()
-    {
-        if (currentNPC == null) return;
-        
-        // Restore to the state-appropriate bubble
-        currentNPC.UpdateBubbleForCurrentState();
-    }
-    
-    private IEnumerator TypewriterEffect(string text)
-    {
-        if (dialogueText == null) yield break;
-        
+        isTyping = true;
         dialogueText.text = "";
-        
+
         foreach (char letter in text)
         {
             dialogueText.text += letter;
-            yield return new WaitForSeconds(0.02f); // Adjust speed as needed
+
+            // Play typewriter sound for certain characters
+            if (currentDialogue != null && currentDialogue.typewriterSound != null)
+            {
+                if (letter != ' ' && Random.Range(0f, 1f) > 0.7f) // Random typing sounds
+                {
+                    PlayAudioClip(currentDialogue.typewriterSound);
+                }
+            }
+
+            yield return new WaitForSeconds(typewriterSpeed);
+        }
+
+        isTyping = false;
+
+        // Optional pause after dialogue
+        if (pauseAfter > 0f)
+        {
+            yield return new WaitForSeconds(pauseAfter);
         }
     }
-    
+
+    private void SkipTypewriter()
+    {
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+            isTyping = false;
+
+            // Show full text immediately
+            if (currentDialogue != null)
+            {
+                TimeOfDay currentTime = dayNightCycle != null ? dayNightCycle.CurrentTimeOfDay : TimeOfDay.Day;
+                DialogueEntry[] availableDialogues = currentDialogue.GetAvailableDialogues(currentDialogue.dialogueEntries, currentTime, gameFlags);
+                if (currentDialogueIndex < availableDialogues.Length)
+                {
+                    dialogueText.text = availableDialogues[currentDialogueIndex].dialogueText;
+                }
+            }
+        }
+    }
+
     private void UpdateDialogueButtons()
     {
-        DialogueEntry[] availableDialogues = GetAvailableDialogues(currentDialogue.dialogueEntries);
+        if (currentDialogue == null) return;
+
+        TimeOfDay currentTime = dayNightCycle != null ? dayNightCycle.CurrentTimeOfDay : TimeOfDay.Day;
+        DialogueEntry[] availableDialogues = currentDialogue.GetAvailableDialogues(currentDialogue.dialogueEntries, currentTime, gameFlags);
         bool hasMoreDialogue = currentDialogueIndex < availableDialogues.Length - 1;
-        
+
         if (continueButton != null)
             continueButton.gameObject.SetActive(hasMoreDialogue);
-        
+
         if (endButton != null)
             endButton.gameObject.SetActive(!hasMoreDialogue);
     }
-    
-    private DialogueEntry[] GetAvailableDialogues(DialogueEntry[] dialogues)
-    {
-        if (dialogues == null) return new DialogueEntry[0];
-        
-        List<DialogueEntry> available = new List<DialogueEntry>();
-        
-        foreach (var dialogue in dialogues)
-        {
-            if (IsDialogueAvailable(dialogue))
-            {
-                available.Add(dialogue);
-            }
-        }
-        
-        return available.ToArray();
-    }
-    
-    private bool IsDialogueAvailable(DialogueEntry dialogue)
-    {
-        // Check time of day availability
-        if (dialogue.availableTimesOfDay != null && dialogue.availableTimesOfDay.Length > 0)
-        {
-            DayNightCycle dayNightCycle = FindObjectOfType<DayNightCycle>();
-            if (dayNightCycle != null)
-            {
-                bool timeMatches = false;
-                foreach (var timeOfDay in dialogue.availableTimesOfDay)
-                {
-                    if (dayNightCycle.CurrentTimeOfDay == timeOfDay)
-                    {
-                        timeMatches = true;
-                        break;
-                    }
-                }
-                if (!timeMatches) return false;
-            }
-        }
-        
-        // Check required flags
-        if (dialogue.requiredFlags != null && dialogue.requiredFlags.Length > 0)
-        {
-            foreach (var flag in dialogue.requiredFlags)
-            {
-                if (!gameFlags.Contains(flag))
-                {
-                    return false;
-                }
-            }
-        }
-        
-        return true;
-    }
-    
+
     private DialogueData GetDialogueForNPC(NPC npc)
     {
-        // Try to get dialogue from NPC's schedule data first
+        // Priority 1: Check if NPC has DialogueData component attached
+        if (npc.dialogueData != null)
+        {
+            return npc.dialogueData;
+        }
+
+        // Priority 2: Try loading from Resources folder
+        DialogueData dialogueData = Resources.Load<DialogueData>($"Dialogues/{npc.npcName}");
+        if (dialogueData != null)
+        {
+            return dialogueData;
+        }
+
+        // Priority 3: Create from NPCScheduleData if available
         if (npc.scheduleData != null && npc.scheduleData.dialogues != null && npc.scheduleData.dialogues.Length > 0)
         {
             // Create a temporary DialogueData from the schedule
             DialogueData tempDialogue = ScriptableObject.CreateInstance<DialogueData>();
             tempDialogue.npcName = npc.npcName;
-            
+
             // Convert string array to DialogueEntry array
             List<DialogueEntry> entries = new List<DialogueEntry>();
             foreach (string dialogue in npc.scheduleData.dialogues)
@@ -453,24 +589,69 @@ public class NPCInteractionSystem : MonoBehaviour
                 };
                 entries.Add(entry);
             }
-            
+
             tempDialogue.dialogueEntries = entries.ToArray();
-            // Set default conversation bubble if available
             tempDialogue.defaultConversationBubble = defaultInteractionBubble;
             return tempDialogue;
         }
-        
-        // Fallback: Look for DialogueData in Resources or attached to NPC
-        DialogueData dialogueData = npc.GetComponent<DialogueData>();
-        if (dialogueData == null)
-        {
-            // Try loading from Resources
-            dialogueData = Resources.Load<DialogueData>($"Dialogues/{npc.npcName}");
-        }
-        
-        return dialogueData;
+
+        return null;
     }
-    
+
+    private void UpdateNPCConversationBubble(DialogueEntry entry)
+    {
+        if (currentNPC == null) return;
+
+        Sprite bubbleToShow = null;
+
+        // Priority order: dialogue-specific > dialogue data default > system default
+        if (entry.conversationBubbleSprite != null)
+        {
+            bubbleToShow = entry.conversationBubbleSprite;
+        }
+        else if (currentDialogue.defaultConversationBubble != null)
+        {
+            bubbleToShow = currentDialogue.defaultConversationBubble;
+        }
+        else if (defaultInteractionBubble != null)
+        {
+            bubbleToShow = defaultInteractionBubble;
+        }
+
+        // Show the conversation bubble
+        if (bubbleToShow != null)
+        {
+            currentNPC.ShowConversationBubble(bubbleToShow);
+        }
+    }
+
+    private Sprite GetCurrentNPCBubbleSprite()
+    {
+        if (currentNPC == null || currentNPC.currentBubble == null) return null;
+
+        Image bubbleImage = currentNPC.currentBubble.GetComponent<Image>();
+        if (bubbleImage == null)
+            bubbleImage = currentNPC.currentBubble.GetComponentInChildren<Image>();
+
+        return bubbleImage?.sprite;
+    }
+
+    private void RestoreOriginalNPCBubble()
+    {
+        if (currentNPC == null) return;
+
+        // Restore to the state-appropriate bubble
+        currentNPC.UpdateBubbleForCurrentState();
+    }
+
+    private void PlayAudioClip(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+    }
+
     // Public methods for external systems
     public void AddGameFlag(string flag)
     {
@@ -479,27 +660,27 @@ public class NPCInteractionSystem : MonoBehaviour
             gameFlags.Add(flag);
         }
     }
-    
+
     public void RemoveGameFlag(string flag)
     {
         gameFlags.Remove(flag);
     }
-    
+
     public bool HasGameFlag(string flag)
     {
         return gameFlags.Contains(flag);
     }
-    
+
     public void SetGameFlags(List<string> flags)
     {
         gameFlags = new List<string>(flags);
     }
-    
+
     public List<string> GetGameFlags()
     {
         return new List<string>(gameFlags);
     }
-    
+
     // Methods for external control of conversation bubbles
     public void ShowConversationBubble(Sprite bubbleSprite)
     {
@@ -508,34 +689,34 @@ public class NPCInteractionSystem : MonoBehaviour
             currentNPC.ShowConversationBubble(bubbleSprite);
         }
     }
-    
+
     public void ShowQuestionBubble()
     {
         ShowConversationBubble(questionBubbleSprite);
     }
-    
+
     public void ShowExclamationBubble()
     {
         ShowConversationBubble(exclamationBubbleSprite);
     }
-    
+
     public void ShowHeartBubble()
     {
         ShowConversationBubble(heartBubbleSprite);
     }
-    
+
     public void ShowAngerBubble()
     {
         ShowConversationBubble(angerBubbleSprite);
     }
-    
+
     // For save/load system
     [System.Serializable]
     public class DialogueSystemSaveData
     {
         public List<string> gameFlags;
     }
-    
+
     public DialogueSystemSaveData GetSaveData()
     {
         return new DialogueSystemSaveData
@@ -543,7 +724,7 @@ public class NPCInteractionSystem : MonoBehaviour
             gameFlags = this.gameFlags
         };
     }
-    
+
     public void LoadSaveData(DialogueSystemSaveData data)
     {
         if (data != null)
