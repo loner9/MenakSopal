@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 534004164a54d4c46b24afa12397c78d, type: 3}
+  m_Name: Jono_Spawn_conf
+  m_EditorClassIdentifier: 
+  npcID: jono_01
+  displayName: Jono_Spawn_conf
+  npcPrefab: {fileID: 4232856290345205590, guid: 4662270035f82834e8f0e04bbbfee1c4, type: 3}
+  scheduleData: {fileID: 11400000, guid: a34667ff0ddbfb34bafc5034bf20704d, type: 2}
+  spawnPosition: {x: 27.09, y: -4.68}
+  spawnAtGameStart: 1
+  hasTimeRestrictions: 0
+  allowedSpawnTimes: 00000000
+  requiredFlags: []
+  blockedByFlags: []
+  useCustomSpawnPosition: 0
+  customSpawnPosition: {x: 0, y: 0}
+  category: Village
+  description: Describe what this NPC does and when they appear...
