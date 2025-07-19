@@ -6,13 +6,17 @@ public class SimpleNPC : MonoBehaviour
     [SerializeField] private NPCState currentState = NPCState.Idle;
     [SerializeField] private bool isMoving = false;
     [SerializeField] private bool canInteract = true; // Only true when idle
-    public bool isInteractable { get; private set; }
+
     [Header("Movement")]
     public float arrivalThreshold = 0.1f;
 
+    [Header("Sprite Settings")]
+    [Tooltip("Is your sprite originally facing right? If your sprite faces left by default, uncheck this.")]
+    public bool spriteDefaultFacesRight = true;
+
     // References
     private SimpleNPCScheduleData scheduleData;
-    private SyncedScriptableNPCManager npcManager;
+    private SyncedScriptableNPCManager npcManager; // Fixed reference type
     private Rigidbody2D rb;
     private Animator animator;
     private Transform player;
@@ -23,6 +27,10 @@ public class SimpleNPC : MonoBehaviour
     private bool hasDestination = false;
     private float waypointBreakTimer = 0f;
 
+    // Initialization tracking
+    private bool isInitialized = false;
+    private string initializationID = "";
+
     // Interaction
     private float interactionRange = 1.5f;
     private bool isPlayerNearby = false;
@@ -32,11 +40,6 @@ public class SimpleNPC : MonoBehaviour
     private Vector2 idleTarget;
     private float idleWalkTimer = 0f;
     private float idleWalkInterval = 3f; // Change idle target every 3 seconds
-
-    public SimpleNPCScheduleData GetScheduleData()
-    {
-        return scheduleData;
-    }
 
     public enum NPCState
     {
@@ -312,12 +315,16 @@ public class SimpleNPC : MonoBehaviour
             if (currentSchedule.HasMoreWaypoints() || currentSchedule.waypointRoute.isLooped)
             {
                 // Take a break at this waypoint
-                // Convert game hours to real seconds based on a reasonable default
-                // Since we're synced with DayNightCycle, we'll use a standard conversion
-                float gameHoursToRealSeconds = 60f; // 1 game hour = 60 real seconds (configurable)
-                float breakTimeInSeconds = currentSchedule.waypointRoute.breakTimeAtEachWaypoint * gameHoursToRealSeconds;
+                // Calculate real seconds from game hours using the DayNightCycle settings
+                float breakTimeInSeconds = currentSchedule.waypointRoute.breakTimeAtEachWaypoint * npcManager.gameHoursPerRealSecond;
                 waypointBreakTimer = breakTimeInSeconds;
+
                 ChangeState(NPCState.AtWaypoint);
+
+                if (scheduleData != null)
+                {
+                    Debug.Log($"SimpleNPC {scheduleData.npcName}: Taking {breakTimeInSeconds:F1}s break at waypoint");
+                }
             }
             else
             {
@@ -466,21 +473,162 @@ public class SimpleNPC : MonoBehaviour
 
     #endregion
 
-    #region Animation
+    #region Animation and Facing Direction
+
+    private Vector2 lastMovementDirection = Vector2.down; // Default facing down
 
     void UpdateAnimator()
     {
         if (animator == null) return;
 
-        // Simple animation - just speed for walking
+        // Set speed for walk animations
         animator.SetFloat("speed", isMoving ? 1f : 0f);
 
-        // You can add orientation/direction here if needed
+        // Update facing direction based on movement
+        if (isMoving)
+        {
+            Vector2 currentMovementDirection = GetCurrentMovementDirection();
+            if (currentMovementDirection != Vector2.zero)
+            {
+                lastMovementDirection = currentMovementDirection;
+                UpdateFacingDirection(lastMovementDirection);
+            }
+        }
+
+        // Set orientation parameter for animator
+        SetAnimatorOrientation(lastMovementDirection);
+    }
+
+    /// <summary>
+    /// Gets the current movement direction based on NPC state
+    /// </summary>
+    Vector2 GetCurrentMovementDirection()
+    {
+        switch (currentState)
+        {
+            case NPCState.MovingToSchedule:
+            case NPCState.Idle when isMoving: // Idle random walking
+                if (hasDestination)
+                {
+                    return (currentDestination - (Vector2)transform.position).normalized;
+                }
+                else if (idleTarget != Vector2.zero)
+                {
+                    return (idleTarget - (Vector2)transform.position).normalized;
+                }
+                break;
+
+            default:
+                return Vector2.zero;
+        }
+
+        return Vector2.zero;
+    }
+
+    /// <summary>
+    /// Updates the visual facing direction of the sprite
+    /// </summary>
+    void UpdateFacingDirection(Vector2 direction)
+    {
+        // Handle sprite flipping for left/right movement
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
+        {
+            // Determine desired facing direction
+            bool shouldFaceRight = direction.x > 0.1f;
+            bool shouldFaceLeft = direction.x < -0.1f;
+
+            if (shouldFaceRight)
+            {
+                // Want to face right
+                spriteRenderer.flipX = !spriteDefaultFacesRight;
+            }
+            else if (shouldFaceLeft)
+            {
+                // Want to face left  
+                spriteRenderer.flipX = spriteDefaultFacesRight;
+            }
+            // Don't change flip for purely vertical movement
+        }
+    }
+
+    /// <summary>
+    /// Sets the animator orientation parameter based on movement direction
+    /// This supports 4-directional or 8-directional movement animations
+    /// </summary>
+    void SetAnimatorOrientation(Vector2 direction)
+    {
+        if (animator == null) return;
+
+        // Convert direction to orientation value
+        // This assumes your animator uses an integer parameter called "orientation"
+        // with values: 0=Down, 1=Up, 2=Right, 3=Left
+
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        if (angle < 0) angle += 360;
+
+        int orientation;
+        if (angle >= 315 || angle < 45)
+            orientation = 2; // Right
+        else if (angle >= 45 && angle < 135)
+            orientation = 1; // Up
+        else if (angle >= 135 && angle < 225)
+            orientation = 3; // Left
+        else
+            orientation = 0; // Down
+
+        // Only set if the parameter exists in your animator
+        if (HasAnimatorParameter("orientation"))
+        {
+            animator.SetInteger("orientation", orientation);
+        }
+    }
+
+    /// <summary>
+    /// Checks if the animator has a specific parameter
+    /// </summary>
+    bool HasAnimatorParameter(string paramName)
+    {
+        if (animator == null) return false;
+
+        foreach (var param in animator.parameters)
+        {
+            if (param.name == paramName)
+                return true;
+        }
+        return false;
     }
 
     #endregion
 
-    #region Debug
+    /// <summary>
+    /// Gets the schedule data for this NPC.
+    /// Used by NPCInteractionBridge and other components that need schedule information.
+    /// </summary>
+    public SimpleNPCScheduleData GetScheduleData()
+    {
+        return scheduleData;
+    }
+
+    /// <summary>
+    /// Gets the current state for debugging
+    /// </summary>
+    public NPCState GetCurrentState()
+    {
+        return currentState;
+    }
+
+    /// <summary>
+    /// Gets debug information about this NPC's current status
+    /// </summary>
+    public string GetDebugStatus()
+    {
+        if (!isInitialized)
+            return "Not initialized";
+
+        return $"State: {currentState}, Moving: {isMoving}, HasDestination: {hasDestination}, " +
+               $"CanInteract: {CanInteractWithPlayer()}, InitID: {initializationID}";
+    }
 
     void OnDrawGizmosSelected()
     {
@@ -523,5 +671,4 @@ public class SimpleNPC : MonoBehaviour
         }
     }
 
-    #endregion
 }

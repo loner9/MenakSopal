@@ -362,33 +362,207 @@ public class SyncedScriptableNPCManager : MonoBehaviour
             if (shouldBeActive && !isCurrentlySpawned)
             {
                 // NPC should be active but isn't spawned - spawn it
+                if (showDetailedLogs)
+                {
+                    Debug.Log($"SyncedScriptableNPCManager: SPAWNING {spawnData.displayName} at hour {CurrentHour} - conditions met");
+                }
                 SpawnNPC(spawnData);
                 spawnedCount++;
             }
             else if (!shouldBeActive && isCurrentlySpawned)
             {
                 // NPC shouldn't be active but is spawned - despawn it
+                string reason = GetDespawnReason(spawnData);
+                if (showDetailedLogs)
+                {
+                    Debug.Log($"SyncedScriptableNPCManager: DESPAWNING {spawnData.displayName} at hour {CurrentHour} - {reason}");
+                }
                 DespawnNPC(spawnData);
                 despawnedCount++;
+            }
+            else if (showDetailedLogs && isCurrentlySpawned)
+            {
+                // NPC is spawned and should stay spawned - log why they're staying
+                Debug.Log($"SyncedScriptableNPCManager: {spawnData.displayName} STAYING ACTIVE at hour {CurrentHour} - still meets spawn conditions");
             }
         }
         
         if (showDetailedLogs && (spawnedCount > 0 || despawnedCount > 0))
         {
-            Debug.Log($"SyncedScriptableNPCManager: Hour {CurrentHour} spawn update - " +
+            Debug.Log($"SyncedScriptableNPCManager: Hour {CurrentHour} spawn update complete - " +
                      $"Spawned: {spawnedCount}, Despawned: {despawnedCount}");
         }
     }
     
     /// <summary>
+    /// Gets a human-readable reason why an NPC should be despawned.
+    /// This helps with debugging spawn/despawn issues.
+    /// </summary>
+    private string GetDespawnReason(NPCSpawnData spawnData)
+    {
+        if (spawnData.npcPrefab == null || spawnData.scheduleData == null)
+        {
+            return "Missing prefab or schedule data";
+        }
+        
+        if (CurrentHour < spawnData.scheduleData.startHour)
+        {
+            return $"Before start time (starts at {spawnData.scheduleData.startHour}:00)";
+        }
+        
+        if (HasNPCReachedDespawnTime(spawnData))
+        {
+            return "Reached despawn time from schedule";
+        }
+        
+        if (spawnData.hasTimeRestrictions)
+        {
+            bool timeAllowed = false;
+            foreach (TimeOfDay allowedTime in spawnData.allowedSpawnTimes)
+            {
+                if (currentTimeOfDay == allowedTime)
+                {
+                    timeAllowed = true;
+                    break;
+                }
+            }
+            
+            if (!timeAllowed)
+            {
+                return $"Time restriction (current: {currentTimeOfDay})";
+            }
+        }
+        
+        if (spawnData.requiredFlags != null && spawnData.requiredFlags.Length > 0)
+        {
+            foreach (string requiredFlag in spawnData.requiredFlags)
+            {
+                if (!currentGameFlags.Contains(requiredFlag))
+                {
+                    return $"Missing required flag: {requiredFlag}";
+                }
+            }
+        }
+        
+        if (spawnData.blockedByFlags != null && spawnData.blockedByFlags.Length > 0)
+        {
+            foreach (string blockedFlag in spawnData.blockedByFlags)
+            {
+                if (currentGameFlags.Contains(blockedFlag))
+                {
+                    return $"Blocked by flag: {blockedFlag}";
+                }
+            }
+        }
+        
+        return "Unknown reason";
+    }
+    
+    /// <summary>
     /// Determines if an NPC should be active based on current game conditions.
-    /// This encapsulates all the spawn condition logic in one place.
+    /// This fixes the spawn/despawn cycling issue by properly handling time ranges.
     /// </summary>
     bool ShouldNPCBeActive(NPCSpawnData spawnData)
     {
-        // Use the spawn data's built-in condition checking
-        // This considers time restrictions, game flags, and basic requirements
-        return spawnData.CanSpawnNow(currentTimeOfDay, currentGameFlags);
+        // Check basic requirements first
+        if (spawnData.npcPrefab == null || spawnData.scheduleData == null)
+        {
+            return false;
+        }
+        
+        // Check if it's past the NPC's start hour
+        if (CurrentHour < spawnData.scheduleData.startHour)
+        {
+            return false; // Too early for this NPC
+        }
+        
+        // Check if we've hit a despawn condition (the key fix!)
+        if (HasNPCReachedDespawnTime(spawnData))
+        {
+            return false; // NPC should be despawned
+        }
+        
+        // Check time restrictions (TimeOfDay-based) - only if enabled
+        if (spawnData.hasTimeRestrictions)
+        {
+            bool timeAllowed = false;
+            foreach (TimeOfDay allowedTime in spawnData.allowedSpawnTimes)
+            {
+                if (currentTimeOfDay == allowedTime)
+                {
+                    timeAllowed = true;
+                    break;
+                }
+            }
+            
+            if (!timeAllowed)
+            {
+                return false;
+            }
+        }
+        
+        // Check required flags
+        if (spawnData.requiredFlags != null && spawnData.requiredFlags.Length > 0)
+        {
+            foreach (string requiredFlag in spawnData.requiredFlags)
+            {
+                if (!currentGameFlags.Contains(requiredFlag))
+                {
+                    return false; // Missing required flag
+                }
+            }
+        }
+        
+        // Check blocked flags
+        if (spawnData.blockedByFlags != null && spawnData.blockedByFlags.Length > 0)
+        {
+            foreach (string blockedFlag in spawnData.blockedByFlags)
+            {
+                if (currentGameFlags.Contains(blockedFlag))
+                {
+                    return false; // Blocked by flag
+                }
+            }
+        }
+        
+        return true; // NPC should be active
+    }
+    
+    /// <summary>
+    /// Checks if the NPC has reached a time when they should despawn.
+    /// This is the key method that fixes the spawn/despawn cycling.
+    /// </summary>
+    private bool HasNPCReachedDespawnTime(NPCSpawnData spawnData)
+    {
+        if (spawnData.scheduleData == null || spawnData.scheduleData.hourlySchedule == null)
+        {
+            return false;
+        }
+        
+        // Find the most recent schedule entry with shouldDespawn = true that we've passed
+        int latestDespawnHour = -1;
+        
+        foreach (var schedule in spawnData.scheduleData.hourlySchedule)
+        {
+            if (schedule.shouldDespawn && schedule.hour <= CurrentHour)
+            {
+                if (schedule.hour > latestDespawnHour)
+                {
+                    latestDespawnHour = schedule.hour;
+                }
+            }
+        }
+        
+        // If we found a despawn hour and we're at or past it, the NPC should be despawned
+        bool shouldDespawn = latestDespawnHour >= 0 && CurrentHour >= latestDespawnHour;
+        
+        if (showDetailedLogs && shouldDespawn)
+        {
+            Debug.Log($"SyncedScriptableNPCManager: {spawnData.displayName} should despawn - " +
+                     $"reached despawn hour {latestDespawnHour} (current hour: {CurrentHour})");
+        }
+        
+        return shouldDespawn;
     }
     
     /// <summary>
@@ -654,11 +828,28 @@ public class SyncedScriptableNPCManager : MonoBehaviour
         
         return report.ToString();
     }
-    
+
     #endregion
     
-    #region Gizmos and Visual Debug
+    public float gameHoursPerRealSecond
+    {
+        get
+        {
+            if (dayNightCycle != null && dayNightCycle.timeSettings != null)
+            {
+                // Total cycle duration is for 24 game hours
+                return dayNightCycle.timeSettings.totalCycleDuration / 24f;
+            }
+            else
+            {
+                // Default fallback: 60 seconds per game hour (24 minutes for full cycle)
+                return 60f;
+            }
+        }
+    }
     
+    #region Gizmos and Visual Debug
+
     void OnDrawGizmos()
     {
         if (!showSpawnStatus || npcSpawnDataAssets == null) return;
