@@ -261,9 +261,9 @@ public class NPCInteractionSystem : MonoBehaviour
         OnDialogueStart?.Invoke(npc);
 
         // Force NPC to interaction state if not already
-        if (npc.StateMachine.CurrentNPCState != npc.InteractState)
+        if (npc.StateMachine.CurrentNPCState != npc.InteractionState)
         {
-            npc.StateMachine.ChangeState(npc.InteractState);
+            npc.StateMachine.ChangeState(npc.InteractionState);
         }
 
         Debug.Log($"Started dialogue with {npc.npcName}");

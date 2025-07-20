@@ -14,29 +14,43 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scheduleName: NPC Jono Schedule
   scheduleDescription: Description of this schedule...
-  dayPosition: {x: 10, y: -13}
-  dayBehavior: 0
-  dayAnimation: Work
-  dayPatrolPoints:
-  - position: {x: 0, y: 0}
-    pauseDuration: 0.1
-    activityAtPoint: 0
-  activeAtNight: 0
+  spawnHour: 6
+  homeObjectTag: House
+  homeObjectName: Entrance_Jono
   homePosition: {x: 28, y: -2}
-  nightPosition: {x: 0, y: 0}
-  nightBehavior: 3
-  nightAnimation: Sleep
-  nightPatrolPoints: []
-  workStation: {fileID: 0}
-  workDuration: 5
+  scheduleEvents:
+  - hour: 7
+    targetObjectTag: NPCTarget
+    targetObjectName: Jono_Schedule_1
+    targetPosition: {x: 0, y: 0}
+    behavior: 0
+    shouldIdleWhenReached: 1
+    shouldDespawn: 0
+    customDialogue: []
+  - hour: 15
+    targetObjectTag: NPCTarget
+    targetObjectName: Jono_Schedule_2
+    targetPosition: {x: 0, y: 0}
+    behavior: 0
+    shouldIdleWhenReached: 1
+    shouldDespawn: 0
+    customDialogue: []
+  - hour: 15
+    targetObjectTag: House
+    targetObjectName: Entrance_Jono
+    targetPosition: {x: 0, y: 0}
+    behavior: 0
+    shouldIdleWhenReached: 1
+    shouldDespawn: 0
+    customDialogue: []
+  moveAroundWhenIdle: 0
+  idleMovementRange: 2
+  walkSpeed: 1.5
+  pauseAtDestination: 2
   dialogues:
   - Hei
   - Hari yang baik untuk bekerja
   - Jangan khawatir, semua masalahmu akan berlalu, percayalah
   - Mie Ayam!, aku merekomendasikannya!!!
-  availableAtNight: 0
-  dayStartHour: 6
-  nightStartHour: 20
-  walkSpeed: 1.5
-  pauseAtDestination: 2
-  detailedSchedule: []
+  workStation: {fileID: 0}
+  workDuration: 5

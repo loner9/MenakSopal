@@ -8,18 +8,15 @@ public class NPCSpawnData
     [Header("NPC Prefab")]
     public GameObject npcPrefab;
     public string npcID; // Unique identifier for save/load
-    
+
     [Header("Spawn Settings")]
-    public Vector2 spawnPosition;
     public bool spawnAtStart = true;
-    
-    [Header("Schedule Override")]
-    public bool useCustomSchedule = false;
-    public NPCScheduleData customSchedule;
-    
+
+    [Header("Schedule Data")]
+    [Tooltip("NPCScheduleData contains spawn position (home location) and all scheduling info")]
+    public NPCScheduleData scheduleData;
+
     [Header("Spawn Conditions")]
-    public bool spawnBasedOnTime = false;
-    public TimeOfDay[] availableSpawnTimes;
     public string[] requiredFlags; // For quest-based spawning
 }
 
@@ -28,41 +25,36 @@ public class NPCManager : MonoBehaviour
     [Header("NPC Management")]
     public List<NPCSpawnData> npcSpawnList = new List<NPCSpawnData>();
     public Transform npcParent; // Optional parent object for organization
-    
-    [Header("Spawn Areas")]
-    public Vector2 villageAreaMin = new Vector2(-20, -20);
-    public Vector2 villageAreaMax = new Vector2(20, 20);
-    public LayerMask obstacleLayerMask;
-    
+
+
     [Header("Performance Settings")]
-    public float npcUpdateInterval = 0.5f; // How often to update distant NPCs
-    public float maxActiveDistance = 30f; // Distance to keep NPCs fully active
-    public float cullingDistance = 50f; // Distance to completely disable NPCs
-    
+    [Tooltip("Enable basic performance optimization for large numbers of NPCs")]
+    public bool enablePerformanceOptimization = false;
+
     [Header("Debug")]
     public bool showDebugInfo = false;
     public bool showSpawnAreas = true;
-    
+
     // Runtime data
     private List<NPC> spawnedNPCs = new List<NPC>();
-    private List<NPC> activeNPCs = new List<NPC>();
-    private List<NPC> dormantNPCs = new List<NPC>();
-    
+
     // Systems integration
     private DayNightCycle dayNightCycle;
     private NPCInteractionSystem interactionSystem;
     private Transform player;
-    
-    // Performance optimization
-    private float lastUpdateTime;
-    
+
+
+    // Schedule management
+    private int currentHour = -1;
+    private Dictionary<NPC, ScheduleCommand> pendingCommands = new Dictionary<NPC, ScheduleCommand>();
+
     // Events
     public System.Action<NPC> OnNPCSpawned;
     public System.Action<NPC> OnNPCDespawned;
     public System.Action<List<NPC>> OnNPCListUpdated;
-    
+
     #region Initialization
-    
+
     private void Awake()
     {
         // Create NPC parent if not assigned
@@ -73,45 +65,45 @@ public class NPCManager : MonoBehaviour
             npcParent = parentGO.transform;
         }
     }
-    
+
     private void Start()
     {
         // Find required systems
         dayNightCycle = FindObjectOfType<DayNightCycle>();
         interactionSystem = FindObjectOfType<NPCInteractionSystem>();
-        
+
         // Find player
         GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
         if (playerGO != null)
             player = playerGO.transform;
-        
-        // Subscribe to day/night events
+
+        // Subscribe to time events
         if (dayNightCycle != null)
         {
-            dayNightCycle.OnTimeOfDayChanged += OnTimeOfDayChanged;
+            dayNightCycle.OnTimeChanged += OnTimeChanged;
         }
-        
+
         // Spawn initial NPCs
         SpawnInitialNPCs();
-        
-        // Start performance optimization routine
-        InvokeRepeating(nameof(OptimizeNPCPerformance), 1f, npcUpdateInterval);
+
+        // Initialize tag cache for better performance
+        NPCScheduleData.ClearAllCaches();
     }
-    
+
     private void OnDestroy()
     {
         if (dayNightCycle != null)
         {
-            dayNightCycle.OnTimeOfDayChanged -= OnTimeOfDayChanged;
+            dayNightCycle.OnTimeChanged -= OnTimeChanged;
         }
-        
+
         CancelInvoke();
     }
-    
+
     #endregion
-    
+
     #region NPC Spawning
-    
+
     private void SpawnInitialNPCs()
     {
         foreach (var spawnData in npcSpawnList)
@@ -121,10 +113,10 @@ public class NPCManager : MonoBehaviour
                 SpawnNPC(spawnData);
             }
         }
-        
+
         Debug.Log($"NPCManager: Spawned {spawnedNPCs.Count} NPCs at start");
     }
-    
+
     public NPC SpawnNPC(NPCSpawnData spawnData)
     {
         if (spawnData.npcPrefab == null)
@@ -132,75 +124,85 @@ public class NPCManager : MonoBehaviour
             Debug.LogError($"NPCManager: No prefab assigned for NPC spawn data");
             return null;
         }
-        
+
         // Check if NPC already exists
         if (GetNPCByID(spawnData.npcID) != null)
         {
             Debug.LogWarning($"NPCManager: NPC with ID '{spawnData.npcID}' already exists");
             return null;
         }
-        
-        // Spawn the NPC
-        Vector2 spawnPos = spawnData.spawnPosition != Vector2.zero ? 
-                          spawnData.spawnPosition : 
-                          GetValidSpawnPosition();
-        
+
+        // Get spawn position from schedule data (home position)
+        Vector2 spawnPos = Vector2.zero;
+        if (spawnData.scheduleData != null)
+        {
+            spawnPos = spawnData.scheduleData.GetHomePosition();
+        }
+        else
+        {
+            Debug.LogError($"NPCManager: No schedule data assigned for NPC '{spawnData.npcID}'");
+            return null;
+        }
+
         GameObject npcGO = Instantiate(spawnData.npcPrefab, spawnPos, Quaternion.identity, npcParent);
         NPC npc = npcGO.GetComponent<NPC>();
-        
+
         if (npc == null)
         {
             Debug.LogError($"NPCManager: Spawned object does not have NPC component!");
             Destroy(npcGO);
             return null;
         }
-        
+
         // Configure NPC
         SetupNPC(npc, spawnData);
-        
+
         // Track the NPC
         spawnedNPCs.Add(npc);
-        activeNPCs.Add(npc);
-        
+
         // Notify systems
         OnNPCSpawned?.Invoke(npc);
         OnNPCListUpdated?.Invoke(spawnedNPCs);
-        
+
         Debug.Log($"NPCManager: Spawned NPC '{npc.npcName}' at {spawnPos}");
         return npc;
     }
-    
+
     private void SetupNPC(NPC npc, NPCSpawnData spawnData)
     {
         // Set unique ID
         npc.gameObject.name = $"NPC_{spawnData.npcID}";
-        
-        // Apply custom schedule if specified
-        if (spawnData.useCustomSchedule && spawnData.customSchedule != null)
+
+        // Apply schedule data
+        if (spawnData.scheduleData != null)
         {
-            npc.scheduleData = spawnData.customSchedule;
+            npc.scheduleData = spawnData.scheduleData;
         }
-        
+        else
+        {
+            Debug.LogError($"NPCManager: No schedule data for NPC '{npc.npcName}'");
+        }
+
         // Force schedule update based on current time
         if (dayNightCycle != null)
         {
             npc.currentTimeOfDay = dayNightCycle.CurrentTimeOfDay;
         }
     }
-    
-    public NPC SpawnNPCAt(GameObject npcPrefab, Vector2 position, string npcID = null)
+
+    public NPC SpawnNPCAt(GameObject npcPrefab, NPCScheduleData scheduleData, string npcID = null)
     {
         NPCSpawnData tempSpawnData = new NPCSpawnData
         {
             npcPrefab = npcPrefab,
             npcID = npcID ?? System.Guid.NewGuid().ToString(),
-            spawnPosition = position,
+            scheduleData = scheduleData,
             spawnAtStart = false
         };
-        
+
         return SpawnNPC(tempSpawnData);
     }
-    
+
     public void DespawnNPC(string npcID)
     {
         NPC npc = GetNPCByID(npcID);
@@ -209,100 +211,204 @@ public class NPCManager : MonoBehaviour
             DespawnNPC(npc);
         }
     }
-    
+
     public void DespawnNPC(NPC npc)
     {
         if (npc == null) return;
-        
+
         // Remove from tracking lists
         spawnedNPCs.Remove(npc);
-        activeNPCs.Remove(npc);
-        dormantNPCs.Remove(npc);
-        
+
         // Notify systems
         OnNPCDespawned?.Invoke(npc);
         OnNPCListUpdated?.Invoke(spawnedNPCs);
-        
+
         // Destroy the GameObject
         Destroy(npc.gameObject);
-        
+
         Debug.Log($"NPCManager: Despawned NPC '{npc.npcName}'");
     }
-    
+
     #endregion
-    
+
     #region NPC Management
-    
+
     public NPC GetNPCByID(string npcID)
     {
         return spawnedNPCs.FirstOrDefault(npc => npc.gameObject.name.Contains(npcID));
     }
-    
+
     public NPC GetNPCByName(string npcName)
     {
         return spawnedNPCs.FirstOrDefault(npc => npc.npcName == npcName);
     }
-    
+
     public List<NPC> GetNPCsByType(NPC.NPCType npcType)
     {
         return spawnedNPCs.Where(npc => npc.npcType == npcType).ToList();
     }
-    
+
     public List<NPC> GetNPCsInRadius(Vector2 center, float radius)
     {
-        return spawnedNPCs.Where(npc => 
+        return spawnedNPCs.Where(npc =>
             Vector2.Distance(npc.transform.position, center) <= radius).ToList();
     }
-    
+
     public List<NPC> GetActiveNPCs()
     {
-        return new List<NPC>(activeNPCs);
+        return new List<NPC>(spawnedNPCs);
     }
-    
+
     public int GetTotalNPCCount()
     {
         return spawnedNPCs.Count;
     }
-    
+
     #endregion
-    
+
     #region Day/Night Integration
-    
-    private void OnTimeOfDayChanged(TimeOfDay newTimeOfDay)
+
+
+    private void OnTimeChanged(float currentTime)
     {
-        // Handle time-based NPC spawning/despawning
+        int hour = Mathf.FloorToInt(currentTime);
+
+        // Only process schedule changes when the hour actually changes
+        if (hour != currentHour)
+        {
+            currentHour = hour;
+            ProcessHourlyScheduleUpdate(hour);
+        }
+    }
+
+    private void ProcessHourlyScheduleUpdate(int hour)
+    {
+        Debug.Log($"NPCManager: Processing hourly schedule update for hour {hour}");
+
+        // Process each NPC's schedule for this hour
         foreach (var spawnData in npcSpawnList)
         {
-            if (spawnData.spawnBasedOnTime)
+            ProcessNPCScheduleForHour(spawnData, hour);
+        }
+
+        // Execute any pending schedule commands
+        ExecutePendingScheduleCommands();
+    }
+
+    private void ProcessNPCScheduleForHour(NPCSpawnData spawnData, int hour)
+    {
+        if (spawnData.scheduleData == null) 
+        {
+            Debug.Log($"[NPC MANAGER DEBUG] No schedule data for {spawnData.npcID}");
+            return;
+        }
+
+        Debug.Log($"[NPC MANAGER DEBUG] Processing schedule for {spawnData.npcID} at hour {hour}");
+        
+        NPC existingNPC = GetNPCByID(spawnData.npcID);
+        bool shouldBeActive = hour >= spawnData.scheduleData.spawnHour;
+        
+        Debug.Log($"[NPC MANAGER DEBUG] {spawnData.npcID} - spawnHour: {spawnData.scheduleData.spawnHour}, currentHour: {hour}, shouldBeActive: {shouldBeActive}, existingNPC: {(existingNPC != null ? "EXISTS" : "NULL")}");
+
+        if (shouldBeActive && existingNPC == null)
+        {
+            Debug.Log($"[NPC MANAGER DEBUG] Spawning {spawnData.npcID} for hour {hour}");
+            // Spawn NPC for this hour
+            SpawnNPC(spawnData);
+        }
+        else if (!shouldBeActive && existingNPC != null)
+        {
+            Debug.Log($"[NPC MANAGER DEBUG] Sending {spawnData.npcID} home and despawning");
+            // Send NPC home and despawn
+            Vector2 homePos = spawnData.scheduleData.GetHomePosition();
+            Debug.Log($"[NPC MANAGER DEBUG] Home position for {spawnData.npcID}: {homePos}");
+            
+            var homeCommand = new ScheduleCommand
             {
-                bool shouldBeSpawned = spawnData.availableSpawnTimes.Contains(newTimeOfDay);
-                NPC existingNPC = GetNPCByID(spawnData.npcID);
+                commandType = ScheduleCommandType.GoHome,
+                targetPosition = homePos
+            };
+
+            pendingCommands[existingNPC] = homeCommand;
+        }
+        else if (shouldBeActive && existingNPC != null)
+        {
+            Debug.Log($"[NPC MANAGER DEBUG] Checking for schedule event for {spawnData.npcID} at hour {hour}");
+            // Check if there's a schedule event for this hour
+            var scheduleEvent = spawnData.scheduleData.GetScheduleEventForHour(hour);
+
+            if (scheduleEvent != null && scheduleEvent.hour == hour)
+            {
+                Debug.Log($"[NPC MANAGER DEBUG] ✅ Found schedule event for {spawnData.npcID} at hour {hour}");
+                Debug.Log($"[NPC MANAGER DEBUG] Event details - Tag: '{scheduleEvent.targetObjectTag}', Name: '{scheduleEvent.targetObjectName}', Behavior: {scheduleEvent.behavior}");
                 
-                if (shouldBeSpawned && existingNPC == null)
+                // This hour has a specific event - execute it
+                ScheduleCommandType commandType = scheduleEvent.shouldDespawn ?
+                    ScheduleCommandType.GoHome : ScheduleCommandType.Move;
+                
+                Vector2 targetPos = scheduleEvent.GetTargetPosition();
+                Debug.Log($"[NPC MANAGER DEBUG] Target position for {spawnData.npcID}: {targetPos}");
+
+                var scheduleCommand = new ScheduleCommand
                 {
-                    SpawnNPC(spawnData);
-                }
-                else if (!shouldBeSpawned && existingNPC != null)
-                {
-                    DespawnNPC(existingNPC);
-                }
+                    commandType = commandType,
+                    targetPosition = targetPos,
+                    behavior = scheduleEvent.behavior,
+                    shouldIdleWhenReached = scheduleEvent.shouldIdleWhenReached,
+                    canInteract = true // Always allow interaction unless specified otherwise
+                };
+
+                pendingCommands[existingNPC] = scheduleCommand;
+                Debug.Log($"[NPC MANAGER DEBUG] ✅ Created {commandType} command for {spawnData.npcID} to position {targetPos}" +
+                         (scheduleEvent.shouldDespawn ? " (will despawn on arrival)" : ""));
+            }
+            else
+            {
+                Debug.Log($"[NPC MANAGER DEBUG] ⚠️ No schedule event found for {spawnData.npcID} at hour {hour}");
+            }
+            // If no specific event for this hour, NPC continues current behavior
+        }
+    }
+
+    private void ExecutePendingScheduleCommands()
+    {
+        Debug.Log($"[NPC MANAGER DEBUG] Executing {pendingCommands.Count} pending schedule commands");
+        
+        foreach (var kvp in pendingCommands)
+        {
+            NPC npc = kvp.Key;
+            ScheduleCommand command = kvp.Value;
+
+            if (npc != null)
+            {
+                Debug.Log($"[NPC MANAGER DEBUG] Sending {command.commandType} command to {npc.npcName} for position {command.targetPosition}");
+                npc.ReceiveScheduleCommand(command);
+            }
+            else
+            {
+                Debug.LogWarning($"[NPC MANAGER DEBUG] Trying to send command to NULL NPC!");
             }
         }
-        
-        Debug.Log($"NPCManager: Time changed to {newTimeOfDay}, managing {spawnedNPCs.Count} NPCs");
+
+        pendingCommands.Clear();
+        Debug.Log($"[NPC MANAGER DEBUG] All pending commands executed and cleared");
     }
-    
+
+    // Public methods for NPCs to interact with the manager
+    public void NotifyNPCDestinationReached(NPC npc)
+    {
+        Debug.Log($"NPCManager: NPC {npc.npcName} reached destination");
+        // Could trigger additional logic here if needed
+    }
+
+    public void RequestNPCDespawn(NPC npc)
+    {
+        Debug.Log($"NPCManager: Despawn requested for NPC {npc.npcName}");
+        DespawnNPC(npc);
+    }
+
     private bool ShouldSpawnNPC(NPCSpawnData spawnData)
     {
-        // Check time-based spawning
-        if (spawnData.spawnBasedOnTime && dayNightCycle != null)
-        {
-            if (!spawnData.availableSpawnTimes.Contains(dayNightCycle.CurrentTimeOfDay))
-            {
-                return false;
-            }
-        }
-        
         // Check required flags (quest integration)
         if (spawnData.requiredFlags != null && spawnData.requiredFlags.Length > 0)
         {
@@ -317,93 +423,16 @@ public class NPCManager : MonoBehaviour
                 }
             }
         }
-        
+
         return true;
     }
-    
+
     #endregion
-    
-    #region Performance Optimization
-    
-    private void OptimizeNPCPerformance()
-    {
-        if (player == null) return;
-        
-        activeNPCs.Clear();
-        dormantNPCs.Clear();
-        
-        foreach (NPC npc in spawnedNPCs)
-        {
-            if (npc == null) continue;
-            
-            float distance = Vector2.Distance(player.position, npc.transform.position);
-            
-            if (distance > cullingDistance)
-            {
-                // Completely disable NPCs that are very far away
-                npc.gameObject.SetActive(false);
-                dormantNPCs.Add(npc);
-            }
-            else if (distance > maxActiveDistance)
-            {
-                // Reduce update frequency for distant NPCs
-                npc.gameObject.SetActive(true);
-                
-                // Optionally disable complex behaviors for distant NPCs
-                if (npc.StateMachine != null)
-                {
-                    // Keep basic state but reduce updates
-                    npc.enabled = false;
-                }
-                
-                dormantNPCs.Add(npc);
-            }
-            else
-            {
-                // Keep NPCs near player fully active
-                npc.gameObject.SetActive(true);
-                npc.enabled = true;
-                activeNPCs.Add(npc);
-            }
-        }
-        
-        if (showDebugInfo)
-        {
-            Debug.Log($"NPCManager: {activeNPCs.Count} active, {dormantNPCs.Count} dormant NPCs");
-        }
-    }
-    
-    #endregion
-    
+
+
     #region Utility Methods
-    
-    private Vector2 GetValidSpawnPosition()
-    {
-        Vector2 pos;
-        int attempts = 0;
-        int maxAttempts = 50;
-        
-        do
-        {
-            pos = new Vector2(
-                Random.Range(villageAreaMin.x, villageAreaMax.x),
-                Random.Range(villageAreaMin.y, villageAreaMax.y)
-            );
-            attempts++;
-            
-            // Check if position is valid (not overlapping with obstacles)
-            Collider2D hitCollider = Physics2D.OverlapCircle(pos, 0.5f, obstacleLayerMask);
-            if (hitCollider == null)
-            {
-                return pos;
-            }
-            
-        } while (attempts < maxAttempts);
-        
-        Debug.LogWarning($"NPCManager: Could not find valid spawn position after {maxAttempts} attempts");
-        return (villageAreaMin + villageAreaMax) * 0.5f;
-    }
-    
+
+
     public void ForceUpdateAllNPCs()
     {
         foreach (NPC npc in spawnedNPCs)
@@ -414,7 +443,7 @@ public class NPCManager : MonoBehaviour
             }
         }
     }
-    
+
     public void SetAllNPCsBehavior(NPCBehavior behavior)
     {
         foreach (NPC npc in spawnedNPCs)
@@ -425,22 +454,29 @@ public class NPCManager : MonoBehaviour
                 switch (behavior)
                 {
                     case NPCBehavior.Flee:
-                        if (player != null)
-                            npc.FleeFromThreat(player.position);
+                        // Flee behavior is no longer supported in the new system
+                        // Force to idle instead
+                        npc.ForceBehavior(npc.IdleState);
                         break;
                     case NPCBehavior.Idle:
                         npc.ForceBehavior(npc.IdleState);
                         break;
-                    // Add other behaviors as needed
+                    case NPCBehavior.Walk:
+                        npc.ForceBehavior(npc.MoveState);
+                        break;
+                    case NPCBehavior.Interact:
+                        npc.ForceBehavior(npc.InteractionState);
+                        break;
+                        // Work and Sleep behaviors are handled through scheduling
                 }
             }
         }
     }
-    
+
     #endregion
-    
+
     #region Save/Load System
-    
+
     [System.Serializable]
     public class NPCManagerSaveData
     {
@@ -448,7 +484,7 @@ public class NPCManager : MonoBehaviour
         public List<Vector2> npcPositions;
         public List<string> npcNames;
     }
-    
+
     public NPCManagerSaveData GetSaveData()
     {
         NPCManagerSaveData saveData = new NPCManagerSaveData
@@ -457,7 +493,7 @@ public class NPCManager : MonoBehaviour
             npcPositions = new List<Vector2>(),
             npcNames = new List<string>()
         };
-        
+
         foreach (NPC npc in spawnedNPCs)
         {
             if (npc != null)
@@ -467,81 +503,60 @@ public class NPCManager : MonoBehaviour
                 saveData.npcNames.Add(npc.npcName);
             }
         }
-        
+
         return saveData;
     }
-    
+
     public void LoadSaveData(NPCManagerSaveData saveData)
     {
         if (saveData == null) return;
-        
+
         // Clear existing NPCs
         foreach (NPC npc in spawnedNPCs.ToList())
         {
             if (npc != null)
                 DespawnNPC(npc);
         }
-        
+
         // Respawn NPCs from save data
         for (int i = 0; i < saveData.spawnedNPCIDs.Count; i++)
         {
             string npcID = saveData.spawnedNPCIDs[i];
-            Vector2 position = saveData.npcPositions[i];
-            
+            // Note: Position is ignored now - NPCs spawn at their schedule data home position
+
             // Find matching spawn data
             NPCSpawnData spawnData = npcSpawnList.FirstOrDefault(data => data.npcID == npcID);
             if (spawnData != null)
             {
-                spawnData.spawnPosition = position;
                 SpawnNPC(spawnData);
             }
         }
     }
-    
+
     #endregion
-    
+
     #region Debug and Gizmos
-    
+
     private void OnDrawGizmosSelected()
     {
-        if (showSpawnAreas)
-        {
-            // Draw village area
-            Gizmos.color = new Color(0f, 1f, 0f, 0.3f);
-            Vector3 center = new Vector3(
-                (villageAreaMin.x + villageAreaMax.x) * 0.5f,
-                (villageAreaMin.y + villageAreaMax.y) * 0.5f,
-                0
-            );
-            Vector3 size = new Vector3(
-                villageAreaMax.x - villageAreaMin.x,
-                villageAreaMax.y - villageAreaMin.y,
-                0.1f
-            );
-            Gizmos.DrawCube(center, size);
-        }
-        
-        // Draw spawn positions
+
+        // Draw NPC home positions from schedule data
         Gizmos.color = Color.blue;
         foreach (var spawnData in npcSpawnList)
         {
-            if (spawnData.spawnPosition != Vector2.zero)
+            if (spawnData.scheduleData != null)
             {
-                Gizmos.DrawWireSphere(spawnData.spawnPosition, 0.5f);
+                Vector2 homePos = spawnData.scheduleData.GetHomePosition();
+                Gizmos.DrawWireSphere(homePos, 0.5f);
+
+#if UNITY_EDITOR
+                UnityEditor.Handles.Label(homePos + Vector2.up * 0.8f, spawnData.npcID);
+#endif
             }
         }
-        
-        // Draw performance zones around player if in play mode
-        if (Application.isPlaying && player != null)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(player.position, maxActiveDistance);
-            
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(player.position, cullingDistance);
-        }
+
     }
-    
+
     private void Update()
     {
         if (showDebugInfo && Application.isPlaying)
@@ -549,6 +564,24 @@ public class NPCManager : MonoBehaviour
             // Debug GUI can be added here for runtime information
         }
     }
-    
+
     #endregion
+}
+
+[System.Serializable]
+public struct ScheduleCommand
+{
+    public ScheduleCommandType commandType;
+    public Vector2 targetPosition;
+    public NPCBehavior behavior;
+    public bool shouldIdleWhenReached;
+    public bool canInteract;
+}
+
+public enum ScheduleCommandType
+{
+    Move,
+    Idle,
+    GoHome,
+    Despawn
 }

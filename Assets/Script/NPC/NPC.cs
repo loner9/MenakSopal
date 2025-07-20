@@ -39,6 +39,10 @@ public class NPC : MonoBehaviour
 
     [Header("Pathfinding")]
     public LayerMask obstacleLayerMask = -1;
+    [SerializeField] float gridSize = 0.5f;
+    [SerializeField] bool searchShortcut = false;
+    [SerializeField] bool snapToGrid = false;
+    List<Vector2> path;
 
     [Header("Dialogue System")]
     [Tooltip("Optional DialogueData asset for advanced dialogue features. If not assigned, will use NPCScheduleData.dialogues or Resources folder.")]
@@ -66,13 +70,8 @@ public class NPC : MonoBehaviour
     // State Machine
     public NPCStateMachine StateMachine { get; private set; }
     public NPCIdleState IdleState { get; private set; }
-    public NPCWalkState WalkState { get; private set; }
-    public NPCWorkState WorkState { get; private set; }
-    public NPCInteractState InteractState { get; private set; }
-    public NPCSleepState SleepState { get; private set; }
-    public NPCFleeState FleeState { get; private set; }
-    public NPCPatrolState PatrolState { get; private set; }
-    public NPCGoHomeState GoHomeState { get; private set; }
+    public NPCMoveState MoveState { get; private set; }
+    public NPCInteractionState InteractionState { get; private set; }
 
     // Pathfinding
     public Pathfinder<Vector2> pathfinder;
@@ -85,6 +84,13 @@ public class NPC : MonoBehaviour
     public bool isPlayerInRange = false;
     public TimeOfDay currentTimeOfDay;
     public DayNightCycle dayNightCycle;
+
+    // Schedule management
+    private ScheduleCommand? pendingScheduleCommand;
+    private Vector2 currentIdlePosition;
+    private bool shouldIdleWhenReached = true;
+    private bool shouldMoveAroundWhenIdle = false;
+    private bool shouldDespawnOnReachingDestination = false;
 
     // Interaction system
     public System.Action<NPC> OnInteractionStart;
@@ -114,13 +120,8 @@ public class NPC : MonoBehaviour
     {
         StateMachine = new NPCStateMachine();
         IdleState = new NPCIdleState(this, StateMachine);
-        WalkState = new NPCWalkState(this, StateMachine);
-        WorkState = new NPCWorkState(this, StateMachine);
-        InteractState = new NPCInteractState(this, StateMachine);
-        SleepState = new NPCSleepState(this, StateMachine);
-        FleeState = new NPCFleeState(this, StateMachine);
-        PatrolState = new NPCPatrolState(this, StateMachine);
-        GoHomeState = new NPCGoHomeState(this, StateMachine);
+        MoveState = new NPCMoveState(this, StateMachine);
+        InteractionState = new NPCInteractionState(this, StateMachine);
 
         previousPosition = transform.position;
         LoadSpriteSheet();
@@ -160,20 +161,9 @@ public class NPC : MonoBehaviour
         // Initialize pathfinder
         pathfinder = new Pathfinder<Vector2>(GetDistance, GetNeighbourNodes, 1000);
 
-        // Start with appropriate state based on current activity
-        NPCBehavior currentActivity = GetCurrentActivity();
-        if (currentActivity == NPCBehavior.Walk)
-        {
-            StateMachine.Initialize(PatrolState);
-        }
-        else if (ShouldGoHome())
-        {
-            StateMachine.Initialize(GoHomeState);
-        }
-        else
-        {
-            StateMachine.Initialize(GetStateForTimeOfDay(currentTimeOfDay));
-        }
+        // Initialize with idle state - NPCManager will send commands as needed
+        currentIdlePosition = transform.position;
+        StateMachine.Initialize(IdleState);
     }
 
     private void Update()
@@ -376,38 +366,80 @@ public class NPC : MonoBehaviour
         return (A - B).sqrMagnitude;
     }
 
-    public Dictionary<Vector2, float> GetNeighbourNodes(Vector2 currentTile)
+    public Dictionary<Vector2, float> GetNeighbourNodes(Vector2 pos)
     {
         Dictionary<Vector2, float> neighbours = new Dictionary<Vector2, float>();
-
-        Vector2[] directions = { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
-
-        foreach (Vector2 direction in directions)
+        for (int i = -1; i < 2; i++)
         {
-            Vector2 neighbourPos = currentTile + direction;
-
-            // Check if the position is walkable (no obstacles)
-            if (!Physics2D.OverlapCircle(neighbourPos, 0.3f, obstacleLayerMask))
+            for (int j = -1; j < 2; j++)
             {
-                neighbours.Add(neighbourPos, 1f);
+                if (i == 0 && j == 0) continue;
+
+                Vector2 dir = new Vector2(i, j) * gridSize;
+                if (!Physics2D.Linecast(pos, pos + dir, obstacleLayerMask))
+                {
+                    neighbours.Add(GetClosestNode(pos + dir), dir.magnitude);
+                }
             }
         }
-
         return neighbours;
+    }
+    
+    Vector2 GetClosestNode(Vector2 target)
+    {
+        return new Vector2(Mathf.Round(target.x / gridSize) * gridSize, Mathf.Round(target.y / gridSize) * gridSize);
+    }
+    
+    List<Vector2> ShortenPath(List<Vector2> path)
+    {
+        List<Vector2> newPath = new List<Vector2>();
+
+        for (int i = 0; i < path.Count; i++)
+        {
+            newPath.Add(path[i]);
+            for (int j = path.Count - 1; j > i; j--)
+            {
+                if (!Physics2D.Linecast(path[i], path[j], obstacleLayerMask))
+                {
+                    i = j;
+                    break;
+                }
+            }
+            newPath.Add(path[i]);
+        }
+        newPath.Add(path[path.Count - 1]);
+        return newPath;
     }
 
     public void GetMoveCommand(Vector2 target)
     {
         Vector2 startPos = (Vector2)transform.position;
+        Debug.Log($"[NPC MOVEMENT DEBUG] {npcName}: GetMoveCommand from {startPos} to {target}");
+        
+        Vector2 closestStartNode = GetClosestNode(startPos);
+        Vector2 closestTargetNode = GetClosestNode(target);
+        
+        Debug.Log($"[NPC MOVEMENT DEBUG] {npcName}: Grid nodes - Start: {closestStartNode}, Target: {closestTargetNode}");
 
-        if (pathfinder.GenerateAstarPath(startPos, target, out pathLeftToGo))
+        if (pathfinder.GenerateAstarPath(closestStartNode, closestTargetNode, out path))
         {
+            Debug.Log($"[NPC MOVEMENT DEBUG] {npcName}: Raw path generated with {path.Count} nodes");
+            
+            if (searchShortcut && path.Count > 0)
+                pathLeftToGo = ShortenPath(path);
+            else
+            {
+                pathLeftToGo = new List<Vector2>(path);
+                if (!snapToGrid) pathLeftToGo.Add(target);
+            }
+            
             currentDestination = target;
             hasDestination = true;
+            Debug.Log($"[NPC MOVEMENT DEBUG] {npcName}: ✅ Path found! {pathLeftToGo.Count} waypoints to destination {target}");
         }
         else
         {
-            Debug.LogWarning($"NPC {npcName}: Could not find path to target");
+            Debug.LogWarning($"[NPC MOVEMENT DEBUG] {npcName}: ❌ Could not find path to target {target}");
             hasDestination = false;
         }
     }
@@ -421,21 +453,139 @@ public class NPC : MonoBehaviour
 
     public Vector2 GetMovementToDestination()
     {
+        Debug.Log($"[NPC MOVEMENT DEBUG] {npcName}:GetMovementToDestination - pathLeftToGo.Count: {pathLeftToGo.Count}, currentDestination: {currentDestination}");
+
         if (pathLeftToGo.Count > 0)
         {
             Vector2 direction = (pathLeftToGo[0] - (Vector2)transform.position).normalized;
+            Debug.Log($"[NPC MOVEMENT DEBUG] {npcName}: Moving towards waypoint {pathLeftToGo[0]}, direction: {direction}");
 
             // Remove waypoint if we're close enough
             if (Vector2.Distance(transform.position, pathLeftToGo[0]) < 0.5f)
             {
                 pathLeftToGo.RemoveAt(0);
+                Debug.Log($"[NPC MOVEMENT DEBUG] {npcName}: Reached waypoint, {pathLeftToGo.Count} waypoints remaining");
             }
 
             return direction * moveSpeed;
         }
 
         hasDestination = false;
+        Debug.Log($"[NPC MOVEMENT DEBUG] {npcName}: No waypoints left, stopping movement");
         return Vector2.zero;
+    }
+    #endregion
+
+    #region Schedule Command System
+    public void ReceiveScheduleCommand(ScheduleCommand command)
+    {
+        pendingScheduleCommand = command;
+        Debug.Log($"[NPC DEBUG] {npcName}: Received schedule command {command.commandType} to position {command.targetPosition}");
+        Debug.Log($"[NPC DEBUG] {npcName}: Command details - Behavior: {command.behavior}, ShouldIdle: {command.shouldIdleWhenReached}, CanInteract: {command.canInteract}");
+    }
+
+    public bool HasNewScheduleCommand()
+    {
+        return pendingScheduleCommand.HasValue;
+    }
+
+    public void ProcessScheduleCommand()
+    {
+        if (!pendingScheduleCommand.HasValue)
+        {
+            Debug.Log($"[NPC DEBUG] {npcName}: No pending schedule command to process");
+            return;
+        }
+
+        var command = pendingScheduleCommand.Value;
+        pendingScheduleCommand = null;
+
+        Debug.Log($"[NPC DEBUG] {npcName}: Processing schedule command {command.commandType} to position {command.targetPosition}");
+
+        switch (command.commandType)
+        {
+            case ScheduleCommandType.Move:
+                Debug.Log($"[NPC DEBUG] {npcName}: Executing MOVE command to {command.targetPosition}");
+                shouldIdleWhenReached = command.shouldIdleWhenReached;
+                canInteract = command.canInteract;
+                shouldDespawnOnReachingDestination = false;
+                GetMoveCommand(command.targetPosition);
+                StateMachine.ChangeState(MoveState);
+                break;
+
+            case ScheduleCommandType.Idle:
+                Debug.Log($"[NPC DEBUG] {npcName}: Executing IDLE command at {command.targetPosition}");
+                currentIdlePosition = command.targetPosition;
+                shouldMoveAroundWhenIdle = ShouldMoveAroundWhenIdle();
+                shouldDespawnOnReachingDestination = false;
+                StateMachine.ChangeState(IdleState);
+                break;
+
+            case ScheduleCommandType.GoHome:
+                Debug.Log($"[NPC DEBUG] {npcName}: Executing GO HOME command to {command.targetPosition} (will despawn on arrival)");
+                shouldIdleWhenReached = command.shouldIdleWhenReached;
+                canInteract = command.canInteract;
+                shouldDespawnOnReachingDestination = true; // Mark for despawn on arrival
+                GetMoveCommand(command.targetPosition);
+                StateMachine.ChangeState(MoveState);
+                break;
+
+            case ScheduleCommandType.Despawn:
+                Debug.Log($"[NPC DEBUG] {npcName}: Executing DESPAWN command");
+                RequestDespawn();
+                break;
+        }
+    }
+
+    public Vector2 GetCurrentDestination()
+    {
+        return currentDestination;
+    }
+
+    public bool ShouldIdleWhenReached()
+    {
+        return shouldIdleWhenReached;
+    }
+
+    public bool ShouldMoveAroundWhenIdle()
+    {
+        if (scheduleData != null)
+            return scheduleData.moveAroundWhenIdle;
+        return shouldMoveAroundWhenIdle;
+    }
+
+    public void SetIdlePosition(Vector2 position)
+    {
+        currentIdlePosition = position;
+    }
+
+    public bool ShouldDespawnAfterReachingDestination()
+    {
+        return shouldDespawnOnReachingDestination;
+    }
+
+    public void NotifyDestinationReached()
+    {
+        // Notify NPCManager that we've reached our destination
+        NPCManager npcManager = FindObjectOfType<NPCManager>();
+        if (npcManager != null)
+        {
+            npcManager.NotifyNPCDestinationReached(this);
+        }
+    }
+
+    public void RequestDespawn()
+    {
+        NPCManager npcManager = FindObjectOfType<NPCManager>();
+        if (npcManager != null)
+        {
+            npcManager.RequestNPCDespawn(this);
+        }
+        else
+        {
+            // Fallback
+            gameObject.SetActive(false);
+        }
     }
     #endregion
 
@@ -443,58 +593,16 @@ public class NPC : MonoBehaviour
     private void OnTimeOfDayChanged(TimeOfDay newTimeOfDay)
     {
         currentTimeOfDay = newTimeOfDay;
-
-        // Check if we need to change behavior
-        if (ShouldGoHome() && StateMachine.CurrentNPCState != GoHomeState)
-        {
-            StateMachine.ChangeState(GoHomeState);
-        }
-        else
-        {
-            // Update activity based on new time
-            NPCBehavior newActivity = GetCurrentActivity();
-            if (newActivity == NPCBehavior.Walk && StateMachine.CurrentNPCState != PatrolState)
-            {
-                StateMachine.ChangeState(PatrolState);
-            }
-            else if (newActivity != NPCBehavior.Walk && StateMachine.CurrentNPCState == PatrolState)
-            {
-                StateMachine.ChangeState(IdleState);
-            }
-            else
-            {
-                // For other state changes, use the original logic
-                NPCState newState = GetStateForTimeOfDay(newTimeOfDay);
-                if (newState != StateMachine.CurrentNPCState && StateMachine.CurrentNPCState != InteractState)
-                {
-                    StateMachine.ChangeState(newState);
-                }
-            }
-        }
+        // Schedule updates are now handled by NPCManager
+        // This method is kept for compatibility but NPCs now receive commands from NPCManager
     }
 
+    // Legacy method kept for compatibility
     public NPCState GetStateForTimeOfDay(TimeOfDay timeOfDay)
     {
-        if (scheduleData == null)
-            return IdleState;
-
-        switch (timeOfDay)
-        {
-            case TimeOfDay.Day:
-                return scheduleData.dayBehavior == NPCBehavior.Work ? WorkState :
-                       scheduleData.dayBehavior == NPCBehavior.Walk ? WalkState : IdleState;
-
-            case TimeOfDay.Night:
-                return scheduleData.nightBehavior == NPCBehavior.Sleep ? SleepState :
-                       scheduleData.nightBehavior == NPCBehavior.Walk ? WalkState : IdleState;
-
-            case TimeOfDay.Sunrise:
-            case TimeOfDay.Sunset:
-                return WalkState; // Transition periods
-
-            default:
-                return IdleState;
-        }
+        // This method is no longer used in the new system
+        // All state transitions are now handled via schedule commands from NPCManager
+        return IdleState;
     }
 
     public Vector2 GetScheduledPosition()
@@ -502,94 +610,17 @@ public class NPC : MonoBehaviour
         if (scheduleData == null)
             return transform.position;
 
-        switch (currentTimeOfDay)
-        {
-            case TimeOfDay.Day:
-            case TimeOfDay.Sunrise:
-                return scheduleData.dayPosition;
-
-            case TimeOfDay.Night:
-            case TimeOfDay.Sunset:
-                return scheduleData.nightPosition;
-
-            default:
-                return transform.position;
-        }
+        // Use the new event-based system
+        return scheduleData.GetPositionForTime(dayNightCycle?.CurrentTime ?? 12f);
     }
 
-    // New helper methods for simplified system
-    public NPCBehavior GetCurrentActivity()
-    {
-        if (scheduleData == null)
-            return NPCBehavior.Idle;
-
-        // Check if we should be active at night
-        if (IsNightTime() && !scheduleData.activeAtNight)
-        {
-            return NPCBehavior.Walk; // Will trigger going home
-        }
-
-        // Get activity based on time of day
-        if (IsNightTime() && scheduleData.activeAtNight)
-        {
-            return scheduleData.nightBehavior;
-        }
-        else
-        {
-            return scheduleData.dayBehavior;
-        }
-    }
-
-    public PatrolPoint[] GetCurrentPatrolPoints()
-    {
-        if (scheduleData == null)
-            return null;
-
-        if (IsNightTime() && scheduleData.activeAtNight)
-        {
-            return scheduleData.nightPatrolPoints;
-        }
-        else
-        {
-            return scheduleData.dayPatrolPoints;
-        }
-    }
-
-    public Vector2 GetCurrentPosition()
-    {
-        if (scheduleData == null)
-            return transform.position;
-
-        if (IsNightTime() && scheduleData.activeAtNight)
-        {
-            return scheduleData.nightPosition;
-        }
-        else
-        {
-            return scheduleData.dayPosition;
-        }
-    }
-
+    // Legacy methods kept for compatibility but simplified
     public Vector2 GetHomePosition()
     {
         if (scheduleData == null)
             return transform.position;
 
-        return scheduleData.homePosition;
-    }
-
-    public bool ShouldGoHome()
-    {
-        return IsNightTime() && !scheduleData.activeAtNight;
-    }
-
-    private bool IsNightTime()
-    {
-        if (dayNightCycle == null)
-            return false;
-
-        float currentHour = dayNightCycle.CurrentTime;
-        return currentHour >= scheduleData.nightStartHour || currentHour < scheduleData.dayStartHour;
+        return scheduleData.GetHomePosition();
     }
     #endregion
 
@@ -606,21 +637,29 @@ public class NPC : MonoBehaviour
         if (isPlayerInRange && !wasInRange && canInteract)
         {
             // Player entered range - could switch to interaction state
-            if (StateMachine.CurrentNPCState != InteractState && StateMachine.CurrentNPCState != FleeState)
+            if (StateMachine.CurrentNPCState != InteractionState)
             {
                 // Only interact if not in important states
-                if (StateMachine.CurrentNPCState == IdleState || StateMachine.CurrentNPCState == WalkState)
+                if (StateMachine.CurrentNPCState == IdleState || StateMachine.CurrentNPCState == MoveState)
                 {
-                    StateMachine.ChangeState(InteractState);
+                    StateMachine.ChangeState(InteractionState);
                 }
             }
         }
         else if (!isPlayerInRange && wasInRange)
         {
-            // Player left range - return to scheduled behavior
-            if (StateMachine.CurrentNPCState == InteractState)
+            // Player left range - return to previous behavior
+            if (StateMachine.CurrentNPCState == InteractionState)
             {
-                StateMachine.ChangeState(GetStateForTimeOfDay(currentTimeOfDay));
+                // Check if we have a pending command first
+                if (HasNewScheduleCommand())
+                {
+                    ProcessScheduleCommand();
+                }
+                else
+                {
+                    StateMachine.ChangeState(IdleState);
+                }
             }
         }
     }
@@ -668,14 +707,10 @@ public class NPC : MonoBehaviour
     {
         if (StateMachine.CurrentNPCState == IdleState)
             ShowStatusBubble(NPCBehavior.Idle);
-        else if (StateMachine.CurrentNPCState == WorkState)
-            ShowStatusBubble(NPCBehavior.Work);
-        else if (StateMachine.CurrentNPCState == SleepState)
-            ShowStatusBubble(NPCBehavior.Sleep);
-        else if (StateMachine.CurrentNPCState == WalkState)
+        else if (StateMachine.CurrentNPCState == MoveState)
             ShowStatusBubble(NPCBehavior.Walk);
-        else if (StateMachine.CurrentNPCState == FleeState)
-            ShowStatusBubble(NPCBehavior.Flee);
+        else if (StateMachine.CurrentNPCState == InteractionState)
+            HideStatusBubble(); // Don't show bubble during interaction
     }
     #endregion
 
@@ -702,17 +737,8 @@ public class NPC : MonoBehaviour
 
     public void ResetToScheduledBehavior()
     {
-        StateMachine.ChangeState(GetStateForTimeOfDay(currentTimeOfDay));
-    }
-
-    public void FleeFromThreat(Vector2 threatPosition)
-    {
-        // Calculate flee direction
-        Vector2 fleeDirection = ((Vector2)transform.position - threatPosition).normalized;
-        Vector2 fleeTarget = (Vector2)transform.position + fleeDirection * 10f;
-
-        GetMoveCommand(fleeTarget);
-        StateMachine.ChangeState(FleeState);
+        // In the new system, simply return to idle and let NPCManager handle scheduling
+        StateMachine.ChangeState(IdleState);
     }
     #endregion
 
@@ -738,58 +764,88 @@ public class NPC : MonoBehaviour
         // Draw scheduled positions if available
         if (scheduleData != null)
         {
-            // Day position
-            Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(scheduleData.dayPosition, 0.5f);
-
-            // Night position (if active at night)
-            if (scheduleData.activeAtNight)
-            {
-                Gizmos.color = Color.cyan;
-                Gizmos.DrawWireSphere(scheduleData.nightPosition, 0.5f);
-            }
+            // No longer drawing legacy day/night positions since we use schedule events
 
             // Home position
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(scheduleData.homePosition, 0.3f);
+            Vector2 homePos = scheduleData.GetHomePosition();
+            Gizmos.DrawWireSphere(homePos, 0.3f);
 
-            // Day patrol points
-            if (scheduleData.dayPatrolPoints != null && scheduleData.dayPatrolPoints.Length > 0)
+            // Draw home object connection if using object reference
+#if UNITY_EDITOR
+            if (!string.IsNullOrEmpty(scheduleData.homeObjectName))
             {
-                Gizmos.color = Color.green;
-                for (int i = 0; i < scheduleData.dayPatrolPoints.Length; i++)
-                {
-                    Gizmos.DrawWireSphere(scheduleData.dayPatrolPoints[i].position, 0.3f);
-
-                    // Draw connections between patrol points
-                    if (i < scheduleData.dayPatrolPoints.Length - 1)
-                    {
-                        Gizmos.DrawLine(scheduleData.dayPatrolPoints[i].position, scheduleData.dayPatrolPoints[i + 1].position);
-                    }
-                    else
-                    {
-                        // Connect last to first
-                        Gizmos.DrawLine(scheduleData.dayPatrolPoints[i].position, scheduleData.dayPatrolPoints[0].position);
-                    }
-                }
+                Gizmos.color = Color.red;
+                Gizmos.DrawLine(homePos, homePos + Vector2.up * 0.7f);
+                string homeLabel = $"HOME→{scheduleData.homeObjectName}";
+                if (!string.IsNullOrEmpty(scheduleData.homeObjectTag))
+                    homeLabel += $"\n[{scheduleData.homeObjectTag}]";
+                UnityEditor.Handles.Label(homePos + Vector2.up * 0.8f, homeLabel);
             }
-
-            // Night patrol points (if active at night)
-            if (scheduleData.activeAtNight && scheduleData.nightPatrolPoints != null && scheduleData.nightPatrolPoints.Length > 0)
+            else
             {
-                Gizmos.color = Color.magenta;
-                for (int i = 0; i < scheduleData.nightPatrolPoints.Length; i++)
-                {
-                    Gizmos.DrawWireSphere(scheduleData.nightPatrolPoints[i].position, 0.25f);
+                UnityEditor.Handles.Label(homePos + Vector2.up * 0.8f, "HOME");
+            }
+#endif
 
-                    if (i < scheduleData.nightPatrolPoints.Length - 1)
-                    {
-                        Gizmos.DrawLine(scheduleData.nightPatrolPoints[i].position, scheduleData.nightPatrolPoints[i + 1].position);
-                    }
+            // Draw schedule events
+            if (scheduleData.scheduleEvents != null && scheduleData.scheduleEvents.Length > 0)
+            {
+                for (int i = 0; i < scheduleData.scheduleEvents.Length; i++)
+                {
+                    var scheduleEvent = scheduleData.scheduleEvents[i];
+                    if (scheduleEvent == null) continue;
+
+                    // Color based on time of day
+                    if (scheduleEvent.hour >= 6 && scheduleEvent.hour < 12)
+                        Gizmos.color = Color.yellow; // Morning
+                    else if (scheduleEvent.hour >= 12 && scheduleEvent.hour < 18)
+                        Gizmos.color = Color.green; // Afternoon
+                    else if (scheduleEvent.hour >= 18 && scheduleEvent.hour < 22)
+                        Gizmos.color = new Color32(255, 165, 0, 255); // Orange - Evening
                     else
+                        Gizmos.color = Color.blue; // Night
+
+                    // Get smart target position
+                    Vector2 targetPos = scheduleEvent.GetTargetPosition();
+
+                    // Draw position for this event
+                    Gizmos.DrawWireSphere(targetPos, 0.3f);
+
+                    // Draw object reference indicator
+#if UNITY_EDITOR
+                    if (!string.IsNullOrEmpty(scheduleEvent.targetObjectName))
                     {
-                        Gizmos.DrawLine(scheduleData.nightPatrolPoints[i].position, scheduleData.nightPatrolPoints[0].position);
+                        // Draw connection line to show it's using an object reference
+                        Gizmos.color = Color.white;
+                        Gizmos.DrawLine(targetPos, targetPos + Vector2.up * 0.4f);
                     }
+#endif
+
+                    // Draw connections between events (chronological order)
+                    if (i < scheduleData.scheduleEvents.Length - 1)
+                    {
+                        var nextEvent = scheduleData.scheduleEvents[i + 1];
+                        if (nextEvent != null)
+                        {
+                            Gizmos.color = Color.white;
+                            Gizmos.DrawLine(targetPos, nextEvent.GetTargetPosition());
+                        }
+                    }
+
+                    // Draw hour label (in editor only)
+#if UNITY_EDITOR
+                    string label = $"{scheduleEvent.hour}:00\n{scheduleEvent.behavior}";
+                    if (scheduleEvent.shouldDespawn)
+                        label += "\n[DESPAWN]";
+                    if (!string.IsNullOrEmpty(scheduleEvent.targetObjectName))
+                    {
+                        label += $"\n→{scheduleEvent.targetObjectName}";
+                        if (!string.IsNullOrEmpty(scheduleEvent.targetObjectTag))
+                            label += $"\n[{scheduleEvent.targetObjectTag}]";
+                    }
+                    UnityEditor.Handles.Label(targetPos + Vector2.up * 0.5f, label);
+#endif
                 }
             }
         }

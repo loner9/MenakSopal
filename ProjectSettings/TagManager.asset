@@ -10,6 +10,8 @@ TagManager:
   - Player
   - Lamps
   - NPC
+  - House
+  - NPCTarget
   layers:
   - Default
   - TransparentFX
