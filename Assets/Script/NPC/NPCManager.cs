@@ -306,7 +306,7 @@ public class NPCManager : MonoBehaviour
         Debug.Log($"[NPC MANAGER DEBUG] Processing schedule for {spawnData.npcID} at hour {hour}");
         
         NPC existingNPC = GetNPCByID(spawnData.npcID);
-        bool shouldBeActive = hour >= spawnData.scheduleData.spawnHour;
+        bool shouldBeActive = ShouldNPCBeActiveAtHour(spawnData.scheduleData, hour);
         
         Debug.Log($"[NPC MANAGER DEBUG] {spawnData.npcID} - spawnHour: {spawnData.scheduleData.spawnHour}, currentHour: {hour}, shouldBeActive: {shouldBeActive}, existingNPC: {(existingNPC != null ? "EXISTS" : "NULL")}");
 
@@ -405,6 +405,40 @@ public class NPCManager : MonoBehaviour
     {
         Debug.Log($"NPCManager: Despawn requested for NPC {npc.npcName}");
         DespawnNPC(npc);
+    }
+
+    private bool ShouldNPCBeActiveAtHour(NPCScheduleData scheduleData, int hour)
+    {
+        // First check if it's past spawn hour
+        if (hour < scheduleData.spawnHour)
+        {
+            return false;
+        }
+        
+        // Check if there's a despawn event that has already occurred
+        if (scheduleData.scheduleEvents != null)
+        {
+            // Find the most recent event that has occurred (including current hour)
+            ScheduleEvent mostRecentEvent = null;
+            foreach (var scheduleEvent in scheduleData.scheduleEvents)
+            {
+                if (scheduleEvent != null && scheduleEvent.hour <= hour)
+                {
+                    if (mostRecentEvent == null || scheduleEvent.hour > mostRecentEvent.hour)
+                    {
+                        mostRecentEvent = scheduleEvent;
+                    }
+                }
+            }
+            
+            // If the most recent event is a despawn event, NPC should not be active
+            if (mostRecentEvent != null && mostRecentEvent.shouldDespawn)
+            {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
     private bool ShouldSpawnNPC(NPCSpawnData spawnData)

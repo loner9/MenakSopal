@@ -35,7 +35,7 @@ MonoBehaviour:
     shouldIdleWhenReached: 1
     shouldDespawn: 0
     customDialogue: []
-  - hour: 15
+  - hour: 20
     targetObjectTag: House
     targetObjectName: Entrance_Jono
     targetPosition: {x: 0, y: 0}
