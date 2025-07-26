@@ -12,6 +12,14 @@ public class NPCInteractionSystem : MonoBehaviour
     public TextMeshProUGUI dialogueText;
     public Button continueButton;
     public Button endButton;
+    
+    [Header("Choice System UI")]
+    [Tooltip("Container for choice buttons")]
+    public Transform choiceContainer;
+    [Tooltip("Prefab for choice buttons")]
+    public Button choiceButtonPrefab;
+    [Tooltip("Adventure Book styled choice button sprite")]
+    public Sprite choiceButtonSprite;
 
     [Header("Adventure Book UI")]
     [Tooltip("Main dialogue frame from your Adventure Book assets (2_0 sprite)")]
@@ -32,8 +40,8 @@ public class NPCInteractionSystem : MonoBehaviour
     public float interactionRange = 2f;
 
     [Header("Visual Feedback")]
-    public GameObject interactionPrompt;
-    public TextMeshProUGUI promptText;
+    // public GameObject interactionPrompt;
+    // public TextMeshProUGUI promptText;
 
     [Header("Adventure Book Settings")]
     public float typewriterSpeed = 0.03f;
@@ -54,6 +62,14 @@ public class NPCInteractionSystem : MonoBehaviour
     public AudioClip bookOpenSound;
     public AudioClip bookCloseSound;
     public AudioClip pageFlipSound;
+    
+    [Header("Choice System Audio")]
+    [Tooltip("Sound when hovering over choice buttons")]
+    public AudioClip choiceHoverSound;
+    [Tooltip("Sound when selecting a choice")]
+    public AudioClip choiceSelectSound;
+    [Tooltip("Sound for important choices")]
+    public AudioClip importantChoiceSound;
 
     private NPC currentNPC;
     private DialogueData currentDialogue;
@@ -65,6 +81,12 @@ public class NPCInteractionSystem : MonoBehaviour
     private Sprite originalNPCBubble; // Store original bubble to restore later
     private Coroutine typingCoroutine;
     private DayNightCycle dayNightCycle;
+    
+    // Choice system state
+    private bool isShowingChoices = false;
+    private List<Button> activeChoiceButtons = new List<Button>();
+    private DialogueEntry currentDialogueEntry;
+    private bool waitingForChoiceResponse = false;
 
     public bool IsInDialogue => isInDialogue;
 
@@ -100,8 +122,8 @@ public class NPCInteractionSystem : MonoBehaviour
         if (dialoguePanel != null)
             dialoguePanel.SetActive(false);
 
-        if (interactionPrompt != null)
-            interactionPrompt.SetActive(false);
+        // if (interactionPrompt != null)
+        //     interactionPrompt.SetActive(false);
 
         // Apply Adventure Book styling
         // if (dialogueBoxImage != null && adventureBookFrame != null)
@@ -153,8 +175,8 @@ public class NPCInteractionSystem : MonoBehaviour
             {
                 SkipTypewriter();
             }
-            // Continue dialogue
-            else if (!isTyping && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(interactKey)))
+            // Continue dialogue (only if not showing choices and not waiting for response)
+            else if (!isTyping && !isShowingChoices && !waitingForChoiceResponse && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(interactKey)))
             {
                 ContinueDialogue();
             }
@@ -198,21 +220,21 @@ public class NPCInteractionSystem : MonoBehaviour
 
     private void UpdateInteractionPrompt()
     {
-        if (interactionPrompt != null)
-        {
-            if (currentNPC != null)
-            {
-                interactionPrompt.SetActive(true);
-                if (promptText != null)
-                {
-                    promptText.text = $"Press {interactKey} to talk to {currentNPC.npcName}";
-                }
-            }
-            else
-            {
-                interactionPrompt.SetActive(false);
-            }
-        }
+        // if (interactionPrompt != null)
+        // {
+        //     if (currentNPC != null)
+        //     {
+        //         interactionPrompt.SetActive(true);
+        //         if (promptText != null)
+        //         {
+        //             promptText.text = $"Press {interactKey} to talk to {currentNPC.npcName}";
+        //         }
+        //     }
+        //     else
+        //     {
+        //         interactionPrompt.SetActive(false);
+        //     }
+        // }
     }
 
     public void StartDialogue(NPC npc)
@@ -232,12 +254,18 @@ public class NPCInteractionSystem : MonoBehaviour
         currentDialogueIndex = 0;
         isInDialogue = true;
 
+        // Pause game time during dialogue
+        if (dayNightCycle != null)
+        {
+            dayNightCycle.PauseTime();
+        }
+
         // Store original bubble state
         originalNPCBubble = GetCurrentNPCBubbleSprite();
 
         // Hide interaction prompt
-        if (interactionPrompt != null)
-            interactionPrompt.SetActive(false);
+        // if (interactionPrompt != null)
+        //     interactionPrompt.SetActive(false);
 
         // Play dialogue start sound
         PlayAudioClip(dialogueData.dialogueStartSound ?? bookOpenSound);
@@ -390,6 +418,12 @@ public class NPCInteractionSystem : MonoBehaviour
             StopCoroutine(typingCoroutine);
             isTyping = false;
         }
+        
+        // Clear choice system state
+        ClearChoiceButtons();
+        isShowingChoices = false;
+        waitingForChoiceResponse = false;
+        currentDialogueEntry = null;
 
         // Play book close sound
         PlayAudioClip(bookCloseSound);
@@ -444,6 +478,12 @@ public class NPCInteractionSystem : MonoBehaviour
 
     private void FinishEndDialogue()
     {
+        // Resume game time after dialogue
+        if (dayNightCycle != null)
+        {
+            dayNightCycle.ResumeTime();
+        }
+
         // Restore original NPC bubble
         RestoreOriginalNPCBubble();
 
@@ -468,6 +508,13 @@ public class NPCInteractionSystem : MonoBehaviour
     private void DisplayDialogue(DialogueEntry entry)
     {
         if (entry == null) return;
+
+        currentDialogueEntry = entry;
+        
+        // Clear any existing choices
+        ClearChoiceButtons();
+        isShowingChoices = false;
+        waitingForChoiceResponse = false;
 
         // Update NPC bubble based on dialogue entry
         UpdateNPCConversationBubble(entry);
@@ -516,6 +563,13 @@ public class NPCInteractionSystem : MonoBehaviour
         {
             yield return new WaitForSeconds(pauseAfter);
         }
+        
+        // Check if this dialogue entry has choices
+        if (currentDialogueEntry != null && currentDialogueEntry.hasChoices)
+        {
+            yield return new WaitForSeconds(0.5f); // Brief pause before showing choices
+            ShowChoices(currentDialogueEntry);
+        }
     }
 
     private void SkipTypewriter()
@@ -526,13 +580,14 @@ public class NPCInteractionSystem : MonoBehaviour
             isTyping = false;
 
             // Show full text immediately
-            if (currentDialogue != null)
+            if (currentDialogueEntry != null)
             {
-                TimeOfDay currentTime = dayNightCycle != null ? dayNightCycle.CurrentTimeOfDay : TimeOfDay.Day;
-                DialogueEntry[] availableDialogues = currentDialogue.GetAvailableDialogues(currentDialogue.dialogueEntries, currentTime, gameFlags);
-                if (currentDialogueIndex < availableDialogues.Length)
+                dialogueText.text = currentDialogueEntry.dialogueText;
+                
+                // If this dialogue has choices, show them after skipping
+                if (currentDialogueEntry.hasChoices && !isShowingChoices)
                 {
-                    dialogueText.text = availableDialogues[currentDialogueIndex].dialogueText;
+                    ShowChoices(currentDialogueEntry);
                 }
             }
         }
@@ -545,12 +600,16 @@ public class NPCInteractionSystem : MonoBehaviour
         TimeOfDay currentTime = dayNightCycle != null ? dayNightCycle.CurrentTimeOfDay : TimeOfDay.Day;
         DialogueEntry[] availableDialogues = currentDialogue.GetAvailableDialogues(currentDialogue.dialogueEntries, currentTime, gameFlags);
         bool hasMoreDialogue = currentDialogueIndex < availableDialogues.Length - 1;
+        
+        // Hide buttons if showing choices or waiting for choice response
+        bool shouldHideButtons = isShowingChoices || waitingForChoiceResponse || 
+                               (currentDialogueEntry != null && currentDialogueEntry.hasChoices);
 
         if (continueButton != null)
-            continueButton.gameObject.SetActive(hasMoreDialogue);
+            continueButton.gameObject.SetActive(hasMoreDialogue && !shouldHideButtons);
 
         if (endButton != null)
-            endButton.gameObject.SetActive(!hasMoreDialogue);
+            endButton.gameObject.SetActive(!hasMoreDialogue && !shouldHideButtons);
     }
 
     private DialogueData GetDialogueForNPC(NPC npc)
@@ -651,6 +710,245 @@ public class NPCInteractionSystem : MonoBehaviour
             audioSource.PlayOneShot(clip);
         }
     }
+    
+    #region Choice System Methods
+    
+    private void ShowChoices(DialogueEntry entry)
+    {
+        if (entry == null || !entry.hasChoices || choiceContainer == null) return;
+        
+        // ENSURE CHOICE CONTAINER IS ACTIVE
+        choiceContainer.gameObject.SetActive(true);
+        
+        TimeOfDay currentTime = dayNightCycle != null ? dayNightCycle.CurrentTimeOfDay : TimeOfDay.Day;
+        DialogueChoice[] availableChoices = currentDialogue.GetAvailableChoices(entry, currentTime, gameFlags);
+        
+        if (availableChoices.Length == 0)
+        {
+            // No choices available, continue normally
+            Debug.Log("No available choices found for current conditions");
+            return;
+        }
+        
+        isShowingChoices = true;
+        
+        Debug.Log($"Showing {availableChoices.Length} choice buttons");
+        
+        // Create choice buttons
+        for (int i = 0; i < availableChoices.Length; i++)
+        {
+            CreateChoiceButton(availableChoices[i], i);
+        }
+        
+        // Update button visibility
+        UpdateDialogueButtons();
+    }
+    
+    private void CreateChoiceButton(DialogueChoice choice, int choiceIndex)
+    {
+        if (choiceButtonPrefab == null || choiceContainer == null) return;
+        
+        Button choiceButton = Instantiate(choiceButtonPrefab, choiceContainer);
+        activeChoiceButtons.Add(choiceButton);
+        
+        // ENSURE BUTTON IS ACTIVE
+        choiceButton.gameObject.SetActive(true);
+        
+        // Get image component with null check
+        Image buttonImage = choiceButton.GetComponent<Image>();
+        if (buttonImage != null)
+        {
+            // Configure button sprite
+            if (choiceButtonSprite != null)
+            {
+                buttonImage.sprite = choiceButtonSprite;
+            }
+            
+            // ENSURE IMAGE IS VISIBLE - Set default color first
+            buttonImage.color = Color.white;
+            
+            // Apply choice color tint ONLY if it's not default and has proper alpha
+            if (choice.choiceColor != Color.white && choice.choiceColor.a > 0.5f)
+            {
+                buttonImage.color = choice.choiceColor;
+            }
+        }
+        
+        // Set choice text
+        TextMeshProUGUI buttonText = choiceButton.GetComponentInChildren<TextMeshProUGUI>();
+        if (buttonText != null)
+        {
+            buttonText.text = choice.choiceText;
+            
+            // Apply choice styling
+            if (choice.isImportantChoice)
+            {
+                buttonText.fontStyle = FontStyles.Bold;
+                buttonText.color = Color.yellow;
+            }
+        }
+        
+        // ENSURE BUTTON IS INTERACTABLE
+        choiceButton.interactable = true;
+        
+        // Add click listener
+        choiceButton.onClick.AddListener(() => OnChoiceSelected(choice));
+        
+        // Add hover effects
+        var eventTrigger = choiceButton.gameObject.GetComponent<UnityEngine.EventSystems.EventTrigger>();
+        if (eventTrigger == null)
+        {
+            eventTrigger = choiceButton.gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
+        }
+        
+        var hoverEntry = new UnityEngine.EventSystems.EventTrigger.Entry();
+        hoverEntry.eventID = UnityEngine.EventSystems.EventTriggerType.PointerEnter;
+        hoverEntry.callback.AddListener((data) => { 
+            PlayAudioClip(choiceHoverSound);
+        });
+        eventTrigger.triggers.Add(hoverEntry);
+        
+        // DEBUG: Log button creation
+        Debug.Log($"Created choice button: '{choice.choiceText}' - Active: {choiceButton.gameObject.activeSelf}, Interactable: {choiceButton.interactable}");
+    }
+    
+    private void OnChoiceSelected(DialogueChoice choice)
+    {
+        if (choice == null) return;
+        
+        // Play selection sound
+        AudioClip soundToPlay = choice.isImportantChoice ? importantChoiceSound : choiceSelectSound;
+        PlayAudioClip(soundToPlay);
+        
+        // Clear choice buttons
+        ClearChoiceButtons();
+        isShowingChoices = false;
+        waitingForChoiceResponse = true;
+        
+        // Process choice consequences
+        ProcessChoiceConsequences(choice);
+        
+        // Handle choice response or navigation
+        if (choice.response != null && !string.IsNullOrEmpty(choice.response.responseText))
+        {
+            StartCoroutine(ShowChoiceResponse(choice));
+        }
+        else if (choice.targetDialogueIndex >= 0)
+        {
+            // Navigate to specific dialogue entry
+            NavigateToDialogueEntry(choice.targetDialogueIndex);
+        }
+        else
+        {
+            // End dialogue
+            EndDialogue();
+        }
+    }
+    
+    private IEnumerator ShowChoiceResponse(DialogueChoice choice)
+    {
+        var response = choice.response;
+        
+        // Update NPC bubble if specified
+        if (response.conversationBubbleSprite != null)
+        {
+            currentNPC?.ShowConversationBubble(response.conversationBubbleSprite);
+        }
+        
+        // Update UI with response
+        if (speakerNameText != null)
+            speakerNameText.text = response.speakerName.ToUpper();
+        
+        if (dialogueText != null)
+        {
+            if (typingCoroutine != null)
+                StopCoroutine(typingCoroutine);
+                
+            typingCoroutine = StartCoroutine(TypewriterEffect(response.responseText, response.pauseAfterResponse));
+        }
+        
+        // Wait for typing to complete
+        while (isTyping)
+        {
+            yield return null;
+        }
+        
+        // Wait for additional pause
+        if (response.pauseAfterResponse > 0f)
+        {
+            yield return new WaitForSeconds(response.pauseAfterResponse);
+        }
+        
+        waitingForChoiceResponse = false;
+        
+        // Handle navigation after response
+        if (response.continueToNext)
+        {
+            if (response.nextDialogueIndex >= 0)
+            {
+                NavigateToDialogueEntry(response.nextDialogueIndex);
+            }
+            else
+            {
+                // Continue to next dialogue in sequence
+                ContinueDialogue();
+            }
+        }
+        else
+        {
+            // End dialogue
+            EndDialogue();
+        }
+    }
+    
+    private void NavigateToDialogueEntry(int index)
+    {
+        DialogueEntry targetEntry = currentDialogue.GetDialogueEntry(index);
+        if (targetEntry != null)
+        {
+            currentDialogueIndex = index;
+            DisplayDialogue(targetEntry);
+        }
+        else
+        {
+            EndDialogue();
+        }
+    }
+    
+    private void ProcessChoiceConsequences(DialogueChoice choice)
+    {
+        // Add flags
+        if (choice.flagsToAdd != null)
+        {
+            foreach (string flag in choice.flagsToAdd)
+            {
+                AddGameFlag(flag);
+            }
+        }
+        
+        // Remove flags
+        if (choice.flagsToRemove != null)
+        {
+            foreach (string flag in choice.flagsToRemove)
+            {
+                RemoveGameFlag(flag);
+            }
+        }
+    }
+    
+    private void ClearChoiceButtons()
+    {
+        foreach (Button button in activeChoiceButtons)
+        {
+            if (button != null)
+            {
+                Destroy(button.gameObject);
+            }
+        }
+        activeChoiceButtons.Clear();
+    }
+    
+    #endregion
 
     // Public methods for external systems
     public void AddGameFlag(string flag)

@@ -137,6 +137,7 @@ public class DayNightCycle : MonoBehaviour
     private float currentTime;
     private TimeOfDay currentTimeOfDay;
     private Color originalCameraBackground;
+    private Coroutine timeProgressionCoroutine;
     
     // Properties
     public float CurrentTime => currentTime;
@@ -165,7 +166,7 @@ public class DayNightCycle : MonoBehaviour
     private void Start()
     {
         // Start the time cycle
-        StartCoroutine(TimeProgressionCoroutine());
+        timeProgressionCoroutine = StartCoroutine(TimeProgressionCoroutine());
     }
     
     private void Update()
@@ -525,12 +526,19 @@ public class DayNightCycle : MonoBehaviour
     
     public void PauseTime()
     {
-        StopCoroutine(TimeProgressionCoroutine());
+        if (timeProgressionCoroutine != null)
+        {
+            StopCoroutine(timeProgressionCoroutine);
+            timeProgressionCoroutine = null;
+        }
     }
     
     public void ResumeTime()
     {
-        StartCoroutine(TimeProgressionCoroutine());
+        if (timeProgressionCoroutine == null)
+        {
+            timeProgressionCoroutine = StartCoroutine(TimeProgressionCoroutine());
+        }
     }
     
     public void SetCycleDuration(float seconds)

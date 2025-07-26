@@ -397,7 +397,6 @@ public class NPCManager : MonoBehaviour
     // Public methods for NPCs to interact with the manager
     public void NotifyNPCDestinationReached(NPC npc)
     {
-        Debug.Log($"NPCManager: NPC {npc.npcName} reached destination");
         // Could trigger additional logic here if needed
     }
 

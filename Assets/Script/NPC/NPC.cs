@@ -414,17 +414,12 @@ public class NPC : MonoBehaviour
     public void GetMoveCommand(Vector2 target)
     {
         Vector2 startPos = (Vector2)transform.position;
-        Debug.Log($"[NPC MOVEMENT DEBUG] {npcName}: GetMoveCommand from {startPos} to {target}");
         
         Vector2 closestStartNode = GetClosestNode(startPos);
         Vector2 closestTargetNode = GetClosestNode(target);
-        
-        Debug.Log($"[NPC MOVEMENT DEBUG] {npcName}: Grid nodes - Start: {closestStartNode}, Target: {closestTargetNode}");
 
         if (pathfinder.GenerateAstarPath(closestStartNode, closestTargetNode, out path))
         {
-            Debug.Log($"[NPC MOVEMENT DEBUG] {npcName}: Raw path generated with {path.Count} nodes");
-            
             if (searchShortcut && path.Count > 0)
                 pathLeftToGo = ShortenPath(path);
             else
@@ -435,11 +430,9 @@ public class NPC : MonoBehaviour
             
             currentDestination = target;
             hasDestination = true;
-            Debug.Log($"[NPC MOVEMENT DEBUG] {npcName}: ✅ Path found! {pathLeftToGo.Count} waypoints to destination {target}");
         }
         else
         {
-            Debug.LogWarning($"[NPC MOVEMENT DEBUG] {npcName}: ❌ Could not find path to target {target}");
             hasDestination = false;
         }
     }
@@ -453,25 +446,20 @@ public class NPC : MonoBehaviour
 
     public Vector2 GetMovementToDestination()
     {
-        Debug.Log($"[NPC MOVEMENT DEBUG] {npcName}:GetMovementToDestination - pathLeftToGo.Count: {pathLeftToGo.Count}, currentDestination: {currentDestination}");
-
         if (pathLeftToGo.Count > 0)
         {
             Vector2 direction = (pathLeftToGo[0] - (Vector2)transform.position).normalized;
-            Debug.Log($"[NPC MOVEMENT DEBUG] {npcName}: Moving towards waypoint {pathLeftToGo[0]}, direction: {direction}");
 
             // Remove waypoint if we're close enough
             if (Vector2.Distance(transform.position, pathLeftToGo[0]) < 0.5f)
             {
                 pathLeftToGo.RemoveAt(0);
-                Debug.Log($"[NPC MOVEMENT DEBUG] {npcName}: Reached waypoint, {pathLeftToGo.Count} waypoints remaining");
             }
 
             return direction * moveSpeed;
         }
 
         hasDestination = false;
-        Debug.Log($"[NPC MOVEMENT DEBUG] {npcName}: No waypoints left, stopping movement");
         return Vector2.zero;
     }
     #endregion
@@ -480,8 +468,6 @@ public class NPC : MonoBehaviour
     public void ReceiveScheduleCommand(ScheduleCommand command)
     {
         pendingScheduleCommand = command;
-        Debug.Log($"[NPC DEBUG] {npcName}: Received schedule command {command.commandType} to position {command.targetPosition}");
-        Debug.Log($"[NPC DEBUG] {npcName}: Command details - Behavior: {command.behavior}, ShouldIdle: {command.shouldIdleWhenReached}, CanInteract: {command.canInteract}");
     }
 
     public bool HasNewScheduleCommand()

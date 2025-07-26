@@ -1,6 +1,61 @@
 using UnityEngine;
 
 [System.Serializable]
+public class DialogueChoice
+{
+    [Header("Choice Content")]
+    [TextArea(2, 3)]
+    public string choiceText;
+    
+    [Header("Availability")]
+    [Tooltip("Required flags for this choice to appear")]
+    public string[] requiredFlags;
+    [Tooltip("Times when this choice is available")]
+    public TimeOfDay[] availableTimesOfDay;
+    [Tooltip("Can this choice be selected multiple times?")]
+    public bool isRepeatable = true;
+    
+    [Header("Consequences")]
+    [Tooltip("Flags to add when this choice is selected")]
+    public string[] flagsToAdd;
+    [Tooltip("Flags to remove when this choice is selected")]
+    public string[] flagsToRemove;
+    
+    [Header("Navigation")]
+    [Tooltip("Index of the dialogue entry to show after this choice (-1 to end dialogue)")]
+    public int targetDialogueIndex = -1;
+    [Tooltip("Specific dialogue response to this choice")]
+    public DialogueResponse response;
+    
+    [Header("Visual")]
+    [Tooltip("Mark as important choice for special styling")]
+    public bool isImportantChoice = false;
+    [Tooltip("Color tint for this choice button")]
+    public Color choiceColor = Color.white;
+}
+
+[System.Serializable]
+public class DialogueResponse
+{
+    [Header("Response Content")]
+    public string speakerName;
+    [TextArea(3, 5)]
+    public string responseText;
+    
+    [Header("Visual")]
+    [Tooltip("Bubble sprite to show during this response")]
+    public Sprite conversationBubbleSprite;
+    [Tooltip("Pause duration after this response")]
+    public float pauseAfterResponse = 0f;
+    
+    [Header("Navigation")]
+    [Tooltip("Continue to next dialogue entry after this response?")]
+    public bool continueToNext = true;
+    [Tooltip("Index of dialogue entry to continue to (-1 to end dialogue)")]
+    public int nextDialogueIndex = -1;
+}
+
+[System.Serializable]
 public class DialogueEntry
 {
     [Header("Dialogue Content")]
@@ -12,6 +67,12 @@ public class DialogueEntry
     public TimeOfDay[] availableTimesOfDay;
     public bool isRepeatable = true;
     public string[] requiredFlags; // For quest system integration
+    
+    [Header("Choice System")]
+    [Tooltip("Does this dialogue entry present choices to the player?")]
+    public bool hasChoices = false;
+    [Tooltip("Available choices for the player")]
+    public DialogueChoice[] choices;
     
     [Header("Visual")]
     [Tooltip("Specific bubble sprite to show during this dialogue. If null, uses default conversation bubble.")]
@@ -132,6 +193,90 @@ public class DialogueData : ScriptableObject
         if (available.Length == 0) return null;
         
         return available[Random.Range(0, available.Length)];
+    }
+    
+    /// <summary>
+    /// Get available choices for a dialogue entry
+    /// </summary>
+    public DialogueChoice[] GetAvailableChoices(DialogueEntry entry, TimeOfDay currentTime, System.Collections.Generic.List<string> gameFlags)
+    {
+        if (entry == null || !entry.hasChoices || entry.choices == null) 
+            return new DialogueChoice[0];
+        
+        System.Collections.Generic.List<DialogueChoice> available = new System.Collections.Generic.List<DialogueChoice>();
+        
+        foreach (var choice in entry.choices)
+        {
+            if (IsChoiceAvailable(choice, currentTime, gameFlags))
+            {
+                available.Add(choice);
+            }
+        }
+        
+        return available.ToArray();
+    }
+    
+    /// <summary>
+    /// Check if a specific choice is available based on time and flags
+    /// </summary>
+    public bool IsChoiceAvailable(DialogueChoice choice, TimeOfDay currentTime, System.Collections.Generic.List<string> gameFlags)
+    {
+        if (choice == null) return false;
+        
+        // Check time of day availability
+        if (choice.availableTimesOfDay != null && choice.availableTimesOfDay.Length > 0)
+        {
+            bool timeMatches = false;
+            foreach (var timeOfDay in choice.availableTimesOfDay)
+            {
+                if (currentTime == timeOfDay)
+                {
+                    timeMatches = true;
+                    break;
+                }
+            }
+            if (!timeMatches) return false;
+        }
+        
+        // Check required flags
+        if (choice.requiredFlags != null && choice.requiredFlags.Length > 0)
+        {
+            foreach (var flag in choice.requiredFlags)
+            {
+                if (gameFlags == null || !gameFlags.Contains(flag))
+                {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+    
+    /// <summary>
+    /// Get dialogue entry by index safely
+    /// </summary>
+    public DialogueEntry GetDialogueEntry(int index)
+    {
+        if (dialogueEntries == null || index < 0 || index >= dialogueEntries.Length)
+            return null;
+            
+        return dialogueEntries[index];
+    }
+    
+    /// <summary>
+    /// Find the index of a specific dialogue entry
+    /// </summary>
+    public int GetDialogueEntryIndex(DialogueEntry entry)
+    {
+        if (dialogueEntries == null || entry == null) return -1;
+        
+        for (int i = 0; i < dialogueEntries.Length; i++)
+        {
+            if (dialogueEntries[i] == entry) return i;
+        }
+        
+        return -1;
     }
     
     /// <summary>

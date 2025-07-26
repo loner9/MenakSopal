@@ -21,8 +21,6 @@ public class NPCMoveState : NPCState
         
         // Show walking bubble
         npc.ShowStatusBubble(NPCBehavior.Walk);
-        
-        Debug.Log($"NPC {npc.npcName}: Moving to {targetDestination}");
     }
 
     public override void ExitState()
@@ -57,15 +55,12 @@ public class NPCMoveState : NPCState
     
     private void HandleDestinationReached()
     {
-        Debug.Log($"NPC {npc.npcName}: Reached destination {targetDestination}");
-        
         // Notify NPC Manager that we've reached the destination
         npc.NotifyDestinationReached();
         
         // Check if this was a GoHome command (meaning we should despawn)
         if (npc.ShouldDespawnAfterReachingDestination())
         {
-            Debug.Log($"NPC {npc.npcName}: Despawning after reaching home");
             npc.RequestDespawn();
             return;
         }
