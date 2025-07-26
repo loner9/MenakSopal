@@ -32677,7 +32677,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 70}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -400, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &379528587
 MonoBehaviour:
@@ -64962,7 +64962,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &676509609
 RectTransform:
   m_ObjectHideFlags: 0
@@ -119696,8 +119696,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 65536
   interactionRange: 2
-  interactionPrompt: {fileID: 2050290463}
-  promptText: {fileID: 551396423}
   typewriterSpeed: 0.03
   bookOpenSpeed: 0.5
   enableBookAnimations: 1
