@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
+  m_Name: 06_FindWhiteElephant
+  m_EditorClassIdentifier: 
+  questID: find_white_elephant
+  questTitle: Sacred Beast of Legend
+  questDescription: Locate the legendary white elephant required by the river spirit.
+    This sacred creature holds the key to appeasing the supernatural forces.
+  questType: 0
+  questLevel: 5
+  questIcon: {fileID: 0}
+  requiredFlags:
+  - accepted_spirit_demand
+  flagsOnStart: []
+  flagsOnComplete:
+  - seeking_white_elephant
+  - ready_for_journey
+  flagsOnFail: []
+  objectives:
+  - objectiveID: gather_information
+    description: Learn about white elephant legends
+    type: 0
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: heard_white_elephant_legend
+    targetNPC: nenek_bijak
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: find_location
+    description: Discover where the white elephant can be found
+    type: 0
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: krandon_location_discovered
+    targetNPC: pemandu_jalan
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: hire_guide
+    description: Secure guide to Desa Krandon
+    type: 0
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: pemandu_jalan
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  rewards: []
+  isRepeatable: 0
+  canAbandon: 1
+  autoComplete: 1
+  timeLimit: 0
+  showInJournal: 1
+  trackByDefault: 1
+  questColor: {r: 1, g: 0.8, b: 0.2, a: 1}

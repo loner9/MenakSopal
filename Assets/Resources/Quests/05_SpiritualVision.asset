@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
+  m_Name: 05_SpiritualVision
+  m_EditorClassIdentifier: 
+  questID: spiritual_vision_encounter
+  questTitle: Communion with the River Spirit
+  questDescription: Enter spiritual communion to understand the supernatural opposition.
+    Face the ancient guardian of the waters.
+  questType: 0
+  questLevel: 4
+  questIcon: {fileID: 0}
+  requiredFlags:
+  - spiritual_interference_confirmed
+  flagsOnStart: []
+  flagsOnComplete:
+  - river_spirit_encountered
+  - tribute_demand_received
+  flagsOnFail: []
+  objectives:
+  - objectiveID: perform_ritual
+    description: Complete the spiritual ritual with village shaman
+    type: 6
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: spiritual_vision_active
+    targetNPC: 
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: confront_river_spirit
+    description: Face the guardian of the river
+    type: 0
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: buaya_putih_spirit
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  rewards: []
+  isRepeatable: 0
+  canAbandon: 1
+  autoComplete: 1
+  timeLimit: 0
+  showInJournal: 1
+  trackByDefault: 1
+  questColor: {r: 0.6, g: 0.2, b: 0.8, a: 1}

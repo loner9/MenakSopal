@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
+  m_Name: 04_InvestigateDestruction
+  m_EditorClassIdentifier: 
+  questID: investigate_dam_destruction
+  questTitle: Mysterious Sabotage
+  questDescription: Discover why the dam keeps being destroyed overnight. Something
+    supernatural is at work, and the truth must be uncovered.
+  questType: 0
+  questLevel: 3
+  questIcon: {fileID: 0}
+  requiredFlags:
+  - initial_dam_built
+  flagsOnStart: []
+  flagsOnComplete:
+  - dam_repeatedly_destroyed
+  - spiritual_interference_confirmed
+  flagsOnFail: []
+  objectives:
+  - objectiveID: examine_destruction
+    description: Investigate the destroyed dam site
+    type: 2
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: 
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: DamSite
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: talk_to_witnesses
+    description: Question students about what they saw
+    type: 0
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: murid_padepokan_2
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: consult_shaman
+    description: Seek spiritual guidance from village shaman
+    type: 0
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: dukun_kampung
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  rewards: []
+  isRepeatable: 0
+  canAbandon: 1
+  autoComplete: 1
+  timeLimit: 0
+  showInJournal: 1
+  trackByDefault: 1
+  questColor: {r: 0.6, g: 0.2, b: 0.8, a: 1}

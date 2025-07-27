@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1bf30c825a1d3944a1b6264cdf20cff, type: 3}
+  m_Name: KiAgengSinawang_Schedule
+  m_EditorClassIdentifier: 
+  scheduleName: Ki Ageng Sinawang Schedule
+  scheduleDescription: Spiritual teacher and padepokan leader schedule
+  spawnHour: 5
+  homeObjectTag: House
+  homeObjectName: Entrance_kiAgeng
+  homePosition: {x: 0, y: 0}
+  scheduleEvents:
+  - hour: 5
+    targetObjectTag: NPCTarget
+    targetObjectName: MeditationGarden
+    targetPosition: {x: -5, y: 2}
+    behavior: 0
+    shouldIdleWhenReached: 1
+    shouldDespawn: 0
+    customDialogue:
+    - Gunung mengajarkan kita kesabaran, sungai mengajarkan kita ketekunan.
+  - hour: 7
+    targetObjectTag: NPCTarget
+    targetObjectName: TeachingPavilion
+    targetPosition: {x: 0, y: 0}
+    behavior: 4
+    shouldIdleWhenReached: 1
+    shouldDespawn: 0
+    customDialogue: []
+  - hour: 12
+    targetObjectTag: House
+    targetObjectName: Entrance_kiAgeng
+    targetPosition: {x: 2, y: 1}
+    behavior: 0
+    shouldIdleWhenReached: 1
+    shouldDespawn: 0
+    customDialogue: []
+  - hour: 14
+    targetObjectTag: NPCTarget
+    targetObjectName: TeachingPavilion
+    targetPosition: {x: 0, y: 0}
+    behavior: 4
+    shouldIdleWhenReached: 1
+    shouldDespawn: 0
+    customDialogue: []
+  - hour: 18
+    targetObjectTag: NPCTarget
+    targetObjectName: MeditationGarden
+    targetPosition: {x: -5, y: 2}
+    behavior: 0
+    shouldIdleWhenReached: 1
+    shouldDespawn: 0
+    customDialogue: []
+  - hour: 21
+    targetObjectTag: House
+    targetObjectName: Entrance_kiAgeng
+    targetPosition: {x: 2, y: 1}
+    behavior: 3
+    shouldIdleWhenReached: 1
+    shouldDespawn: 1
+    customDialogue: []
+  moveAroundWhenIdle: 0
+  idleMovementRange: 2
+  walkSpeed: 1
+  pauseAtDestination: 3
+  dialogues: []
+  workStation: {fileID: 0}
+  workDuration: 5

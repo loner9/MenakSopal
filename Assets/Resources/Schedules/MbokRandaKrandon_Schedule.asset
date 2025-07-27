@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1bf30c825a1d3944a1b6264cdf20cff, type: 3}
+  m_Name: MbokRandaKrandon_Schedule
+  m_EditorClassIdentifier: 
+  scheduleName: Mbok Randa Krandon Schedule
+  scheduleDescription: White elephant owner in Desa Krandon
+  spawnHour: 6
+  homeObjectTag: House
+  homeObjectName: KrandonElderHouse
+  homePosition: {x: 10, y: 5}
+  scheduleEvents:
+  - hour: 6
+    targetObjectTag: NPCTarget
+    targetObjectName: ElephantEnclosure
+    targetPosition: {x: 8, y: 3}
+    behavior: 2
+    shouldIdleWhenReached: 1
+    shouldDespawn: 0
+    customDialogue:
+    - Gajah putihku adalah harta paling berharga. Dia seperti putri bagiku.
+  - hour: 9
+    targetObjectTag: NPCTarget
+    targetObjectName: KrandonVillageCenter
+    targetPosition: {x: 12, y: 5}
+    behavior: 4
+    shouldIdleWhenReached: 1
+    shouldDespawn: 0
+    customDialogue: []
+  - hour: 12
+    targetObjectTag: House
+    targetObjectName: KrandonElderHouse
+    targetPosition: {x: 10, y: 5}
+    behavior: 0
+    shouldIdleWhenReached: 1
+    shouldDespawn: 0
+    customDialogue: []
+  - hour: 15
+    targetObjectTag: NPCTarget
+    targetObjectName: ElephantEnclosure
+    targetPosition: {x: 8, y: 3}
+    behavior: 2
+    shouldIdleWhenReached: 1
+    shouldDespawn: 0
+    customDialogue: []
+  - hour: 18
+    targetObjectTag: House
+    targetObjectName: KrandonElderHouse
+    targetPosition: {x: 10, y: 5}
+    behavior: 0
+    shouldIdleWhenReached: 1
+    shouldDespawn: 0
+    customDialogue: []
+  - hour: 21
+    targetObjectTag: House
+    targetObjectName: KrandonElderHouse
+    targetPosition: {x: 10, y: 5}
+    behavior: 3
+    shouldIdleWhenReached: 1
+    shouldDespawn: 1
+    customDialogue: []
+  moveAroundWhenIdle: 0
+  idleMovementRange: 2
+  walkSpeed: 1
+  pauseAtDestination: 4
+  dialogues: []
+  workStation: {fileID: 0}
+  workDuration: 5

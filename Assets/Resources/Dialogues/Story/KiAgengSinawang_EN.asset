@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
+  m_Name: KiAgengSinawang_EN
+  m_EditorClassIdentifier: 
+  npcName: Ki Ageng Sinawang
+  dialogueDescription: Padepokan leader, spiritual teacher of Menak Sopal
+  dialogueEntries:
+  - speakerName: Ki Ageng Sinawang
+    dialogueText: Ah, Menak Sopal. I sense your heart is restless today. The wind
+      speaks of changes coming to our land.
+    availableTimesOfDay: 0100000000000000
+    isRepeatable: 1
+    requiredFlags:
+    - story_started
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Ki Ageng Sinawang
+    dialogueText: The suffering of our people weighs on your heart, my child. Sometimes
+      the greatest noble deeds require great sacrifice.
+    availableTimesOfDay: 010000000000000002000000
+    isRepeatable: 1
+    requiredFlags:
+    - water_crisis_discovered
+    hasChoices: 1
+    choices:
+    - choiceText: Teacher, I wish to help solve the water shortage
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 1
+      flagsToAdd:
+      - asked_permission_water_project
+      flagsToRemove: []
+      targetDialogueIndex: -1
+      response:
+        speakerName: Ki Ageng Sinawang
+        responseText: Your compassion honors our teachings. Go forth, but remember
+          - true wisdom lies in understanding all consequences of our actions.
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: -1
+      questToStart: dam_construction_project
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+    - choiceText: What do you think I should do?
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 1
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: -1
+      response:
+        speakerName: Ki Ageng Sinawang
+        responseText: The answer lies within you, child. Listen to your heart, but
+          temper it with wisdom. The path of the helper is never simple.
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: -1
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  greetings: []
+  farewells: []
+  defaultConversationBubble: {fileID: 0}
+  loopDialogue: 0
+  canBeInterrupted: 1
+  dialogueStartSound: {fileID: 0}
+  typewriterSound: {fileID: 0}

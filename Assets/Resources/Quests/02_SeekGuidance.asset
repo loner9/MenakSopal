@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
+  m_Name: 02_SeekGuidance
+  m_EditorClassIdentifier: 
+  questID: seek_guru_guidance
+  questTitle: Wisdom of the Teacher
+  questDescription: Consult Ki Ageng Sinawang about the village's water crisis. Your
+    spiritual teacher's wisdom will guide you on the right path.
+  questType: 0
+  questLevel: 1
+  questIcon: {fileID: 0}
+  requiredFlags:
+  - water_crisis_discovered
+  flagsOnStart: []
+  flagsOnComplete:
+  - guru_guidance_received
+  flagsOnFail: []
+  objectives:
+  - objectiveID: consult_ki_ageng
+    description: Speak with Ki Ageng Sinawang about the crisis
+    type: 0
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: ki_ageng_sinawang
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: receive_permission
+    description: Ask for permission to help with the water project
+    type: 6
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: asked_permission_water_project
+    targetNPC: 
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  rewards: []
+  isRepeatable: 0
+  canAbandon: 1
+  autoComplete: 1
+  timeLimit: 0
+  showInJournal: 1
+  trackByDefault: 1
+  questColor: {r: 0.2, g: 0.6, b: 1, a: 1}

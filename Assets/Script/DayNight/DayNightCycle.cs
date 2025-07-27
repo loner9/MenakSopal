@@ -128,6 +128,7 @@ public class DayNightCycle : MonoBehaviour
     [SerializeField, ReadOnly] private float displayTimePercentage;
     [SerializeField, ReadOnly] private string displayNextPeriod;
     [SerializeField, ReadOnly] private string displayTimeUntilNext;
+    public static DayNightCycle Instance { get; private set; }
     
     // Events
     public System.Action<TimeOfDay> OnTimeOfDayChanged;
@@ -143,21 +144,30 @@ public class DayNightCycle : MonoBehaviour
     public float CurrentTime => currentTime;
     public TimeOfDay CurrentTimeOfDay => currentTimeOfDay;
     public float TimePercentage => currentTime / 24f;
-    
+
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+            throw new System.Exception("An instance of this singleton already exists.");
+        }
+        else
+        {
+            Instance = this;
+        }
         // Calculate transition times based on day/night durations
         CalculateTransitionTimes();
-        
+
         // Initialize time
         currentTime = timeSettings.startTime;
-        
+
         // Cache original camera background
         if (mainCamera != null)
         {
             originalCameraBackground = mainCamera.backgroundColor;
         }
-        
+
         // Initialize lighting
         UpdateTimeOfDay();
         ApplyGradualLighting();

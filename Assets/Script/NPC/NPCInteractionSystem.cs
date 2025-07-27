@@ -89,9 +89,18 @@ public class NPCInteractionSystem : MonoBehaviour
     private bool waitingForChoiceResponse = false;
 
     public bool IsInDialogue => isInDialogue;
+    public NPC CurrentDialogueNPC => currentNPC;
 
     public System.Action<NPC> OnDialogueStart;
     public System.Action<NPC> OnDialogueEnd;
+    
+    /// <summary>
+    /// Check if the system is currently in dialogue with a specific NPC
+    /// </summary>
+    public bool IsInDialogueWith(NPC npc)
+    {
+        return isInDialogue && currentNPC == npc;
+    }
 
     private void Start()
     {
@@ -932,6 +941,51 @@ public class NPCInteractionSystem : MonoBehaviour
             foreach (string flag in choice.flagsToRemove)
             {
                 RemoveGameFlag(flag);
+            }
+        }
+        
+        // Process quest triggers
+        ProcessQuestTriggers(choice);
+    }
+    
+    private void ProcessQuestTriggers(DialogueChoice choice)
+    {
+        QuestManager questManager = QuestManager.Instance;
+        if (questManager == null) return;
+        
+        // Start quest
+        if (!string.IsNullOrEmpty(choice.questToStart))
+        {
+            bool started = questManager.StartQuest(choice.questToStart);
+            if (started)
+            {
+                Debug.Log($"Started quest '{choice.questToStart}' from dialogue choice");
+            }
+        }
+        
+        // Complete quest
+        if (!string.IsNullOrEmpty(choice.questToComplete))
+        {
+            bool completed = questManager.CompleteQuest(choice.questToComplete);
+            if (completed)
+            {
+                Debug.Log($"Completed quest '{choice.questToComplete}' from dialogue choice");
+            }
+        }
+        
+        // Complete objective
+        if (!string.IsNullOrEmpty(choice.objectiveToComplete))
+        {
+            string questID = !string.IsNullOrEmpty(choice.questForObjective) ? 
+                choice.questForObjective : choice.questToStart;
+                
+            if (!string.IsNullOrEmpty(questID))
+            {
+                bool completed = questManager.CompleteObjective(questID, choice.objectiveToComplete);
+                if (completed)
+                {
+                    Debug.Log($"Completed objective '{choice.objectiveToComplete}' in quest '{questID}' from dialogue choice");
+                }
             }
         }
     }

@@ -66,18 +66,18 @@ public class NPCScheduleData : ScriptableObject
         }
         
         Debug.Log($"[SCHEDULE DATA DEBUG] Searching through {scheduleEvents.Length} events:");
-        for (int i = 0; i < scheduleEvents.Length; i++)
-        {
-            var evt = scheduleEvents[i];
-            if (evt != null)
-            {
-                Debug.Log($"[SCHEDULE DATA DEBUG] Event {i}: Hour {evt.hour}, Tag: '{evt.targetObjectTag}', Name: '{evt.targetObjectName}', Behavior: {evt.behavior}");
-            }
-            else
-            {
-                Debug.Log($"[SCHEDULE DATA DEBUG] Event {i}: NULL");
-            }
-        }
+        // for (int i = 0; i < scheduleEvents.Length; i++)
+        // {
+        //     var evt = scheduleEvents[i];
+        //     if (evt != null)
+        //     {
+        //         Debug.Log($"[SCHEDULE DATA DEBUG] Event {i}: Hour {evt.hour}, Tag: '{evt.targetObjectTag}', Name: '{evt.targetObjectName}', Behavior: {evt.behavior}");
+        //     }
+        //     else
+        //     {
+        //         Debug.Log($"[SCHEDULE DATA DEBUG] Event {i}: NULL");
+        //     }
+        // }
             
         // Find the most recent event that occurred at or before this hour
         ScheduleEvent currentEvent = null;

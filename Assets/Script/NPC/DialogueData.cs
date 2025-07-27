@@ -27,6 +27,16 @@ public class DialogueChoice
     [Tooltip("Specific dialogue response to this choice")]
     public DialogueResponse response;
     
+    [Header("Quest Integration")]
+    [Tooltip("Quest to start when this choice is selected")]
+    public string questToStart;
+    [Tooltip("Quest to complete when this choice is selected")]
+    public string questToComplete;
+    [Tooltip("Quest objective to complete when this choice is selected")]
+    public string objectiveToComplete;
+    [Tooltip("Objective in which quest to complete")]
+    public string questForObjective;
+    
     [Header("Visual")]
     [Tooltip("Mark as important choice for special styling")]
     public bool isImportantChoice = false;

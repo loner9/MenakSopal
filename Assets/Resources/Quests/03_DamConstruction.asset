@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
+  m_Name: 03_DamConstruction
+  m_EditorClassIdentifier: 
+  questID: dam_construction_project
+  questTitle: Building Hope
+  questDescription: Construct a dam to bring water to the suffering village. This
+    ambitious project will require teamwork, resources, and determination.
+  questType: 0
+  questLevel: 2
+  questIcon: {fileID: 0}
+  requiredFlags:
+  - asked_permission_water_project
+  flagsOnStart: []
+  flagsOnComplete:
+  - dam_construction_started
+  - initial_dam_built
+  flagsOnFail: []
+  objectives:
+  - objectiveID: gather_students
+    description: Recruit padepokan students to help
+    type: 0
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: students_recruited
+    targetNPC: murid_padepokan_1
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: collect_materials
+    description: Gather stones and wood for construction
+    type: 1
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: 
+    targetItem: construction_materials
+    targetAmount: 10
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: build_dam_structure
+    description: Complete the dam construction
+    type: 6
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: 
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  rewards:
+  - type: 4
+    itemID: 
+    amount: 0
+    flagsToAdd:
+    - initial_dam_success
+    customRewardDescription: Temporary success and village gratitude
+  isRepeatable: 0
+  canAbandon: 1
+  autoComplete: 1
+  timeLimit: 0
+  showInJournal: 1
+  trackByDefault: 1
+  questColor: {r: 0.2, g: 0.6, b: 1, a: 1}

@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
+  m_Name: 07_CompleteSacrifice
+  m_EditorClassIdentifier: 
+  questID: complete_spirit_sacrifice
+  questTitle: The Sacred Offering
+  questDescription: Complete the river spirit's demanded sacrifice. This terrible
+    choice will weigh heavily on your conscience, but it may be the only way to save
+    the village.
+  questType: 0
+  questLevel: 7
+  questIcon: {fileID: 0}
+  requiredFlags:
+  - white_elephant_borrowed
+  flagsOnStart: []
+  flagsOnComplete:
+  - elephant_sacrifice_complete
+  - spirit_pact_complete
+  - white_elephant_taken
+  flagsOnFail: []
+  objectives:
+  - objectiveID: bring_elephant_to_river
+    description: Lead the white elephant to the river shrine
+    type: 2
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: 
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: RiverShrine
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: perform_sacrifice
+    description: Complete the spiritual ritual
+    type: 6
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: 
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  rewards: []
+  isRepeatable: 0
+  canAbandon: 1
+  autoComplete: 0
+  timeLimit: 0
+  showInJournal: 1
+  trackByDefault: 1
+  questColor: {r: 0.8, g: 0.2, b: 0.2, a: 1}

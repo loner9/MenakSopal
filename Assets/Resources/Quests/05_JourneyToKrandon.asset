@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
+  m_Name: 05_JourneyToKrandon
+  m_EditorClassIdentifier: 
+  questID: journey_to_krandon
+  questTitle: Path to the Sacred Beast
+  questDescription: Travel safely to Desa Krandon where the white elephant lives.
+  questType: 0
+  questLevel: 5
+  questIcon: {fileID: 0}
+  requiredFlags:
+  - ready_for_journey
+  flagsOnStart: []
+  flagsOnComplete:
+  - arrived_desa_krandon
+  flagsOnFail: []
+  objectives:
+  - objectiveID: forest_travel
+    description: Navigate the forest path safely
+    type: 2
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: 
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: ForestPath
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: arrive_krandon
+    description: Reach Desa Krandon safely
+    type: 2
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: 
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: DesaKrandon
+    timeDelay: 0
+    showProgress: 1
+  rewards: []
+  isRepeatable: 0
+  canAbandon: 1
+  autoComplete: 1
+  timeLimit: 0
+  showInJournal: 1
+  trackByDefault: 1
+  questColor: {r: 0.6, g: 0.4, b: 0.2, a: 1}

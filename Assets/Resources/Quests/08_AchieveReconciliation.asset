@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
+  m_Name: 08_AchieveReconciliation
+  m_EditorClassIdentifier: 
+  questID: achieve_reconciliation
+  questTitle: Healing the Wounds
+  questDescription: Work toward mutual understanding and peace with Mbok Randa. Through
+    truth and genuine remorse, healing is possible.
+  questType: 0
+  questLevel: 9
+  questIcon: {fileID: 0}
+  requiredFlags:
+  - sincere_apology_given
+  flagsOnStart: []
+  flagsOnComplete:
+  - reconciliation_complete
+  - mutual_understanding_achieved
+  flagsOnFail: []
+  objectives:
+  - objectiveID: demonstrate_remorse
+    description: Show continued commitment to making amends
+    type: 6
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: 
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: accept_consequences
+    description: Accept responsibility for all actions
+    type: 6
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: 
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: find_mutual_understanding
+    description: Reach peace with Mbok Randa
+    type: 0
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: mbok_randa_krandon
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  rewards: []
+  isRepeatable: 0
+  canAbandon: 1
+  autoComplete: 1
+  timeLimit: 0
+  showInJournal: 1
+  trackByDefault: 1
+  questColor: {r: 0.2, g: 0.8, b: 0.4, a: 1}

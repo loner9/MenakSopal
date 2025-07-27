@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
+  m_Name: 01_WaterCrisisDiscovery
+  m_EditorClassIdentifier: 
+  questID: water_crisis_discovery
+  questTitle: Voices of Thirst
+  questDescription: Investigate reports of suffering villagers at the old well. The
+    people are in desperate need of water, and their cries for help cannot be ignored.
+  questType: 0
+  questLevel: 1
+  questIcon: {fileID: 0}
+  requiredFlags:
+  - story_started
+  flagsOnStart: []
+  flagsOnComplete:
+  - water_crisis_discovered
+  flagsOnFail: []
+  objectives:
+  - objectiveID: reach_village_well
+    description: Travel to the village well
+    type: 2
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: 
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: VillageWell
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: talk_to_villagers
+    description: Speak with the suffering villagers
+    type: 0
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: warga_haus_1
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: witness_crisis
+    description: Understand the extent of the water shortage
+    type: 6
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: 
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  rewards:
+  - type: 4
+    itemID: 
+    amount: 0
+    flagsToAdd:
+    - committed_to_help
+    customRewardDescription: Moral commitment to help the villagers
+  isRepeatable: 0
+  canAbandon: 1
+  autoComplete: 1
+  timeLimit: 0
+  showInJournal: 1
+  trackByDefault: 1
+  questColor: {r: 0.2, g: 0.6, b: 1, a: 1}

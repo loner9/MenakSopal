@@ -428,8 +428,10 @@ public class NPC : MonoBehaviour
                 if (!snapToGrid) pathLeftToGo.Add(target);
             }
             
+            // IMPORTANT: Use original target, not grid-snapped version
             currentDestination = target;
             hasDestination = true;
+            Debug.Log($"[NPC] {npcName}: Set currentDestination to {currentDestination} (original target, not grid-snapped)");
         }
         else
         {
@@ -454,12 +456,31 @@ public class NPC : MonoBehaviour
             if (Vector2.Distance(transform.position, pathLeftToGo[0]) < 0.5f)
             {
                 pathLeftToGo.RemoveAt(0);
+                Debug.Log($"[NPC] {npcName}: Reached waypoint, {pathLeftToGo.Count} waypoints remaining");
             }
 
             return direction * moveSpeed;
         }
 
-        hasDestination = false;
+        // Path is empty - check if we're actually at the final destination
+        if (hasDestination)
+        {
+            float distanceToDestination = Vector2.Distance(transform.position, currentDestination);
+            Debug.Log($"[NPC] {npcName}: Path empty, distance to destination: {distanceToDestination}");
+            
+            if (distanceToDestination < 0.5f)
+            {
+                Debug.Log($"[NPC] {npcName}: ✅ Actually reached destination at {currentDestination}");
+                hasDestination = false;
+            }
+            else
+            {
+                Debug.Log($"[NPC] {npcName}: ❌ Path failed - still {distanceToDestination} units away from {currentDestination}");
+                // Try to regenerate path
+                GetMoveCommand(currentDestination);
+            }
+        }
+        
         return Vector2.zero;
     }
     #endregion
