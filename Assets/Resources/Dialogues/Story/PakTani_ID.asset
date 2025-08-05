@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
+  m_Name: PakTani_ID
+  m_EditorClassIdentifier: 
+  npcName: Pak Tani
+  dialogueDescription: Petani desa, menyediakan quest pertanian dan informasi bercocok
+    tanam padi
+  dialogueEntries:
+  - speakerName: Pak Tani
+    dialogueText: Selamat pagi, anak muda! Embun pagi ini sangat cocok untuk menanam
+      hari ini. Apa kamu ke sini untuk belajar bertani?
+    availableTimesOfDay: 01000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 1
+    choices:
+    - choiceText: Bisakah Pak mengajarkan saya bertani padi?
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 1
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: -1
+      response:
+        speakerName: Pak Tani
+        responseText: Padi butuh air, kesabaran, dan rasa hormat pada tanah. Kalau
+          kamu mau bantu di sawah, Pak akan ajari semuanya!
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: -1
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Pak Tani
+    dialogueText: Musim panen sudah tiba! Pak butuh tangan muda yang kuat untuk bantu
+      kumpulkan padi. Mau bantu Pak?
+    availableTimesOfDay: 0100000000000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 1
+    choices:
+    - choiceText: Saya akan bantu panen
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 1
+      flagsToAdd:
+      - pak_tani_harvest_accepted
+      flagsToRemove: []
+      targetDialogueIndex: -1
+      response:
+        speakerName: 
+        responseText: 
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: -1
+      questToStart: village_rice_harvest
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  greetings: []
+  farewells: []
+  defaultConversationBubble: {fileID: 0}
+  loopDialogue: 0
+  canBeInterrupted: 1
+  dialogueStartSound: {fileID: 0}
+  typewriterSound: {fileID: 0}

@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scheduleName: Joko Guide Schedule
   scheduleDescription: Village guide who leads travelers to Desa Krandon
-  spawnHour: 7
+  spawnHour: 5
   homeObjectTag: House
-  homeObjectName: GuideHut
+  homeObjectName: Entrance_joko
   homePosition: {x: -8, y: 0}
   scheduleEvents:
   - hour: 7
@@ -24,13 +24,13 @@ MonoBehaviour:
     targetObjectName: VillageEntrance
     targetPosition: {x: -10, y: 2}
     behavior: 0
-    shouldIdleWhenReached: 1
+    shouldIdleWhenReached: 0
     shouldDespawn: 0
     customDialogue:
     - Aku tahu jalan ke Desa Krandon, Kakak. Perjalanan dua hari melewati hutan.
   - hour: 12
-    targetObjectTag: Tavern
-    targetObjectName: VillageTavern
+    targetObjectTag: NPCTarget
+    targetObjectName: VillageMarket3
     targetPosition: {x: -6, y: 1}
     behavior: 0
     shouldIdleWhenReached: 1
@@ -38,15 +38,15 @@ MonoBehaviour:
     customDialogue: []
   - hour: 15
     targetObjectTag: House
-    targetObjectName: GuideHut
+    targetObjectName: Entrance_joko
     targetPosition: {x: -8, y: 0}
     behavior: 2
-    shouldIdleWhenReached: 1
+    shouldIdleWhenReached: 0
     shouldDespawn: 0
     customDialogue: []
   - hour: 18
-    targetObjectTag: Tavern
-    targetObjectName: VillageTavern
+    targetObjectTag: NPCTarget
+    targetObjectName: VillageMarket1
     targetPosition: {x: -6, y: 1}
     behavior: 4
     shouldIdleWhenReached: 1
@@ -54,7 +54,7 @@ MonoBehaviour:
     customDialogue: []
   - hour: 22
     targetObjectTag: House
-    targetObjectName: GuideHut
+    targetObjectName: Entrance_joko
     targetPosition: {x: -8, y: 0}
     behavior: 3
     shouldIdleWhenReached: 1

@@ -5,6 +5,7 @@ public class PlayerHealth : MonoBehaviour
     [Header("Config")]
     [SerializeField] private PlayerStats stats;
     PlayerAnimation playerAnimation;
+    public PlayerStats Stats => stats;
     
     private bool isDead = false;
 

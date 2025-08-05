@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
+  m_Name: RadenAyuSaraswati_ID
+  m_EditorClassIdentifier: 
+  npcName: Raden Ayu Saraswati
+  dialogueDescription: Ibu Menak Sopal, sosok ibu yang mendukung
+  dialogueEntries:
+  - speakerName: Raden Ayu Saraswati
+    dialogueText: Selamat pagi, anakku tersayang. Ibu bermimpi tentang air yang mengalir
+      tadi malam. Mungkin itu pertanda keberuntungan akan datang.
+    availableTimesOfDay: 0100000000000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Raden Ayu Saraswati
+    dialogueText: Ibu khawatir dengan proyek bendunganmu ini, nak. Roh-roh sungai
+      tidak boleh dianggap enteng.
+    availableTimesOfDay: 02000000
+    isRepeatable: 1
+    requiredFlags:
+    - dam_construction_started
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 1
+    choices:
+    - choiceText: Jangan khawatir, Ibu. Saya akan berhati-hati
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 1
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: -1
+      response:
+        speakerName: Raden Ayu Saraswati
+        responseText: Ayahmu dulu memiliki semangat yang sama. Ingatlah saja, keberanian
+          tanpa kebijaksanaan adalah kecerobohan.
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: -1
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+    - choiceText: Apakah Ibu melihat pertanda tentang sungai?
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 1
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: -1
+      response:
+        speakerName: Raden Ayu Saraswati
+        responseText: Burung-burung gelisah di dekat air. Dan pelita kelahiranmu
+          berkedip-kedip tadi malam - ada sesuatu yang bergerak di alam spiritual.
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: -1
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Raden Ayu Saraswati
+    dialogueText: Anakku telah menjadi pria sejati hari ini. Bukan karena dia memecahkan
+      masalah, tapi karena dia belajar menghadapi konsekuensi dari pilihannya.
+    availableTimesOfDay: 000000000200000003000000
+    isRepeatable: 1
+    requiredFlags:
+    - story_completed
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 1
+    pauseAfterDialogue: 0
+  greetings: []
+  farewells: []
+  defaultConversationBubble: {fileID: 0}
+  loopDialogue: 0
+  canBeInterrupted: 1
+  dialogueStartSound: {fileID: 0}
+  typewriterSound: {fileID: 0}

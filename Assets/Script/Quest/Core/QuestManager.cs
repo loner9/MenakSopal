@@ -51,19 +51,24 @@ public class QuestManager : MonoBehaviour
         
         InitializeQuestSystem();
     }
-    
+
     private void Start()
     {
         // Find required systems
         interactionSystem = FindObjectOfType<NPCInteractionSystem>();
         dayNightCycle = FindObjectOfType<DayNightCycle>();
-        
+
         if (interactionSystem == null && enableQuestSystem)
         {
             Debug.LogWarning("QuestManager: NPCInteractionSystem not found! Quest system may not work properly.");
         }
-        
+
         ValidateQuestData();
+        
+        FlagMonitorSystem.WatchFlagAdded("is_daytime", () =>
+        {
+            
+        });
     }
     
     private void InitializeQuestSystem()
@@ -199,6 +204,12 @@ public class QuestManager : MonoBehaviour
             {
                 AddGameFlag(flag);
             }
+        }
+        
+        // Auto-save on major quest completion
+        if (GameSaveManager.Instance != null)
+        {
+            GameSaveManager.Instance.AutoSave($"Quest_{quest.questID}_Complete");
         }
         
         // Give rewards

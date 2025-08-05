@@ -12,7 +12,7 @@ public class NPCInteractionSystem : MonoBehaviour
     public TextMeshProUGUI dialogueText;
     public Button continueButton;
     public Button endButton;
-    
+
     [Header("Choice System UI")]
     [Tooltip("Container for choice buttons")]
     public Transform choiceContainer;
@@ -62,7 +62,7 @@ public class NPCInteractionSystem : MonoBehaviour
     public AudioClip bookOpenSound;
     public AudioClip bookCloseSound;
     public AudioClip pageFlipSound;
-    
+
     [Header("Choice System Audio")]
     [Tooltip("Sound when hovering over choice buttons")]
     public AudioClip choiceHoverSound;
@@ -77,11 +77,12 @@ public class NPCInteractionSystem : MonoBehaviour
     private bool isInDialogue = false;
     private bool isTyping = false;
     private Transform player;
+    private GameObject playerGO;
     private List<string> gameFlags = new List<string>(); // Simple flag system
     private Sprite originalNPCBubble; // Store original bubble to restore later
     private Coroutine typingCoroutine;
     private DayNightCycle dayNightCycle;
-    
+
     // Choice system state
     private bool isShowingChoices = false;
     private List<Button> activeChoiceButtons = new List<Button>();
@@ -93,7 +94,14 @@ public class NPCInteractionSystem : MonoBehaviour
 
     public System.Action<NPC> OnDialogueStart;
     public System.Action<NPC> OnDialogueEnd;
-    
+
+    private static NPCInteractionSystem instance;
+
+    public static NPCInteractionSystem Instance
+    {
+        get => instance;
+    }
+
     /// <summary>
     /// Check if the system is currently in dialogue with a specific NPC
     /// </summary>
@@ -102,10 +110,29 @@ public class NPCInteractionSystem : MonoBehaviour
         return isInDialogue && currentNPC == npc;
     }
 
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            // Transfer any local flags to existing instance if needed
+            foreach (string flag in gameFlags)
+            {
+                if (!instance.gameFlags.Contains(flag))
+                    instance.gameFlags.Add(flag);
+            }
+            Destroy(gameObject);
+        }
+    }
+
     private void Start()
     {
         // Find required components
-        GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
+        playerGO = GameObject.FindGameObjectWithTag("Player");
         if (playerGO != null)
             player = playerGO.transform;
 
@@ -263,11 +290,24 @@ public class NPCInteractionSystem : MonoBehaviour
         currentDialogueIndex = 0;
         isInDialogue = true;
 
+        // Check and complete TalkToNPC objectives
+        CheckTalkToNPCObjectives(npc);
+
         // Pause game time during dialogue
         if (dayNightCycle != null)
         {
             dayNightCycle.PauseTime();
+            if (player != null)
+            {
+                Debug.Log("Disabling player movement");
+                PlayerMovements playerMovements = playerGO.GetComponent<PlayerMovements>();
+                if (playerMovements != null)
+                {
+                    playerMovements.enabled = false;
+                }
+            }
         }
+
 
         // Store original bubble state
         originalNPCBubble = GetCurrentNPCBubbleSprite();
@@ -427,7 +467,7 @@ public class NPCInteractionSystem : MonoBehaviour
             StopCoroutine(typingCoroutine);
             isTyping = false;
         }
-        
+
         // Clear choice system state
         ClearChoiceButtons();
         isShowingChoices = false;
@@ -491,6 +531,14 @@ public class NPCInteractionSystem : MonoBehaviour
         if (dayNightCycle != null)
         {
             dayNightCycle.ResumeTime();
+            if (player != null)
+            {
+                PlayerMovements playerMovements = playerGO.GetComponent<PlayerMovements>();
+                if (playerMovements != null)
+                {
+                    playerMovements.enabled = true;
+                }
+            }
         }
 
         // Restore original NPC bubble
@@ -519,7 +567,10 @@ public class NPCInteractionSystem : MonoBehaviour
         if (entry == null) return;
 
         currentDialogueEntry = entry;
-        
+
+        // Process dialogue entry consequences (flags, etc.)
+        ProcessDialogueEntryConsequences(entry);
+
         // Clear any existing choices
         ClearChoiceButtons();
         isShowingChoices = false;
@@ -572,7 +623,7 @@ public class NPCInteractionSystem : MonoBehaviour
         {
             yield return new WaitForSeconds(pauseAfter);
         }
-        
+
         // Check if this dialogue entry has choices
         if (currentDialogueEntry != null && currentDialogueEntry.hasChoices)
         {
@@ -592,7 +643,7 @@ public class NPCInteractionSystem : MonoBehaviour
             if (currentDialogueEntry != null)
             {
                 dialogueText.text = currentDialogueEntry.dialogueText;
-                
+
                 // If this dialogue has choices, show them after skipping
                 if (currentDialogueEntry.hasChoices && !isShowingChoices)
                 {
@@ -609,9 +660,9 @@ public class NPCInteractionSystem : MonoBehaviour
         TimeOfDay currentTime = dayNightCycle != null ? dayNightCycle.CurrentTimeOfDay : TimeOfDay.Day;
         DialogueEntry[] availableDialogues = currentDialogue.GetAvailableDialogues(currentDialogue.dialogueEntries, currentTime, gameFlags);
         bool hasMoreDialogue = currentDialogueIndex < availableDialogues.Length - 1;
-        
+
         // Hide buttons if showing choices or waiting for choice response
-        bool shouldHideButtons = isShowingChoices || waitingForChoiceResponse || 
+        bool shouldHideButtons = isShowingChoices || waitingForChoiceResponse ||
                                (currentDialogueEntry != null && currentDialogueEntry.hasChoices);
 
         if (continueButton != null)
@@ -719,50 +770,50 @@ public class NPCInteractionSystem : MonoBehaviour
             audioSource.PlayOneShot(clip);
         }
     }
-    
+
     #region Choice System Methods
-    
+
     private void ShowChoices(DialogueEntry entry)
     {
         if (entry == null || !entry.hasChoices || choiceContainer == null) return;
-        
+
         // ENSURE CHOICE CONTAINER IS ACTIVE
         choiceContainer.gameObject.SetActive(true);
-        
+
         TimeOfDay currentTime = dayNightCycle != null ? dayNightCycle.CurrentTimeOfDay : TimeOfDay.Day;
         DialogueChoice[] availableChoices = currentDialogue.GetAvailableChoices(entry, currentTime, gameFlags);
-        
+
         if (availableChoices.Length == 0)
         {
             // No choices available, continue normally
             Debug.Log("No available choices found for current conditions");
             return;
         }
-        
+
         isShowingChoices = true;
-        
+
         Debug.Log($"Showing {availableChoices.Length} choice buttons");
-        
+
         // Create choice buttons
         for (int i = 0; i < availableChoices.Length; i++)
         {
             CreateChoiceButton(availableChoices[i], i);
         }
-        
+
         // Update button visibility
         UpdateDialogueButtons();
     }
-    
+
     private void CreateChoiceButton(DialogueChoice choice, int choiceIndex)
     {
         if (choiceButtonPrefab == null || choiceContainer == null) return;
-        
+
         Button choiceButton = Instantiate(choiceButtonPrefab, choiceContainer);
         activeChoiceButtons.Add(choiceButton);
-        
+
         // ENSURE BUTTON IS ACTIVE
         choiceButton.gameObject.SetActive(true);
-        
+
         // Get image component with null check
         Image buttonImage = choiceButton.GetComponent<Image>();
         if (buttonImage != null)
@@ -772,23 +823,23 @@ public class NPCInteractionSystem : MonoBehaviour
             {
                 buttonImage.sprite = choiceButtonSprite;
             }
-            
+
             // ENSURE IMAGE IS VISIBLE - Set default color first
             buttonImage.color = Color.white;
-            
+
             // Apply choice color tint ONLY if it's not default and has proper alpha
             if (choice.choiceColor != Color.white && choice.choiceColor.a > 0.5f)
             {
                 buttonImage.color = choice.choiceColor;
             }
         }
-        
+
         // Set choice text
         TextMeshProUGUI buttonText = choiceButton.GetComponentInChildren<TextMeshProUGUI>();
         if (buttonText != null)
         {
             buttonText.text = choice.choiceText;
-            
+
             // Apply choice styling
             if (choice.isImportantChoice)
             {
@@ -796,47 +847,48 @@ public class NPCInteractionSystem : MonoBehaviour
                 buttonText.color = Color.yellow;
             }
         }
-        
+
         // ENSURE BUTTON IS INTERACTABLE
         choiceButton.interactable = true;
-        
+
         // Add click listener
         choiceButton.onClick.AddListener(() => OnChoiceSelected(choice));
-        
+
         // Add hover effects
         var eventTrigger = choiceButton.gameObject.GetComponent<UnityEngine.EventSystems.EventTrigger>();
         if (eventTrigger == null)
         {
             eventTrigger = choiceButton.gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
         }
-        
+
         var hoverEntry = new UnityEngine.EventSystems.EventTrigger.Entry();
         hoverEntry.eventID = UnityEngine.EventSystems.EventTriggerType.PointerEnter;
-        hoverEntry.callback.AddListener((data) => { 
+        hoverEntry.callback.AddListener((data) =>
+        {
             PlayAudioClip(choiceHoverSound);
         });
         eventTrigger.triggers.Add(hoverEntry);
-        
+
         // DEBUG: Log button creation
         Debug.Log($"Created choice button: '{choice.choiceText}' - Active: {choiceButton.gameObject.activeSelf}, Interactable: {choiceButton.interactable}");
     }
-    
+
     private void OnChoiceSelected(DialogueChoice choice)
     {
         if (choice == null) return;
-        
+
         // Play selection sound
         AudioClip soundToPlay = choice.isImportantChoice ? importantChoiceSound : choiceSelectSound;
         PlayAudioClip(soundToPlay);
-        
+
         // Clear choice buttons
         ClearChoiceButtons();
         isShowingChoices = false;
         waitingForChoiceResponse = true;
-        
+
         // Process choice consequences
         ProcessChoiceConsequences(choice);
-        
+
         // Handle choice response or navigation
         if (choice.response != null && !string.IsNullOrEmpty(choice.response.responseText))
         {
@@ -853,43 +905,43 @@ public class NPCInteractionSystem : MonoBehaviour
             EndDialogue();
         }
     }
-    
+
     private IEnumerator ShowChoiceResponse(DialogueChoice choice)
     {
         var response = choice.response;
-        
+
         // Update NPC bubble if specified
         if (response.conversationBubbleSprite != null)
         {
             currentNPC?.ShowConversationBubble(response.conversationBubbleSprite);
         }
-        
+
         // Update UI with response
         if (speakerNameText != null)
             speakerNameText.text = response.speakerName.ToUpper();
-        
+
         if (dialogueText != null)
         {
             if (typingCoroutine != null)
                 StopCoroutine(typingCoroutine);
-                
+
             typingCoroutine = StartCoroutine(TypewriterEffect(response.responseText, response.pauseAfterResponse));
         }
-        
+
         // Wait for typing to complete
         while (isTyping)
         {
             yield return null;
         }
-        
+
         // Wait for additional pause
         if (response.pauseAfterResponse > 0f)
         {
             yield return new WaitForSeconds(response.pauseAfterResponse);
         }
-        
+
         waitingForChoiceResponse = false;
-        
+
         // Handle navigation after response
         if (response.continueToNext)
         {
@@ -909,7 +961,7 @@ public class NPCInteractionSystem : MonoBehaviour
             EndDialogue();
         }
     }
-    
+
     private void NavigateToDialogueEntry(int index)
     {
         DialogueEntry targetEntry = currentDialogue.GetDialogueEntry(index);
@@ -923,7 +975,7 @@ public class NPCInteractionSystem : MonoBehaviour
             EndDialogue();
         }
     }
-    
+
     private void ProcessChoiceConsequences(DialogueChoice choice)
     {
         // Add flags
@@ -934,7 +986,7 @@ public class NPCInteractionSystem : MonoBehaviour
                 AddGameFlag(flag);
             }
         }
-        
+
         // Remove flags
         if (choice.flagsToRemove != null)
         {
@@ -943,16 +995,16 @@ public class NPCInteractionSystem : MonoBehaviour
                 RemoveGameFlag(flag);
             }
         }
-        
+
         // Process quest triggers
         ProcessQuestTriggers(choice);
     }
-    
+
     private void ProcessQuestTriggers(DialogueChoice choice)
     {
         QuestManager questManager = QuestManager.Instance;
         if (questManager == null) return;
-        
+
         // Start quest
         if (!string.IsNullOrEmpty(choice.questToStart))
         {
@@ -962,7 +1014,7 @@ public class NPCInteractionSystem : MonoBehaviour
                 Debug.Log($"Started quest '{choice.questToStart}' from dialogue choice");
             }
         }
-        
+
         // Complete quest
         if (!string.IsNullOrEmpty(choice.questToComplete))
         {
@@ -972,13 +1024,13 @@ public class NPCInteractionSystem : MonoBehaviour
                 Debug.Log($"Completed quest '{choice.questToComplete}' from dialogue choice");
             }
         }
-        
+
         // Complete objective
         if (!string.IsNullOrEmpty(choice.objectiveToComplete))
         {
-            string questID = !string.IsNullOrEmpty(choice.questForObjective) ? 
+            string questID = !string.IsNullOrEmpty(choice.questForObjective) ?
                 choice.questForObjective : choice.questToStart;
-                
+
             if (!string.IsNullOrEmpty(questID))
             {
                 bool completed = questManager.CompleteObjective(questID, choice.objectiveToComplete);
@@ -989,7 +1041,30 @@ public class NPCInteractionSystem : MonoBehaviour
             }
         }
     }
-    
+
+    private void ProcessDialogueEntryConsequences(DialogueEntry entry)
+    {
+        if (entry == null) return;
+
+        // Add flags
+        if (entry.flagsToAdd != null)
+        {
+            foreach (string flag in entry.flagsToAdd)
+            {
+                AddGameFlag(flag);
+            }
+        }
+
+        // Remove flags
+        if (entry.flagsToRemove != null)
+        {
+            foreach (string flag in entry.flagsToRemove)
+            {
+                RemoveGameFlag(flag);
+            }
+        }
+    }
+
     private void ClearChoiceButtons()
     {
         foreach (Button button in activeChoiceButtons)
@@ -1001,7 +1076,7 @@ public class NPCInteractionSystem : MonoBehaviour
         }
         activeChoiceButtons.Clear();
     }
-    
+
     #endregion
 
     // Public methods for external systems
@@ -1010,12 +1085,18 @@ public class NPCInteractionSystem : MonoBehaviour
         if (!gameFlags.Contains(flag))
         {
             gameFlags.Add(flag);
+            // Notify flag monitor system for automatic reactions
+            FlagMonitorSystem.NotifyFlagAdded(flag);
         }
     }
 
     public void RemoveGameFlag(string flag)
     {
-        gameFlags.Remove(flag);
+        if (gameFlags.Remove(flag))
+        {
+            // Notify flag monitor system for automatic reactions
+            FlagMonitorSystem.NotifyFlagRemoved(flag);
+        }
     }
 
     public bool HasGameFlag(string flag)
@@ -1051,6 +1132,140 @@ public class NPCInteractionSystem : MonoBehaviour
     {
         ShowConversationBubble(exclamationBubbleSprite);
     }
+
+    #region TalkToNPC Objective Integration
+
+    /// <summary>
+    /// Check and automatically complete TalkToNPC objectives when talking to an NPC
+    /// </summary>
+    /// <param name="npc">The NPC being talked to</param>
+    private void CheckTalkToNPCObjectives(NPC npc)
+    {
+        if (npc == null) return;
+
+        var questManager = QuestManager.Instance;
+        if (questManager == null) return;
+
+        // Get NPC ID from NPCManager spawn data
+        string npcID = GetNPCIDFromSpawnData(npc);
+        if (string.IsNullOrEmpty(npcID))
+        {
+            // Fallback to npcName if no ID found
+            npcID = npc.npcName?.ToLower().Replace(" ", "_");
+        }
+
+        if (string.IsNullOrEmpty(npcID)) return;
+
+        // Get all active quests using the correct property
+        var activeQuests = questManager.ActiveQuests;
+        if (activeQuests == null) return;
+
+        foreach (var quest in activeQuests)
+        {
+            if (quest.objectives == null) continue;
+
+            foreach (var objective in quest.objectives)
+            {
+                // Check if this is a TalkToNPC objective that matches this NPC
+                if (objective.type == ObjectiveType.TalkToNPC &&
+                    !objective.isCompleted &&
+                    !string.IsNullOrEmpty(objective.targetNPC))
+                {
+                    // Check if the target NPC matches (case-insensitive)
+                    if (string.Equals(objective.targetNPC, npcID, System.StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(objective.targetNPC, npc.npcName, System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Complete the objective
+                        bool completed = questManager.CompleteObjective(quest.questID, objective.objectiveID);
+
+                        if (completed)
+                        {
+                            Debug.Log($"[TalkToNPC] Auto-completed objective '{objective.description}' by talking to {npc.npcName} (ID: {npcID})");
+
+                            // Show feedback to player
+                            ShowObjectiveCompleteMessage(objective.description);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Get NPC ID from NPCManager spawn data
+    /// </summary>
+    /// <param name="npc">The NPC to get ID for</param>
+    /// <returns>NPC ID from spawn data, or null if not found</returns>
+    private string GetNPCIDFromSpawnData(NPC npc)
+    {
+        var npcManager = FindObjectOfType<NPCManager>();
+        if (npcManager == null) return null;
+
+        // Find matching spawn data based on prefab or name
+        foreach (var spawnData in npcManager.npcSpawnList)
+        {
+            if (spawnData.npcPrefab != null)
+            {
+                // Check if this NPC matches the prefab
+                if (npc.name.Contains(spawnData.npcPrefab.name) ||
+                    npc.npcName == spawnData.npcPrefab.GetComponent<NPC>()?.npcName)
+                {
+                    return spawnData.npcID;
+                }
+            }
+
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Show a message when an objective is completed through NPC interaction
+    /// </summary>
+    /// <param name="objectiveDescription">Description of the completed objective</param>
+    private void ShowObjectiveCompleteMessage(string objectiveDescription)
+    {
+        // You can customize this to integrate with your UI system
+        Debug.Log($"Objective Complete: {objectiveDescription}");
+
+        // If you have a UI notification system, integrate it here
+        // Example: NotificationManager.ShowMessage($"Objective Complete: {objectiveDescription}");
+    }
+
+    /// <summary>
+    /// Get all TalkToNPC objectives for a specific NPC (for debugging/UI purposes)
+    /// </summary>
+    /// <param name="npcID">ID of the NPC to check</param>
+    /// <returns>List of relevant objectives</returns>
+    public System.Collections.Generic.List<QuestObjective> GetTalkToNPCObjectivesForNPC(string npcID)
+    {
+        var objectives = new System.Collections.Generic.List<QuestObjective>();
+        var questManager = QuestManager.Instance;
+
+        if (questManager == null || string.IsNullOrEmpty(npcID)) return objectives;
+
+        var activeQuests = questManager.ActiveQuests;
+        if (activeQuests == null) return objectives;
+
+        foreach (var quest in activeQuests)
+        {
+            if (quest.objectives == null) continue;
+
+            foreach (var objective in quest.objectives)
+            {
+                if (objective.type == ObjectiveType.TalkToNPC &&
+                    !objective.isCompleted &&
+                    string.Equals(objective.targetNPC, npcID, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    objectives.Add(objective);
+                }
+            }
+        }
+
+        return objectives;
+    }
+
+    #endregion
 
     public void ShowHeartBubble()
     {

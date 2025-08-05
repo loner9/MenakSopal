@@ -46,8 +46,9 @@ public class NPCIdleState : NPCState
         idleTimer += Time.deltaTime;
         randomMovementTimer += Time.deltaTime;
         
-        // Check if we should move around the idle area (if enabled in schedule)
-        if (npc.scheduleData != null && npc.ShouldMoveAroundWhenIdle())
+        // Check if we should move around the idle area
+        // Only move around if both the global setting allows it AND the current schedule allows it
+        if (npc.scheduleData != null && npc.ShouldMoveAroundWhenIdle() && !npc.ShouldIdleWhenReached())
         {
             HandleRandomMovement();
         }

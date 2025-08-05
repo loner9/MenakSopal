@@ -131,8 +131,8 @@ public class QuestDataGenerator : EditorWindow
     {
         var quest = ScriptableObject.CreateInstance<QuestData>();
         quest.questID = "water_crisis_discovery";
-        quest.questTitle = "Voices of Thirst";
-        quest.questDescription = "Investigate reports of suffering villagers at the old well. The people are in desperate need of water, and their cries for help cannot be ignored.";
+        quest.questTitle = "Keresahan di Masa Kemarau";
+        quest.questDescription = "Selidiki laporan tentang penderitaan warga desa di sumur tua. Masyarakat sangat membutuhkan air, dan suara mereka meminta pertolongan tidak boleh diabaikan..";
         quest.questType = QuestType.Main;
         quest.questLevel = 1;
         
@@ -147,7 +147,7 @@ public class QuestDataGenerator : EditorWindow
             new QuestObjective
             {
                 objectiveID = "reach_village_well",
-                description = "Travel to the village well",
+                description = "Pergi ke sumur desa",
                 type = ObjectiveType.VisitLocation,
                 targetLocation = "VillageWell",
                 isOptional = false
@@ -155,16 +155,9 @@ public class QuestDataGenerator : EditorWindow
             new QuestObjective
             {
                 objectiveID = "talk_to_villagers",
-                description = "Speak with the suffering villagers",
+                description = "Bicaralah dengan para penduduk desa yang menderita.",
                 type = ObjectiveType.TalkToNPC,
                 targetNPC = "warga_haus_1",
-                isOptional = false
-            },
-            new QuestObjective
-            {
-                objectiveID = "witness_crisis",
-                description = "Understand the extent of the water shortage",
-                type = ObjectiveType.Custom,
                 isOptional = false
             }
         };
@@ -176,7 +169,7 @@ public class QuestDataGenerator : EditorWindow
             {
                 type = QuestRewardType.Flags,
                 flagsToAdd = new string[] { "committed_to_help" },
-                customRewardDescription = "Moral commitment to help the villagers"
+                customRewardDescription = "Komitmen moral untuk membantu warga desa"
             }
         };
         
@@ -191,8 +184,8 @@ public class QuestDataGenerator : EditorWindow
     {
         var quest = ScriptableObject.CreateInstance<QuestData>();
         quest.questID = "seek_guru_guidance";
-        quest.questTitle = "Wisdom of the Teacher";
-        quest.questDescription = "Consult Ki Ageng Sinawang about the village's water crisis. Your spiritual teacher's wisdom will guide you on the right path.";
+        quest.questTitle = "Kebijaksanaan Guru";
+        quest.questDescription = "Konsultasikan dengan Ki Ageng Sinawang mengenai krisis air di desa. Kebijaksanaan guru spiritualmu akan membimbing dirimu ke jalan yang benar.";
         quest.questType = QuestType.Main;
         quest.questLevel = 1;
         
@@ -204,7 +197,7 @@ public class QuestDataGenerator : EditorWindow
             new QuestObjective
             {
                 objectiveID = "consult_ki_ageng",
-                description = "Speak with Ki Ageng Sinawang about the crisis",
+                description = "Bicaralah dengan Ki Ageng Sinawang mengenai krisis tersebut.",
                 type = ObjectiveType.TalkToNPC,
                 targetNPC = "ki_ageng_sinawang",
                 isOptional = false
@@ -919,7 +912,7 @@ public class QuestDataGenerator : EditorWindow
         var quest = ScriptableObject.CreateInstance<QuestData>();
         quest.questID = "land_naming_ceremony";
         quest.questTitle = "Teranging Galih";
-        quest.questDescription = "Witness the naming of the land in honor of understanding.";
+        quest.questDescription = "Saksikan penamaan tanah ini untuk menghargai kebesaran hati Mbok randa.";
         quest.questType = QuestType.Main;
         quest.questLevel = 13;
         
@@ -931,7 +924,7 @@ public class QuestDataGenerator : EditorWindow
             new QuestObjective
             {
                 objectiveID = "attend_ceremony",
-                description = "Participate in the land naming ceremony",
+                description = "Berpatisipasi di balai padepokan",
                 type = ObjectiveType.VisitLocation,
                 targetLocation = "VillageCenter",
                 isOptional = false
@@ -939,9 +932,9 @@ public class QuestDataGenerator : EditorWindow
             new QuestObjective
             {
                 objectiveID = "hear_mbok_randa_declaration",
-                description = "Listen to Mbok Randa's pronouncement",
+                description = "Dengarkan deklarasi Ki Ageng Sinawang",
                 type = ObjectiveType.TalkToNPC,
-                targetNPC = "mbok_randa_krandon",
+                targetNPC = "ki_ageng_sinawang",
                 isOptional = false
             }
         };

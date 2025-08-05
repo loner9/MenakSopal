@@ -1,0 +1,145 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
+  m_Name: BuayaPutih_ID
+  m_EditorClassIdentifier: 
+  npcName: Buaya Putih
+  dialogueDescription: Penjaga mistis, mewakili tuntutan alam dan kerjasama akhir
+  dialogueEntries:
+  - speakerName: Buaya Putih
+    dialogueText: Siapa yang berani mengganggu air kuno tanpa meminta izin dari penjaganya?
+    availableTimesOfDay: 000000000200000003000000
+    isRepeatable: 1
+    requiredFlags:
+    - spiritual_vision_active
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 1
+    choices:
+    - choiceText: Saya Menak Sopal. Saya berusaha membantu rakyat saya
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 1
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: -1
+      response:
+        speakerName: Buaya Putih
+        responseText: Membantu? Dengan membangun bendungan di sungaiKU? Niatmu mungkin
+          murni, tapi caramu menunjukkan ketidakhormatan.
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: -1
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+    - choiceText: Roh agung, saya tidak bermaksud menyinggung
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 1
+      flagsToAdd:
+      - showed_respect_to_spirit
+      flagsToRemove: []
+      targetDialogueIndex: -1
+      response:
+        speakerName: Buaya Putih
+        responseText: Penghormatan ditunjukkan melalui tindakan, bukan kata-kata.
+          Kamu membangun tanpa bertanya, mengambil tanpa memberi.
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: -1
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 1
+    pauseAfterDialogue: 0
+  - speakerName: Buaya Putih
+    dialogueText: Jika kamu ingin bendunganmu berdiri, kamu harus menawarkan persembahan
+      yang layak. Bawakan aku kepala gajah putih, dan aku akan menghentikan kerusakanku.
+    availableTimesOfDay: 000000000200000003000000
+    isRepeatable: 1
+    requiredFlags:
+    - first_contact_complete
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 1
+    choices:
+    - choiceText: Saya akan mencari gajah putih ini
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 1
+      flagsToAdd:
+      - accepted_spirit_demand
+      flagsToRemove: []
+      targetDialogueIndex: -1
+      response:
+        speakerName: 
+        responseText: 
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: -1
+      questToStart: find_white_elephant
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 1
+    pauseAfterDialogue: 0
+  - speakerName: Buaya Putih
+    dialogueText: Persembahan itu dapat diterima. Bendunganmu akan berdiri, dan air
+      akan mengalir sesuai kebutuhan. Keseimbangan telah dipulihkan.
+    availableTimesOfDay: 000000000200000003000000
+    isRepeatable: 1
+    requiredFlags:
+    - elephant_sacrifice_complete
+    flagsToAdd:
+    - spirit_pact_complete
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 1
+    pauseAfterDialogue: 0
+  - speakerName: Buaya Putih
+    dialogueText: Anak muda yang menghormati cara-cara kuno, aku tidak akan membiarkanmu
+      tenggelam. Hatimu yang murni telah mendapat perlindunganku.
+    availableTimesOfDay: 000000000200000003000000
+    isRepeatable: 1
+    requiredFlags:
+    - drowning_in_river
+    flagsToAdd:
+    - rescued_by_crocodile
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 1
+    pauseAfterDialogue: 0
+  greetings: []
+  farewells: []
+  defaultConversationBubble: {fileID: 0}
+  loopDialogue: 0
+  canBeInterrupted: 1
+  dialogueStartSound: {fileID: 0}
+  typewriterSound: {fileID: 0}

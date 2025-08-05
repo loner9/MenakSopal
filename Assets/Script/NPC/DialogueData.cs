@@ -78,6 +78,12 @@ public class DialogueEntry
     public bool isRepeatable = true;
     public string[] requiredFlags; // For quest system integration
     
+    [Header("Consequences")]
+    [Tooltip("Flags to add when this dialogue is shown")]
+    public string[] flagsToAdd;
+    [Tooltip("Flags to remove when this dialogue is shown")]
+    public string[] flagsToRemove;
+    
     [Header("Choice System")]
     [Tooltip("Does this dialogue entry present choices to the player?")]
     public bool hasChoices = false;

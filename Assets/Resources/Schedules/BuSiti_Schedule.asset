@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scheduleName: BuSiti Schedule
   scheduleDescription: Villager affected by water crisis
-  spawnHour: 6
+  spawnHour: 5
   homeObjectTag: House
-  homeObjectName: VillageHouse2
+  homeObjectName: Entrance_siti
   homePosition: {x: -3, y: -8}
   scheduleEvents:
   - hour: 6
-    targetObjectTag: Well
-    targetObjectName: VillageWell
+    targetObjectTag: NPCTarget
+    targetObjectName: VillageWell1
     targetPosition: {x: 0, y: -6}
     behavior: 4
     shouldIdleWhenReached: 1
@@ -30,15 +30,15 @@ MonoBehaviour:
     - Tolong, anak muda! Anak-anakku sudah berhari-hari tidak mendapat air bersih!
   - hour: 9
     targetObjectTag: House
-    targetObjectName: VillageHouse2
+    targetObjectName: Entrance_siti
     targetPosition: {x: -3, y: -8}
     behavior: 0
     shouldIdleWhenReached: 1
     shouldDespawn: 0
     customDialogue: []
   - hour: 15
-    targetObjectTag: Well
-    targetObjectName: VillageWell
+    targetObjectTag: NPCTarget
+    targetObjectName: VillageWell1
     targetPosition: {x: 0, y: -6}
     behavior: 4
     shouldIdleWhenReached: 1
@@ -46,15 +46,15 @@ MonoBehaviour:
     customDialogue: []
   - hour: 18
     targetObjectTag: House
-    targetObjectName: VillageHouse2
+    targetObjectName: Entrance_siti
     targetPosition: {x: -3, y: -8}
     behavior: 0
-    shouldIdleWhenReached: 1
+    shouldIdleWhenReached: 0
     shouldDespawn: 0
     customDialogue: []
   - hour: 20
     targetObjectTag: House
-    targetObjectName: VillageHouse2
+    targetObjectName: Entrance_siti
     targetPosition: {x: -3, y: -8}
     behavior: 3
     shouldIdleWhenReached: 1

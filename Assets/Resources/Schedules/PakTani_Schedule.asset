@@ -16,61 +16,53 @@ MonoBehaviour:
   scheduleDescription: Farmer 1 - Agricultural work schedule
   spawnHour: 5
   homeObjectTag: House
-  homeObjectName: FarmHouse1
+  homeObjectName: Entrance_petani
   homePosition: {x: 8, y: -5}
   scheduleEvents:
-  - hour: 5
-    targetObjectTag: Farm
-    targetObjectName: RiceField1
+  - hour: 6
+    targetObjectTag: NPCTarget
+    targetObjectName: WorkField1
     targetPosition: {x: 10, y: -8}
     behavior: 2
     shouldIdleWhenReached: 1
     shouldDespawn: 0
     customDialogue:
     - Padi tumbuh dengan baik setelah bendungan selesai. Air mengalir lancar sekarang.
-  - hour: 8
-    targetObjectTag: NPCTarget
-    targetObjectName: IrrigationChannel
-    targetPosition: {x: 6, y: -6}
-    behavior: 2
-    shouldIdleWhenReached: 1
-    shouldDespawn: 0
-    customDialogue: []
   - hour: 12
     targetObjectTag: House
-    targetObjectName: FarmHouse1
+    targetObjectName: Entrance_petani
     targetPosition: {x: 8, y: -5}
     behavior: 0
     shouldIdleWhenReached: 1
     shouldDespawn: 0
     customDialogue: []
   - hour: 14
-    targetObjectTag: Farm
-    targetObjectName: RiceField1
+    targetObjectTag: NPCTarget
+    targetObjectName: WorkField1
     targetPosition: {x: 10, y: -8}
     behavior: 2
     shouldIdleWhenReached: 1
     shouldDespawn: 0
     customDialogue: []
   - hour: 17
-    targetObjectTag: Market
-    targetObjectName: VillageMarket
+    targetObjectTag: NPCTarget
+    targetObjectName: VillageMarket1
     targetPosition: {x: 0, y: -4}
     behavior: 4
-    shouldIdleWhenReached: 1
+    shouldIdleWhenReached: 0
     shouldDespawn: 0
     customDialogue: []
   - hour: 19
     targetObjectTag: House
-    targetObjectName: FarmHouse1
+    targetObjectName: Entrance_petani
     targetPosition: {x: 8, y: -5}
     behavior: 0
-    shouldIdleWhenReached: 1
+    shouldIdleWhenReached: 0
     shouldDespawn: 0
     customDialogue: []
   - hour: 21
     targetObjectTag: House
-    targetObjectName: FarmHouse1
+    targetObjectName: Entrance_petani
     targetPosition: {x: 8, y: -5}
     behavior: 3
     shouldIdleWhenReached: 1

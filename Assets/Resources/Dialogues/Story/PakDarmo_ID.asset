@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
+  m_Name: PakDarmo_ID
+  m_EditorClassIdentifier: 
+  npcName: Pak Darmo
+  dialogueDescription: Warga yang menderita krisis air
+  dialogueEntries:
+  - speakerName: Pak Darmo
+    dialogueText: Tolong, anak muda! sudah berhari-hari kami tidak mendapat air bersih!
+      Sumur ini hampir kering!
+    availableTimesOfDay: 000000000200000003000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd:
+    - water_crisis_discovered
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 1
+    pauseAfterDialogue: 0
+  greetings: []
+  farewells: []
+  defaultConversationBubble: {fileID: 0}
+  loopDialogue: 0
+  canBeInterrupted: 1
+  dialogueStartSound: {fileID: 0}
+  typewriterSound: {fileID: 0}

@@ -19,7 +19,7 @@ MonoBehaviour:
   homeObjectName: KrandonElderHouse
   homePosition: {x: 10, y: 5}
   scheduleEvents:
-  - hour: 6
+  - hour: 7
     targetObjectTag: NPCTarget
     targetObjectName: ElephantEnclosure
     targetPosition: {x: 8, y: 3}

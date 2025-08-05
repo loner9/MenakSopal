@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scheduleName: CandraStudent Schedule
   scheduleDescription: Padepokan student 3 daily routine
-  spawnHour: 6
+  spawnHour: 5
   homeObjectTag: House
   homeObjectName: Entrance_Barak
   homePosition: {x: 0, y: -3}
   scheduleEvents:
   - hour: 6
     targetObjectTag: NPCTarget
-    targetObjectName: TrainingGrounds
+    targetObjectName: TrainingGrounds3
     targetPosition: {x: -1, y: 1}
     behavior: 2
     shouldIdleWhenReached: 1
@@ -29,7 +29,7 @@ MonoBehaviour:
     customDialogue: []
   - hour: 8
     targetObjectTag: NPCTarget
-    targetObjectName: StudyHall
+    targetObjectName: TrainingGrounds1
     targetPosition: {x: 1, y: 2}
     behavior: 0
     shouldIdleWhenReached: 1
@@ -37,7 +37,7 @@ MonoBehaviour:
     customDialogue: []
   - hour: 12
     targetObjectTag: NPCTarget
-    targetObjectName: PadepokanDiningHall
+    targetObjectName: TrainingGrounds3
     targetPosition: {x: 0, y: -2}
     behavior: 0
     shouldIdleWhenReached: 1
@@ -45,7 +45,7 @@ MonoBehaviour:
     customDialogue: []
   - hour: 14
     targetObjectTag: NPCTarget
-    targetObjectName: WorkArea
+    targetObjectName: WorkAreaPadepokan3
     targetPosition: {x: 2, y: 0}
     behavior: 2
     shouldIdleWhenReached: 1
@@ -53,15 +53,15 @@ MonoBehaviour:
     customDialogue: []
   - hour: 17
     targetObjectTag: NPCTarget
-    targetObjectName: PadepokanCourtyard
+    targetObjectName: PadepokanCourtyard3
     targetPosition: {x: 0, y: -1}
     behavior: 4
     shouldIdleWhenReached: 1
     shouldDespawn: 0
     customDialogue: []
   - hour: 20
-    targetObjectTag: House
-    targetObjectName: StudentDormitory3
+    targetObjectTag: NPCTarget
+    targetObjectName: ChillPlace3
     targetPosition: {x: 0, y: -3}
     behavior: 0
     shouldIdleWhenReached: 1

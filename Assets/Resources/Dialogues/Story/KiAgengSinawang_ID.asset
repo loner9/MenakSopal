@@ -22,6 +22,9 @@ MonoBehaviour:
     isRepeatable: 1
     requiredFlags:
     - story_started
+    flagsToAdd: []
+    flagsToRemove:
+    - game_started
     hasChoices: 0
     choices: []
     conversationBubbleSprite: {fileID: 0}
@@ -34,6 +37,8 @@ MonoBehaviour:
     isRepeatable: 1
     requiredFlags:
     - water_crisis_discovered
+    flagsToAdd: []
+    flagsToRemove: []
     hasChoices: 1
     choices:
     - choiceText: Guru, saya ingin membantu mengatasi kekurangan air ini
@@ -84,130 +89,6 @@ MonoBehaviour:
     isImportantDialogue: 0
     pauseAfterDialogue: 0
   - speakerName: Ki Ageng Sinawang
-    dialogueText: Ajaklah beberapa murid kita untuk membantumu. Tangan-tangan muda
-      yang bekerja bersama dapat memindahkan gunung - atau dalam hal ini, membangun
-      sungai.
-    availableTimesOfDay: 0100000000000000
-    isRepeatable: 1
-    requiredFlags:
-    - dam_construction_started
-    hasChoices: 1
-    choices:
-    - choiceText: Terima kasih, Guru. Kebijaksanaan Guru membimbing saya
-      requiredFlags: []
-      availableTimesOfDay: 
-      isRepeatable: 1
-      flagsToAdd:
-      - students_permission_granted
-      flagsToRemove: []
-      targetDialogueIndex: -1
-      response:
-        speakerName: 
-        responseText: 
-        conversationBubbleSprite: {fileID: 0}
-        pauseAfterResponse: 0
-        continueToNext: 1
-        nextDialogueIndex: -1
-      questToStart: gather_construction_helpers
-      questToComplete: 
-      objectiveToComplete: 
-      questForObjective: 
-      isImportantChoice: 0
-      choiceColor: {r: 1, g: 1, b: 1, a: 1}
-    conversationBubbleSprite: {fileID: 0}
-    isImportantDialogue: 0
-    pauseAfterDialogue: 0
-  - speakerName: Ki Ageng Sinawang
-    dialogueText: Aku merasakan kekuatan spiritual gelap sedang bekerja. Roh-roh
-      sungai itu kuno dan angkuh. Mereka tidak suka dengan pembangunan yang tidak
-      diundang.
-    availableTimesOfDay: 0200000003000000
-    isRepeatable: 1
-    requiredFlags:
-    - dam_repeatedly_destroyed
-    hasChoices: 1
-    choices:
-    - choiceText: Bagaimana aku bisa menenangkan roh-roh sungai?
-      requiredFlags: []
-      availableTimesOfDay: 
-      isRepeatable: 1
-      flagsToAdd: []
-      flagsToRemove: []
-      targetDialogueIndex: -1
-      response:
-        speakerName: Ki Ageng Sinawang
-        responseText: Roh-roh sering menuntut persembahan atau penghormatan. Carilah
-          komunikasi dulu, nak. Kekerasan haruslah jalan terakhir.
-        conversationBubbleSprite: {fileID: 0}
-        pauseAfterResponse: 0
-        continueToNext: 1
-        nextDialogueIndex: -1
-      questToStart: 
-      questToComplete: 
-      objectiveToComplete: 
-      questForObjective: 
-      isImportantChoice: 0
-      choiceColor: {r: 1, g: 1, b: 1, a: 1}
-    - choiceText: Apakah ada bahaya dalam menghadapi roh-roh ini?
-      requiredFlags: []
-      availableTimesOfDay: 
-      isRepeatable: 1
-      flagsToAdd: []
-      flagsToRemove: []
-      targetDialogueIndex: -1
-      response:
-        speakerName: Ki Ageng Sinawang
-        responseText: Semua urusan spiritual mengandung risiko. Tapi niat sucimu
-          mungkin akan melindungimu. Percayalah pada latihanmu.
-        conversationBubbleSprite: {fileID: 0}
-        pauseAfterResponse: 0
-        continueToNext: 1
-        nextDialogueIndex: -1
-      questToStart: 
-      questToComplete: 
-      objectiveToComplete: 
-      questForObjective: 
-      isImportantChoice: 0
-      choiceColor: {r: 1, g: 1, b: 1, a: 1}
-    conversationBubbleSprite: {fileID: 0}
-    isImportantDialogue: 0
-    pauseAfterDialogue: 0
-  - speakerName: Ki Ageng Sinawang
-    dialogueText: Mbok Randa Krandon berhati baik, meski temperamental. Dia akan
-      mengerti jika kamu menjelaskan kebaikan yang lebih besar yang dilayani tindakanmu.
-    availableTimesOfDay: 010000000000000002000000
-    isRepeatable: 1
-    requiredFlags:
-    - white_elephant_taken
-    - mbok_randa_angry
-    hasChoices: 1
-    choices:
-    - choiceText: Dia sangat marah padaku. Bagaimana aku bisa memperbaiki ini?
-      requiredFlags: []
-      availableTimesOfDay: 
-      isRepeatable: 1
-      flagsToAdd:
-      - guru_advice_reconciliation
-      flagsToRemove: []
-      targetDialogueIndex: -1
-      response:
-        speakerName: Ki Ageng Sinawang
-        responseText: Kebenaran yang diucapkan dengan penyesalan tulus dapat menyembuhkan
-          banyak luka. Tunjukkan padanya kebaikan yang datang dari tindakanmu.
-        conversationBubbleSprite: {fileID: 0}
-        pauseAfterResponse: 0
-        continueToNext: 1
-        nextDialogueIndex: -1
-      questToStart: 
-      questToComplete: 
-      objectiveToComplete: 
-      questForObjective: 
-      isImportantChoice: 0
-      choiceColor: {r: 1, g: 1, b: 1, a: 1}
-    conversationBubbleSprite: {fileID: 0}
-    isImportantDialogue: 0
-    pauseAfterDialogue: 0
-  - speakerName: Ki Ageng Sinawang
     dialogueText: Kamu telah belajar bahwa bahkan niat mulia pun dapat menyebabkan
       rasa sakit. Tapi dari rasa sakit ini, pemahaman tumbuh. Desa kini memiliki
       air, dan kamu memiliki kebijaksanaan.
@@ -216,37 +97,17 @@ MonoBehaviour:
     requiredFlags:
     - story_completed
     - reconciliation_complete
+    flagsToAdd: []
+    flagsToRemove: []
     hasChoices: 0
     choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 1
     pauseAfterDialogue: 0
-  greetings:
-  - speakerName: Ki Ageng Sinawang
-    dialogueText: Gunung mengajarkan kita kesabaran, sungai mengajarkan kita ketekunan.
-      Pelajaran apa yang akan kamu pilih untuk dipelajari hari ini?
-    availableTimesOfDay: 01000000
-    isRepeatable: 1
-    requiredFlags: []
-    hasChoices: 0
-    choices: []
-    conversationBubbleSprite: {fileID: 0}
-    isImportantDialogue: 0
-    pauseAfterDialogue: 0
-  - speakerName: Ki Ageng Sinawang
-    dialogueText: Duduklah dengan tenang di bawah pohon beringin tua saat matahari
-      terbenam. Dengarkan apa yang dikatakan angin tentang hari esok.
-    availableTimesOfDay: 00000000
-    isRepeatable: 1
-    requiredFlags: []
-    hasChoices: 0
-    choices: []
-    conversationBubbleSprite: {fileID: 0}
-    isImportantDialogue: 0
-    pauseAfterDialogue: 0
+  greetings: []
   farewells: []
   defaultConversationBubble: {fileID: 0}
-  loopDialogue: 1
+  loopDialogue: 0
   canBeInterrupted: 1
   dialogueStartSound: {fileID: 0}
   typewriterSound: {fileID: 0}

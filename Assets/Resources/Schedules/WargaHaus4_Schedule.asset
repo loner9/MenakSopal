@@ -16,12 +16,12 @@ MonoBehaviour:
   scheduleDescription: Villager affected by water crisis
   spawnHour: 6
   homeObjectTag: House
-  homeObjectName: VillageHouse4
+  homeObjectName: Entrance_haus2
   homePosition: {x: 1, y: -8}
   scheduleEvents:
-  - hour: 6
-    targetObjectTag: Well
-    targetObjectName: VillageWell
+  - hour: 7
+    targetObjectTag: NPCTarget
+    targetObjectName: VillageWell5
     targetPosition: {x: 0, y: -6}
     behavior: 4
     shouldIdleWhenReached: 1
@@ -30,15 +30,15 @@ MonoBehaviour:
     - Tolong, anak muda! Anak-anakku sudah berhari-hari tidak mendapat air bersih!
   - hour: 9
     targetObjectTag: House
-    targetObjectName: VillageHouse4
+    targetObjectName: Entrance_haus2
     targetPosition: {x: 1, y: -8}
     behavior: 0
     shouldIdleWhenReached: 1
     shouldDespawn: 0
     customDialogue: []
   - hour: 15
-    targetObjectTag: Well
-    targetObjectName: VillageWell
+    targetObjectTag: NPCTarget
+    targetObjectName: VillageWell4
     targetPosition: {x: 0, y: -6}
     behavior: 4
     shouldIdleWhenReached: 1
@@ -46,7 +46,7 @@ MonoBehaviour:
     customDialogue: []
   - hour: 18
     targetObjectTag: House
-    targetObjectName: VillageHouse4
+    targetObjectName: Entrance_haus2
     targetPosition: {x: 1, y: -8}
     behavior: 0
     shouldIdleWhenReached: 1
@@ -54,7 +54,7 @@ MonoBehaviour:
     customDialogue: []
   - hour: 20
     targetObjectTag: House
-    targetObjectName: VillageHouse4
+    targetObjectName: Entrance_haus2
     targetPosition: {x: 1, y: -8}
     behavior: 3
     shouldIdleWhenReached: 1

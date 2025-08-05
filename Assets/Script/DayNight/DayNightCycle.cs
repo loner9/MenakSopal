@@ -589,4 +589,18 @@ public class DayNightCycle : MonoBehaviour
         currentTimeOfDay = data.currentTimeOfDay;
         ApplyGradualLighting();
     }
+    
+    /// <summary>
+    /// Reset time to morning of day 1 (for new game)
+    /// </summary>
+    public void ResetToDay()
+    {
+        currentTime = 4f; 
+        currentTimeOfDay = TimeOfDay.Day;
+        ResumeTime();
+        
+        ApplyGradualLighting();
+        
+        Debug.Log("[DayNightCycle] Reset to morning of new day");
+    }
 }

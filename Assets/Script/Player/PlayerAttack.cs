@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerAttack : MonoBehaviour
 {
@@ -44,15 +45,21 @@ public class PlayerAttack : MonoBehaviour
         HandleAttackInput();
         UpdateCooldownTimer();
     }
+    
+    private bool CanAttack()
+    {
+        string currentScene = SceneManager.GetActiveScene().name;
+        return currentScene != "SceneAwal";
+    }
 
     private void HandleAttackInput()
     {
         if (player.Stats.health <= 0) return;
-
+        if (!CanAttack()) return;
         if (playerActions.Movement.Attack.WasPressedThisFrame() && !isAttacking && cooldownTimer <= 0f)
-        {
-            PerformAttack();
-        }
+            {
+                PerformAttack();
+            }
     }
 
     private void UpdateCooldownTimer()

@@ -119,7 +119,7 @@ public class StoryFlagManager : EditorWindow
         Debug.Log($"✅ Story Flag Definition generated: {flagDefinitionPath}");
     }
     
-    private StoryFlagDefinition[] CreateAllStoryFlags()
+    public StoryFlagDefinition[] CreateAllStoryFlags()
     {
         var flags = new List<StoryFlagDefinition>();
         

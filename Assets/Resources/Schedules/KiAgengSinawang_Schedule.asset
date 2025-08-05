@@ -19,7 +19,7 @@ MonoBehaviour:
   homeObjectName: Entrance_kiAgeng
   homePosition: {x: 0, y: 0}
   scheduleEvents:
-  - hour: 5
+  - hour: 6
     targetObjectTag: NPCTarget
     targetObjectName: MeditationGarden
     targetPosition: {x: -5, y: 2}
@@ -33,7 +33,7 @@ MonoBehaviour:
     targetObjectName: TeachingPavilion
     targetPosition: {x: 0, y: 0}
     behavior: 4
-    shouldIdleWhenReached: 1
+    shouldIdleWhenReached: 0
     shouldDespawn: 0
     customDialogue: []
   - hour: 12
@@ -49,7 +49,7 @@ MonoBehaviour:
     targetObjectName: TeachingPavilion
     targetPosition: {x: 0, y: 0}
     behavior: 4
-    shouldIdleWhenReached: 1
+    shouldIdleWhenReached: 0
     shouldDespawn: 0
     customDialogue: []
   - hour: 18
