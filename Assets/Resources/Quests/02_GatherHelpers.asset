@@ -20,7 +20,7 @@ MonoBehaviour:
   questLevel: 2
   questIcon: {fileID: 0}
   requiredFlags:
-  - students_permission_granted
+  - committed_to_help
   flagsOnStart: []
   flagsOnComplete:
   - construction_team_assembled

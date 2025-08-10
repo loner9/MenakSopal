@@ -27,20 +27,6 @@ MonoBehaviour:
   - initial_dam_built
   flagsOnFail: []
   objectives:
-  - objectiveID: gather_students
-    description: Recruit padepokan students to help
-    type: 0
-    isCompleted: 0
-    isOptional: 0
-    requiredFlags: []
-    flagToSetOnComplete: students_recruited
-    targetNPC: murid_padepokan_1
-    targetItem: 
-    targetAmount: 1
-    currentAmount: 0
-    targetLocation: 
-    timeDelay: 0
-    showProgress: 1
   - objectiveID: collect_materials
     description: Gather stones and wood for construction
     type: 1
