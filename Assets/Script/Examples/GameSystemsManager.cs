@@ -160,6 +160,11 @@ public class GameSystemsManager : MonoBehaviour
             }
         });
 
+        //trigger event dam rusak. setelah objective kelar dan "initial_dam_success" flag ini muncul
+        //ada animasi fade yang nunjukin bangunan selesai. MC ngobrol sama murid2 padepokan, sehabis itu selesai, animasi fade
+        //pindah tempat, dan cerita berikutnya dimulai, enggak lama dari fade ini akan ada suara ledakan
+        //mc bergegas ke dam.  
+
         // Chapter 4: Mystical Encounters
         FlagMonitorSystem.WatchFlagAdded("spiritual_vision_active", () =>
         {
