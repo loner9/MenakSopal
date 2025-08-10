@@ -83,6 +83,12 @@ public class GameSystemsManager : MonoBehaviour
         {
             LogReaction("Story Started - Starting Chapter 1");
             
+            // Show player reflection monologue using MonologueData asset
+            // if (MonologueSystem.Instance != null)
+            // {
+            //     MonologueSystem.Instance.ShowMonologue("PlayerReflections");
+            // }
+            
             // Auto-start related quest if QuestManager exists
             if (questManager != null)
             {
@@ -108,6 +114,15 @@ public class GameSystemsManager : MonoBehaviour
             LogReaction("Water crisis discovered - Starting Chapter 2");
             PlayMusic(urgentMusic);
             ShowUrgentMessage("Ber-Interaksilah dan Cari tahu apa yang terjadi di desa!");
+
+            // Show player monologue about discovering the crisis
+            // if (MonologueSystem.Instance != null)
+            // {
+            //     MonologueSystem.Instance.ShowSimpleMonologue(
+            //         "Ya Tuhan... rakyat di sini benar-benar menderita kekurangan air. Aku tidak bisa membiarkan hal ini terus terjadi. Harus ada yang kulakukan untuk membantu mereka.",
+            //         new string[] { "water_crisis_witnessed" }
+            //     );
+            // }
 
             // Auto-start related quest if QuestManager exists
             if (questManager != null)
@@ -166,7 +181,14 @@ public class GameSystemsManager : MonoBehaviour
         //mc bergegas ke dam.
         FlagMonitorSystem.WatchFlagAdded("initial_dam_success", () =>
         {
-
+            // Show player monologue about dam completion
+            // if (MonologueSystem.Instance != null)
+            // {
+            //     MonologueSystem.Instance.ShowSimpleMonologue(
+            //         "Akhirnya... Bendungan ini selesai. Air akan mengalir kembali ke desa dan rakyat tidak akan kehausan lagi. Tapi... mengapa hatiku merasa gelisah? Apakah ini benar-benar solusi yang tepat?",
+            //         new string[] { "dam_completion_reflection" }
+            //     );
+            // }
         }); 
 
         // Chapter 4: Mystical Encounters
@@ -210,6 +232,17 @@ public class GameSystemsManager : MonoBehaviour
             LogReaction("Reconciliation achieved - Story resolution begins");
             PlayMusic(victoryMusic);
             ShowMessage("Perdamain telah tercapai melalui pemahaman satu sama lain!");
+
+            // Show reflective monologue about reconciliation
+            // if (MonologueSystem.Instance != null)
+            // {
+            //     MonologueSystem.Instance.ShowSimpleMonologue(
+            //         "Akhirnya kami menemukan jalan damai... Mbok Randa dan aku telah saling memahami. Terkadang konflik lahir dari ketidakpahaman, bukan dari kebencian. Inilah pelajaran berharga yang akan kuingat sepanjang hidup.",
+            //         new string[] { "wisdom_gained", "story_reflection" },
+            //         "reflect_on_journey", // objective to complete
+            //         "story_completion"    // quest that contains the objective
+            //     );
+            // }
 
             if (questManager != null)
             {
