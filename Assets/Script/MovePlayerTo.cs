@@ -1,42 +1,31 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MovePlayerTo : MonoBehaviour
 {
     GameObject player;
     Transform defaultTarget;
-    [SerializeField] Transform target;
+    Transform target;
     [SerializeField] float desiredTime = 0f;
+    public static MovePlayerTo Instance { get; private set; }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        GameObject[] targets = GameObject.FindGameObjectsWithTag("House");
-        foreach (GameObject p in targets)
-        {
-            if (p.name == "MCHome")
-            {
-                target = p.transform;
-                break;
-            }
-        }
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        foreach (GameObject p in players)
-        {
-            if (p.name == "PlayerCok")
-            {
-                player = p;
-                break;
-            }
-        }
 
-        if (player != null)
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
         {
-            Debug.Log("Player found: " + player.name);
+            Destroy(this);
         }
         else
         {
-            Debug.LogError("PlayerCok not found among Player-tagged objects!");
+            Instance = this;
         }
+    }
+
+    void Start()
+    {
+
     }
 
     // Update is called once per frame
@@ -67,6 +56,11 @@ public class MovePlayerTo : MonoBehaviour
                 playerMovements.enabled = true;
             }
         }
+    }
+
+    public void voidDelayCall(string name)
+    {
+        Invoke(name, 2.5f);
     }
 
     public void MovePlayer()
@@ -115,9 +109,77 @@ public class MovePlayerTo : MonoBehaviour
         }
     }
 
+    public void MovePlayerDestination(String destination)
+    {
+        GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("MCLocation");
+        Transform currentTarget = null;
+        foreach (GameObject p in gameObjects)
+        {
+            if (p.name == destination)
+            {
+                currentTarget = p.transform;
+                break;
+            }
+        }
+
+        if (currentTarget != null)
+        {
+            try
+            {
+                // Stop player movement first
+                stopPlayerMovement();
+
+                // Get player components that might interfere
+                Rigidbody2D playerRb = player.GetComponent<Rigidbody2D>();
+            
+                player.transform.position = currentTarget.position;
+                Debug.Log("Player moved to " + player.transform.position);
+
+                // Wait a frame then resume movement
+                StartCoroutine(ResumeMovementAfterDelay());
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                throw;
+            }
+        }
+    }
     private System.Collections.IEnumerator ResumeMovementAfterDelay()
     {
         yield return new WaitForEndOfFrame();
         resumePlayerMovement();
+    }
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneChanged;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneChanged;
+    }
+
+    private void OnSceneChanged(Scene arg0, LoadSceneMode arg1)
+    {
+        GameObject[] targets = GameObject.FindGameObjectsWithTag("House");
+        foreach (GameObject p in targets)
+        {
+            if (p.name == "MCHome")
+            {
+                target = p.transform;
+                break;
+            }
+        }
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject p in players)
+        {
+            if (p.name == "Player")
+            {
+                player = p;
+                break;
+            }
+        }
     }
 }

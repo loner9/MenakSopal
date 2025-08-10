@@ -31,7 +31,35 @@ public class GameSystemsManager : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("[GameSystems] GameSystemsManager starting up...");
+        
+        // Try to find QuestManager if not assigned
+        if (questManager == null)
+        {
+            questManager = QuestManager.Instance;
+            Debug.Log($"[GameSystems] QuestManager found: {questManager != null}");
+        }
+        
         SetupFlagReactions();
+        
+        // Check if story_started flag exists and trigger water crisis discovery
+        var interactionSystem = FindObjectOfType<NPCInteractionSystem>();
+        if (interactionSystem != null)
+        {
+            var flags = interactionSystem.GetGameFlags();
+            Debug.Log($"[GameSystems] Current flags: {string.Join(", ", flags)}");
+            
+            // If story_started flag exists but water_crisis_discovered doesn't, add it
+            if (flags.Contains("story_started") && !flags.Contains("water_crisis_discovered"))
+            {
+                Debug.Log("[GameSystems] story_started flag found but water_crisis_discovered missing. Adding it now.");
+                interactionSystem.AddGameFlag("water_crisis_discovered");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[GameSystems] NPCInteractionSystem not found!");
+        }
     }
 
     void LateUpdate()
@@ -51,17 +79,61 @@ public class GameSystemsManager : MonoBehaviour
     {
         // ===== STORY PROGRESSION REACTIONS =====
 
+        FlagMonitorSystem.WatchFlagAdded("story_started", () =>
+        {
+            LogReaction("Story Started - Starting Chapter 1");
+            
+            // Auto-start related quest if QuestManager exists
+            if (questManager != null)
+            {
+                bool started = questManager.StartQuest("water_crisis_discovery");
+                Debug.Log($"[GameSystems] Quest start result: {started}");
+            }
+            else
+            {
+                Debug.LogWarning("[GameSystems] QuestManager is null - cannot start quest");
+            }
+        });
+
+        FlagMonitorSystem.WatchFlagAdded("first_contact", () =>
+        {
+            LogReaction("Story Started - Starting Chapter 1");
+            PlayMusic(urgentMusic);
+            // ShowUrgentMessage("Ber-Interaksilah dan Cari tahu apa yang terjadi di desa!");
+        });
+
         // Chapter 1: Water Crisis Discovery
         FlagMonitorSystem.WatchFlagAdded("water_crisis_discovered", () =>
         {
             LogReaction("Water crisis discovered - Starting Chapter 2");
             PlayMusic(urgentMusic);
-            ShowUrgentMessage("Desa membutuhkan bantuanmu untuk mengatasi krisis air!");
+            ShowUrgentMessage("Ber-Interaksilah dan Cari tahu apa yang terjadi di desa!");
 
             // Auto-start related quest if QuestManager exists
             if (questManager != null)
             {
-                questManager.StartQuest("01_WaterCrisisDiscovery");
+                Debug.Log("[GameSystems] Attempting to start quest water_crisis_discovery");
+                bool started = questManager.StartQuest("water_crisis_discovery");
+                Debug.Log($"[GameSystems] Quest start result: {started}");
+            }
+            else
+            {
+                Debug.LogWarning("[GameSystems] QuestManager is null - cannot start quest");
+            }
+        });
+
+        FlagMonitorSystem.WatchFlagAdded("committed_to_help", () =>
+        {
+            ShowUrgentMessage("Temuilah Ki Ageng dan mintalah petunjuk darinya!");
+            if (questManager != null)
+            {
+                Debug.Log("[GameSystems] Attempting to start quest seek_guru_guidance");
+                bool started = questManager.StartQuest("seek_guru_guidance");
+                Debug.Log($"[GameSystems] Quest start result: {started}");
+            }
+            else
+            {
+                Debug.LogWarning("[GameSystems] QuestManager is null - cannot start quest");
             }
         });
 
@@ -72,19 +144,19 @@ public class GameSystemsManager : MonoBehaviour
 
             if (questManager != null)
             {
-                questManager.StartQuest("03_DamConstruction");
+                questManager.StartQuest("gather_construction_helpers");
             }
         });
 
         // Chapter 3: Helper Recruitment
-        FlagMonitorSystem.WatchFlagAdded("student_helpers_recruited", () =>
+        FlagMonitorSystem.WatchFlagAdded("helpers_recruited", () =>
         {
             LogReaction("Students recruited - Construction can begin");
             ShowMessage("Murid murid Padepokan siap untuk membantumu!");
 
             if (questManager != null)
             {
-                questManager.CompleteObjective("03_DamConstruction", "gather_helpers");
+                questManager.StartQuest("dam_construction_project");
             }
         });
 
@@ -96,7 +168,7 @@ public class GameSystemsManager : MonoBehaviour
 
             if (questManager != null)
             {
-                questManager.StartQuest("05_SpiritualVision");
+                questManager.StartQuest("spiritual_vision_encounter");
             }
         });
 
@@ -107,8 +179,8 @@ public class GameSystemsManager : MonoBehaviour
 
             if (questManager != null)
             {
-                questManager.CompleteQuest("05_SpiritualVision");
-                questManager.StartQuest("07_CompleteSacrifice");
+                questManager.CompleteQuest("spiritual_vision_encounter");
+                questManager.StartQuest("complete_spirit_sacrifice");
             }
         });
 
@@ -120,7 +192,7 @@ public class GameSystemsManager : MonoBehaviour
 
             if (questManager != null)
             {
-                questManager.StartQuest("08_FaceMbokRandaAnger");
+                questManager.StartQuest("face_mbok_randa_anger");
             }
         });
 
@@ -132,8 +204,8 @@ public class GameSystemsManager : MonoBehaviour
 
             if (questManager != null)
             {
-                questManager.CompleteQuest("08_AchieveReconciliation");
-                questManager.StartQuest("09_StoryCompletion");
+                questManager.CompleteQuest("achieve_reconciliation");
+                questManager.StartQuest("story_completion");
             }
         });
 
@@ -146,7 +218,7 @@ public class GameSystemsManager : MonoBehaviour
 
             if (questManager != null)
             {
-                questManager.CompleteQuest("09_StoryCompletion");
+                questManager.CompleteQuest("story_completion");
             }
 
             // Trigger story completion sequence
@@ -273,7 +345,7 @@ public class GameSystemsManager : MonoBehaviour
         yield return new WaitForSeconds(5f);
         
         // Show completion message
-        ShowMessage("Terima kasih telah menyelesaikan perjalanan Sinawang!");
+        ShowMessage("Terima kasih telah menyelesaikan perjalanan Menak Sopal!");
         
         // Wait a bit more for player to read
         yield return new WaitForSeconds(3f);

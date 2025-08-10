@@ -41,9 +41,9 @@ MonoBehaviour:
         pauseAfterResponse: 0
         continueToNext: 1
         nextDialogueIndex: -1
-      questToStart: gather_construction_materials
+      questToStart: 
       questToComplete: 
-      objectiveToComplete: 
+      objectiveToComplete: gather_students
       questForObjective: 
       isImportantChoice: 0
       choiceColor: {r: 1, g: 1, b: 1, a: 1}

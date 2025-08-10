@@ -22,9 +22,10 @@ MonoBehaviour:
     isRepeatable: 1
     requiredFlags:
     - story_started
-    flagsToAdd: []
-    flagsToRemove:
-    - game_started
+    flagsToAdd:
+    - story_started
+    - first_contact
+    flagsToRemove: []
     hasChoices: 0
     choices: []
     conversationBubbleSprite: {fileID: 0}
@@ -59,27 +60,6 @@ MonoBehaviour:
         continueToNext: 1
         nextDialogueIndex: -1
       questToStart: dam_construction_project
-      questToComplete: 
-      objectiveToComplete: 
-      questForObjective: 
-      isImportantChoice: 0
-      choiceColor: {r: 1, g: 1, b: 1, a: 1}
-    - choiceText: Menurut Guru, apa yang harus saya lakukan?
-      requiredFlags: []
-      availableTimesOfDay: 
-      isRepeatable: 1
-      flagsToAdd: []
-      flagsToRemove: []
-      targetDialogueIndex: -1
-      response:
-        speakerName: Ki Ageng Sinawang
-        responseText: Jawabannya ada dalam dirimu, nak. Dengarkan hatimu, tapi tempa
-          dengan kebijaksanaan. Jalan seorang penolong tidak pernah sederhana.
-        conversationBubbleSprite: {fileID: 0}
-        pauseAfterResponse: 0
-        continueToNext: 1
-        nextDialogueIndex: -1
-      questToStart: 
       questToComplete: 
       objectiveToComplete: 
       questForObjective: 

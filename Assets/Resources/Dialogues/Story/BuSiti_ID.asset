@@ -17,7 +17,7 @@ MonoBehaviour:
   dialogueEntries:
   - speakerName: Bu Siti
     dialogueText: Krisis air ini benar benar membuat kami kesusahan nak
-    availableTimesOfDay: 0000000002000000
+    availableTimesOfDay: 010000000000000002000000
     isRepeatable: 1
     requiredFlags:
     - water_crisis_discovered

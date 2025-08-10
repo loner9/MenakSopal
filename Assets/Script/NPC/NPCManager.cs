@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 [System.Serializable]
 public class ConditionalSchedule
@@ -100,6 +101,9 @@ public class NPCManager : MonoBehaviour
         // Spawn initial NPCs
         SpawnInitialNPCs();
 
+        // Set up flag monitoring for schedule updates
+        SetupFlagMonitoring();
+
         // Initialize tag cache for better performance
         NPCScheduleData.ClearAllCaches();
     }
@@ -114,20 +118,102 @@ public class NPCManager : MonoBehaviour
         CancelInvoke();
     }
 
+    private void SetupFlagMonitoring()
+    {
+        // Monitor flag changes that might affect NPC schedules
+        // We'll watch for any flag additions and update schedules accordingly
+        FlagMonitorSystem.WatchFlagAdded("game_started", () =>
+        {
+            Debug.Log("[NPCManager] game_started flag detected - updating NPC schedules");
+            UpdateNPCSchedules();
+        });
+
+
+        FlagMonitorSystem.WatchFlagAdded("story_started", () =>
+        {
+            Debug.Log("[NPCManager] story_started flag detected - updating NPC schedules");
+            UpdateNPCSchedules();
+        });
+
+        FlagMonitorSystem.WatchFlagAdded("first_contact", () =>
+        {
+            try
+            {
+                MovePlayerTo.Instance.MovePlayer();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("[NPCManager] Error while moving player: " + e.Message);
+            }
+        });
+
+        // You can add more specific flag watchers here as needed
+        // For now, we'll also do a general update on any major story flags
+        FlagMonitorSystem.WatchFlagAdded("water_crisis_discovered", () =>
+        {
+            Debug.Log("[NPCManager] water_crisis_discovered flag detected - updating NPC schedules");
+            UpdateNPCSchedules();
+        });
+    }
+
     #endregion
 
     #region NPC Spawning
 
     private void SpawnInitialNPCs()
     {
+        Debug.Log($"[NPC MANAGER DEBUG] ===== INITIAL NPC SPAWN PROCESS =====");
+        Debug.Log($"[NPC MANAGER DEBUG] Total NPCs in spawn list: {npcSpawnList.Count}");
+
+        int attemptedSpawns = 0;
+        int successfulSpawns = 0;
+
         foreach (var spawnData in npcSpawnList)
         {
-            if (spawnData.spawnAtStart && ShouldSpawnNPC(spawnData))
+            Debug.Log($"[NPC MANAGER DEBUG] Processing {spawnData.npcID}:");
+            Debug.Log($"  - spawnAtStart: {spawnData.spawnAtStart}");
+            Debug.Log($"  - npcPrefab: {(spawnData.npcPrefab != null ? "ASSIGNED" : "NULL")}");
+            Debug.Log($"  - scheduleData: {(spawnData.scheduleData != null ? "ASSIGNED" : "NULL")}");
+
+            if (spawnData.spawnAtStart)
             {
-                SpawnNPC(spawnData);
+                attemptedSpawns++;
+                Debug.Log($"[NPC MANAGER DEBUG] Attempting to spawn {spawnData.npcID}...");
+
+                bool shouldSpawn = ShouldSpawnNPC(spawnData);
+                Debug.Log($"[NPC MANAGER DEBUG] Should spawn {spawnData.npcID}: {shouldSpawn}");
+
+                if (shouldSpawn)
+                {
+                    NPC spawned = SpawnNPC(spawnData);
+                    if (spawned != null)
+                    {
+                        successfulSpawns++;
+                        Debug.Log($"[NPC MANAGER DEBUG] ✅ Successfully spawned {spawnData.npcID}");
+                    }
+                    else
+                    {
+                        Debug.LogError($"[NPC MANAGER DEBUG] ❌ Failed to spawn {spawnData.npcID} - SpawnNPC returned null");
+                    }
+                }
+                else
+                {
+                    Debug.Log($"[NPC MANAGER DEBUG] ⏭️ Skipping {spawnData.npcID} - spawn conditions not met");
+                }
             }
+            else
+            {
+                Debug.Log($"[NPC MANAGER DEBUG] ⏭️ Skipping {spawnData.npcID} - spawnAtStart is false");
+            }
+
+            Debug.Log($"[NPC MANAGER DEBUG] --------------------------------");
         }
 
+        Debug.Log($"[NPC MANAGER DEBUG] ===== SPAWN SUMMARY =====");
+        Debug.Log($"[NPC MANAGER DEBUG] Total NPCs in list: {npcSpawnList.Count}");
+        Debug.Log($"[NPC MANAGER DEBUG] Attempted spawns: {attemptedSpawns}");
+        Debug.Log($"[NPC MANAGER DEBUG] Successful spawns: {successfulSpawns}");
+        Debug.Log($"[NPC MANAGER DEBUG] Currently spawned NPCs: {spawnedNPCs.Count}");
         Debug.Log($"NPCManager: Spawned {spawnedNPCs.Count} NPCs at start");
     }
 
@@ -187,20 +273,127 @@ public class NPCManager : MonoBehaviour
         // Set unique ID
         npc.gameObject.name = $"NPC_{spawnData.npcID}";
 
-        // Apply schedule data
-        if (spawnData.scheduleData != null)
+        // Apply schedule data - check conditional schedules first
+        NPCScheduleData scheduleToUse = GetApplicableSchedule(spawnData);
+
+        if (scheduleToUse != null)
         {
-            npc.scheduleData = spawnData.scheduleData;
+            npc.scheduleData = scheduleToUse;
+            Debug.Log($"[NPCManager] Applied schedule for {spawnData.npcID}: {scheduleToUse.name}");
         }
         else
         {
-            Debug.LogError($"NPCManager: No schedule data for NPC '{npc.npcName}'");
+            Debug.LogError($"NPCManager: No applicable schedule data for NPC '{spawnData.npcID}'");
         }
 
         // Force schedule update based on current time
         if (dayNightCycle != null)
         {
             npc.currentTimeOfDay = dayNightCycle.CurrentTimeOfDay;
+        }
+    }
+
+    private NPCScheduleData GetApplicableSchedule(NPCSpawnData spawnData)
+    {
+        // Get current game flags
+        List<string> gameFlags = GetGameFlags();
+
+        // Check conditional schedules first (higher priority)
+        if (spawnData.conditionalSchedules != null && spawnData.conditionalSchedules.Length > 0)
+        {
+            // Sort by priority (highest first)
+            var sortedSchedules = spawnData.conditionalSchedules
+                .Where(cs => cs.scheduleData != null)
+                .OrderByDescending(cs => cs.priority)
+                .ToArray();
+
+            foreach (var conditionalSchedule in sortedSchedules)
+            {
+                bool meetsRequirements = true;
+
+                // Check required flags
+                if (conditionalSchedule.requiredFlags != null && conditionalSchedule.requiredFlags.Length > 0)
+                {
+                    foreach (string requiredFlag in conditionalSchedule.requiredFlags)
+                    {
+                        if (!gameFlags.Contains(requiredFlag))
+                        {
+                            meetsRequirements = false;
+                            Debug.Log($"[NPCManager] Conditional schedule '{conditionalSchedule.description}' for {spawnData.npcID}: missing required flag '{requiredFlag}'");
+                            break;
+                        }
+                    }
+                }
+
+                // Check exclude flags (if any of these exist, don't use this schedule)
+                if (meetsRequirements && conditionalSchedule.excludeFlags != null && conditionalSchedule.excludeFlags.Length > 0)
+                {
+                    foreach (string excludeFlag in conditionalSchedule.excludeFlags)
+                    {
+                        if (gameFlags.Contains(excludeFlag))
+                        {
+                            meetsRequirements = false;
+                            Debug.Log($"[NPCManager] Conditional schedule '{conditionalSchedule.description}' for {spawnData.npcID}: excluded by flag '{excludeFlag}'");
+                            break;
+                        }
+                    }
+                }
+
+                if (meetsRequirements)
+                {
+                    Debug.Log($"[NPCManager] Using conditional schedule '{conditionalSchedule.description}' (priority {conditionalSchedule.priority}) for {spawnData.npcID}");
+                    return conditionalSchedule.scheduleData;
+                }
+            }
+        }
+
+        // Fall back to default schedule
+        if (spawnData.scheduleData != null)
+        {
+            Debug.Log($"[NPCManager] Using default schedule for {spawnData.npcID}");
+            return spawnData.scheduleData;
+        }
+
+        Debug.LogWarning($"[NPCManager] No applicable schedule found for {spawnData.npcID}");
+        return null;
+    }
+
+    private List<string> GetGameFlags()
+    {
+        var interactionSystem = FindObjectOfType<NPCInteractionSystem>();
+        if (interactionSystem != null)
+            return interactionSystem.GetGameFlags();
+
+        Debug.LogWarning("[NPCManager] NPCInteractionSystem not found - using empty flags list");
+        return new List<string>();
+    }
+
+    public void UpdateNPCSchedules()
+    {
+        Debug.Log("[NPCManager] Updating all NPC schedules based on current flags");
+
+        foreach (var npc in spawnedNPCs)
+        {
+            if (npc == null) continue;
+
+            // Find the spawn data for this NPC
+            var spawnData = npcSpawnList.FirstOrDefault(sd => sd.npcID == npc.name.Replace("NPC_", ""));
+            if (spawnData != null)
+            {
+                NPCScheduleData newSchedule = GetApplicableSchedule(spawnData);
+
+                if (newSchedule != null && newSchedule != npc.scheduleData)
+                {
+                    Debug.Log($"[NPCManager] Switching {spawnData.npcID} from '{npc.scheduleData?.name}' to '{newSchedule.name}'");
+                    npc.scheduleData = newSchedule;
+
+                    // Force schedule update based on current time
+                    if (dayNightCycle != null)
+                    {
+                        npc.currentTimeOfDay = dayNightCycle.CurrentTimeOfDay;
+                    }
+                }
+            }
         }
     }
 
@@ -311,24 +504,31 @@ public class NPCManager : MonoBehaviour
 
     private void ProcessNPCScheduleForHour(NPCSpawnData spawnData, int hour)
     {
-        if (spawnData.scheduleData == null) 
+        if (spawnData.scheduleData == null)
         {
             Debug.Log($"[NPC MANAGER DEBUG] No schedule data for {spawnData.npcID}");
             return;
         }
 
         Debug.Log($"[NPC MANAGER DEBUG] Processing schedule for {spawnData.npcID} at hour {hour}");
-        
+
         NPC existingNPC = GetNPCByID(spawnData.npcID);
         bool shouldBeActive = ShouldNPCBeActiveAtHour(spawnData.scheduleData, hour);
-        
+
         Debug.Log($"[NPC MANAGER DEBUG] {spawnData.npcID} - spawnHour: {spawnData.scheduleData.spawnHour}, currentHour: {hour}, shouldBeActive: {shouldBeActive}, existingNPC: {(existingNPC != null ? "EXISTS" : "NULL")}");
 
         if (shouldBeActive && existingNPC == null)
         {
-            Debug.Log($"[NPC MANAGER DEBUG] Spawning {spawnData.npcID} for hour {hour}");
-            // Spawn NPC for this hour
-            SpawnNPC(spawnData);
+            // Check spawn conditions before spawning during runtime
+            if (ShouldSpawnNPC(spawnData))
+            {
+                Debug.Log($"[NPC MANAGER DEBUG] Spawning {spawnData.npcID} for hour {hour}");
+                SpawnNPC(spawnData);
+            }
+            else
+            {
+                Debug.Log($"[NPC MANAGER DEBUG] Cannot spawn {spawnData.npcID} - required flags not met");
+            }
         }
         else if (!shouldBeActive && existingNPC != null)
         {
@@ -336,7 +536,7 @@ public class NPCManager : MonoBehaviour
             // Send NPC home and despawn
             Vector2 homePos = spawnData.scheduleData.GetHomePosition();
             Debug.Log($"[NPC MANAGER DEBUG] Home position for {spawnData.npcID}: {homePos}");
-            
+
             var homeCommand = new ScheduleCommand
             {
                 commandType = ScheduleCommandType.GoHome,
@@ -355,11 +555,11 @@ public class NPCManager : MonoBehaviour
             {
                 Debug.Log($"[NPC MANAGER DEBUG] ✅ Found schedule event for {spawnData.npcID} at hour {hour}");
                 Debug.Log($"[NPC MANAGER DEBUG] Event details - Tag: '{scheduleEvent.targetObjectTag}', Name: '{scheduleEvent.targetObjectName}', Behavior: {scheduleEvent.behavior}");
-                
+
                 // This hour has a specific event - execute it
                 ScheduleCommandType commandType = scheduleEvent.shouldDespawn ?
                     ScheduleCommandType.GoHome : ScheduleCommandType.Move;
-                
+
                 Vector2 targetPos = scheduleEvent.GetTargetPosition();
                 Debug.Log($"[NPC MANAGER DEBUG] Target position for {spawnData.npcID}: {targetPos}");
 
@@ -387,7 +587,7 @@ public class NPCManager : MonoBehaviour
     private void ExecutePendingScheduleCommands()
     {
         Debug.Log($"[NPC MANAGER DEBUG] Executing {pendingCommands.Count} pending schedule commands");
-        
+
         foreach (var kvp in pendingCommands)
         {
             NPC npc = kvp.Key;
@@ -427,7 +627,7 @@ public class NPCManager : MonoBehaviour
         {
             return false;
         }
-        
+
         // Check if there's a despawn event that has already occurred
         if (scheduleData.scheduleEvents != null)
         {
@@ -443,14 +643,14 @@ public class NPCManager : MonoBehaviour
                     }
                 }
             }
-            
+
             // If the most recent event is a despawn event, NPC should not be active
             if (mostRecentEvent != null && mostRecentEvent.shouldDespawn)
             {
                 return false;
             }
         }
-        
+
         return true;
     }
 
@@ -459,16 +659,36 @@ public class NPCManager : MonoBehaviour
         // Check required flags (quest integration)
         if (spawnData.requiredFlags != null && spawnData.requiredFlags.Length > 0)
         {
+            Debug.Log($"[NPC MANAGER DEBUG] Checking spawn conditions for {spawnData.npcID}:");
+            Debug.Log($"  Required flags: [{string.Join(", ", spawnData.requiredFlags)}]");
+
             if (interactionSystem != null)
             {
+                var currentFlags = interactionSystem.GetGameFlags();
+                Debug.Log($"  Current flags: [{string.Join(", ", currentFlags)}]");
+
                 foreach (string flag in spawnData.requiredFlags)
                 {
-                    if (!interactionSystem.HasGameFlag(flag))
+                    bool hasFlag = interactionSystem.HasGameFlag(flag);
+                    Debug.Log($"  Checking flag '{flag}': {(hasFlag ? "✓ PRESENT" : "✗ MISSING")}");
+
+                    if (!hasFlag)
                     {
+                        Debug.Log($"[NPC MANAGER DEBUG] {spawnData.npcID} spawn BLOCKED - missing required flag: {flag}");
                         return false;
                     }
                 }
+                Debug.Log($"[NPC MANAGER DEBUG] {spawnData.npcID} spawn ALLOWED - all required flags present");
             }
+            else
+            {
+                Debug.LogWarning($"[NPC MANAGER DEBUG] NPCInteractionSystem not found - cannot check flags for {spawnData.npcID}");
+                return false; // Can't check flags, don't spawn
+            }
+        }
+        else
+        {
+            Debug.Log($"[NPC MANAGER DEBUG] {spawnData.npcID} has no required flags - spawn allowed");
         }
 
         return true;

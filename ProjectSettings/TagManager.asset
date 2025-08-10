@@ -12,6 +12,7 @@ TagManager:
   - NPC
   - House
   - NPCTarget
+  - ManualTrigger
   layers:
   - Default
   - TransparentFX

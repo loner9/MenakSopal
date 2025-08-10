@@ -74,13 +74,22 @@ public class NPCAppearance : MonoBehaviour
     {
         if (animator == null) return;
         
-        if (direction.x > 0.01f)
-            animator.SetInteger("orientation", 6); // Right
-        else if (direction.x < -0.01f)
-            animator.SetInteger("orientation", 2); // Left
-        else if (direction.y > 0.01f)
-            animator.SetInteger("orientation", 0); // Up
-        else if (direction.y < -0.01f)
-            animator.SetInteger("orientation", 4); // Down
+        // Choose direction based on which axis has larger absolute value
+        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+        {
+            // Horizontal movement is stronger - face left or right
+            if (direction.x > 0.01f)
+                animator.SetInteger("orientation", 6); // Right
+            else if (direction.x < -0.01f)
+                animator.SetInteger("orientation", 2); // Left
+        }
+        else
+        {
+            // Vertical movement is stronger or equal - face up or down
+            if (direction.y > 0.01f)
+                animator.SetInteger("orientation", 0); // Up
+            else if (direction.y < -0.01f)
+                animator.SetInteger("orientation", 4); // Down
+        }
     }
 }

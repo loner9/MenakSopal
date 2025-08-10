@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scheduleName: PakDarmo Schedule
   scheduleDescription: Villager affected by water crisis
-  spawnHour: 5
+  spawnHour: 6
   homeObjectTag: House
   homeObjectName: Entrance_siti
   homePosition: {x: -5, y: -8}
   scheduleEvents:
-  - hour: 6
+  - hour: 7
     targetObjectTag: NPCTarget
     targetObjectName: VillageWell3
     targetPosition: {x: 0, y: -6}
@@ -51,14 +51,6 @@ MonoBehaviour:
     behavior: 0
     shouldIdleWhenReached: 0
     shouldDespawn: 0
-    customDialogue: []
-  - hour: 20
-    targetObjectTag: House
-    targetObjectName: Entrance_siti
-    targetPosition: {x: -5, y: -8}
-    behavior: 3
-    shouldIdleWhenReached: 1
-    shouldDespawn: 1
     customDialogue: []
   moveAroundWhenIdle: 0
   idleMovementRange: 2

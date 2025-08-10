@@ -43,7 +43,7 @@ MonoBehaviour:
   - objectiveID: talk_to_villagers
     description: Speak with the suffering villagers
     type: 0
-    isCompleted: 0
+    isCompleted: 1
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
@@ -56,12 +56,12 @@ MonoBehaviour:
     showProgress: 1
   - objectiveID: witness_crisis
     description: Understand the extent of the water shortage
-    type: 6
+    type: 0
     isCompleted: 0
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
-    targetNPC: 
+    targetNPC: bu_siti
     targetItem: 
     targetAmount: 1
     currentAmount: 0
