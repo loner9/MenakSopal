@@ -7,12 +7,14 @@ using System.Linq;
 
 public class MonologueSystem : MonoBehaviour
 {
-    [Header("UI Components")]
+    [Header("UI Components - Uses same UI as dialogue system")]
+    [Tooltip("Leave empty to auto-find NPCInteractionSystem's dialogue UI")]
     public GameObject monologuePanel;
     public GameObject monologueCanvas;
     public TextMeshProUGUI monologueText;
     public Image backgroundImage;
     public Button continueButton;
+    public Button endButton;
     
     [Header("Audio")]
     public AudioSource audioSource;
@@ -110,6 +112,21 @@ public class MonologueSystem : MonoBehaviour
             playerMovements = playerGO.GetComponent<PlayerMovements>();
         }
         
+        // Auto-find UI components from NPCInteractionSystem if not assigned
+        if (npcInteractionSystem != null)
+        {
+            if (monologuePanel == null)
+                monologuePanel = npcInteractionSystem.dialoguePanel;
+            if (monologueCanvas == null)
+                monologueCanvas = npcInteractionSystem.dialogueCanvas;
+            if (monologueText == null)
+                monologueText = npcInteractionSystem.dialogueText;
+            if (continueButton == null)
+                continueButton = npcInteractionSystem.continueButton;
+            if (endButton == null)
+                endButton = npcInteractionSystem.endButton;
+        }
+        
         // Validate UI components
         if (monologuePanel == null)
         {
@@ -141,6 +158,13 @@ public class MonologueSystem : MonoBehaviour
                 {
                     EndMonologue();
                 }
+            });
+        }
+        
+        if (endButton != null)
+        {
+            endButton.onClick.AddListener(() => {
+                EndMonologue();
             });
         }
     }
@@ -275,6 +299,25 @@ public class MonologueSystem : MonoBehaviour
         {
             backgroundImage.color = monologue.backgroundColor;
         }
+        
+        // Setup buttons for monologue mode
+        // Hide continue button during typing, show end button
+        UpdateMonologueButtons(true); // isTyping = true initially
+    }
+    
+    private void UpdateMonologueButtons(bool isTyping)
+    {
+        if (continueButton != null)
+        {
+            // Show continue button only when not typing (to skip or continue)
+            continueButton.gameObject.SetActive(!isTyping);
+        }
+        
+        if (endButton != null)
+        {
+            // Always show end button during monologue
+            endButton.gameObject.SetActive(true);
+        }
     }
     
     private IEnumerator TypewriterEffect(string text)
@@ -296,6 +339,7 @@ public class MonologueSystem : MonoBehaviour
         }
         
         isTyping = false;
+        UpdateMonologueButtons(false); // Update buttons when typing is finished
     }
     
     private void SkipTypewriter()
@@ -307,6 +351,7 @@ public class MonologueSystem : MonoBehaviour
         
         isTyping = false;
         monologueText.text = currentMonologue.monologueText;
+        UpdateMonologueButtons(false); // Update buttons when typewriter is skipped
     }
     
     public void EndMonologue()
@@ -316,11 +361,17 @@ public class MonologueSystem : MonoBehaviour
         // Process queued consequences
         ProcessQueuedConsequences();
         
-        // Hide UI
+        // Hide UI and restore button states
         if (monologuePanel != null)
             monologuePanel.SetActive(false);
         if (monologueCanvas != null)
             monologueCanvas.SetActive(false);
+        
+        // Hide monologue buttons (they'll be restored when dialogue system is used next)
+        if (continueButton != null)
+            continueButton.gameObject.SetActive(false);
+        if (endButton != null)
+            endButton.gameObject.SetActive(false);
         
         // Resume game time and enable player movement
         if (dayNightCycle != null)
