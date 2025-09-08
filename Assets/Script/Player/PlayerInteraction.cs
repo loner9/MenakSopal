@@ -32,7 +32,7 @@ public class PlayerInteraction : MonoBehaviour
     
     void Update()
     {
-        if (dialogueSystem != null && !dialogueSystem.IsInDialogue)
+        if (dialogueSystem != null && !dialogueSystem.IsInDialogue())
         {
             CheckForNearbyNPCs();
             

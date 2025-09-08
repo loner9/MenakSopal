@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questID: negotiate_elephant_loan
   questTitle: Convincing the Owner
-  questDescription: Persuade Mbok Randa to lend her precious white elephant.
+  questDescription: Berbicaralah dengan mbok Randa agar bisa meminjamkan gajah putihnya
   questType: 0
   questLevel: 6
   questIcon: {fileID: 0}
@@ -27,7 +27,7 @@ MonoBehaviour:
   flagsOnFail: []
   objectives:
   - objectiveID: meet_mbok_randa
-    description: Introduce yourself to the elephant's owner
+    description: Perkenalkan dirimu kepada mbok randa
     type: 0
     isCompleted: 0
     isOptional: 0
@@ -41,7 +41,7 @@ MonoBehaviour:
     timeDelay: 0
     showProgress: 1
   - objectiveID: explain_situation
-    description: Explain the water crisis situation
+    description: Jelaskan tentang situasi krisis air yang melanda.
     type: 6
     isCompleted: 0
     isOptional: 0
@@ -55,7 +55,7 @@ MonoBehaviour:
     timeDelay: 0
     showProgress: 1
   - objectiveID: secure_agreement
-    description: Obtain permission to borrow the elephant
+    description: Dapatkan izin untuk "meminjam" gajah putih
     type: 6
     isCompleted: 0
     isOptional: 0

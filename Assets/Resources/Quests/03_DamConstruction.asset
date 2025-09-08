@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: 03_DamConstruction
   m_EditorClassIdentifier: 
   questID: dam_construction_project
-  questTitle: Building Hope
-  questDescription: Construct a dam to bring water to the suffering village. This
-    ambitious project will require teamwork, resources, and determination.
+  questTitle: Membangun Harapan
+  questDescription: Bangun bendungan untuk membawa air ke desa yang sedang menderita.
+    Proyek ambisius ini akan membutuhkan kerja sama tim, sumber daya, dan tekad yang
+    kuat.
   questType: 0
   questLevel: 2
   questIcon: {fileID: 0}
@@ -28,7 +29,7 @@ MonoBehaviour:
   flagsOnFail: []
   objectives:
   - objectiveID: collect_materials
-    description: Gather stones and wood for construction
+    description: Kumpulkan bebatuan dan kayu
     type: 1
     isCompleted: 0
     isOptional: 0
@@ -42,13 +43,13 @@ MonoBehaviour:
     timeDelay: 0
     showProgress: 1
   - objectiveID: build_dam_structure
-    description: Complete the dam construction
-    type: 6
+    description: Selesaikan Pembangunan Dam
+    type: 0
     isCompleted: 0
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
-    targetNPC: 
+    targetNPC: murid_padepokan_2
     targetItem: 
     targetAmount: 1
     currentAmount: 0

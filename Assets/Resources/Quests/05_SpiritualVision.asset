@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: 05_SpiritualVision
   m_EditorClassIdentifier: 
   questID: spiritual_vision_encounter
-  questTitle: Communion with the River Spirit
-  questDescription: Enter spiritual communion to understand the supernatural opposition.
-    Face the ancient guardian of the waters.
+  questTitle: Investigasi Kerusakan Dam
+  questDescription: Investigasilah sekitar area dam untuk mencari tahu hal apa yang
+    menyebabkan gagalnya dam dibangun
   questType: 0
   questLevel: 4
   questIcon: {fileID: 0}
@@ -28,8 +28,8 @@ MonoBehaviour:
   flagsOnFail: []
   objectives:
   - objectiveID: perform_ritual
-    description: Complete the spiritual ritual with village shaman
-    type: 6
+    description: Bersemedilah di sekitar dam
+    type: 2
     isCompleted: 0
     isOptional: 0
     requiredFlags: []
@@ -42,7 +42,7 @@ MonoBehaviour:
     timeDelay: 0
     showProgress: 1
   - objectiveID: confront_river_spirit
-    description: Face the guardian of the river
+    description: Berbicaralah dengan penunggu sungai
     type: 0
     isCompleted: 0
     isOptional: 0

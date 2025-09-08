@@ -75064,6 +75064,8 @@ GameObject:
   - component: {fileID: 779106673}
   - component: {fileID: 779106672}
   - component: {fileID: 779106675}
+  - component: {fileID: 779106676}
+  - component: {fileID: 779106677}
   m_Layer: 0
   m_Name: triggerSquare
   m_TagString: Untagged
@@ -75224,6 +75226,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c1c497da13681d448cab5fe6bd66f1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &779106676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 779106670}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 016aad8472b40dc4181c90c08b59ac19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetNPC: {fileID: 4424810041525235852, guid: 6cb1f12eefe7d6d4fafcb10f2fb9071c, type: 3}
+  npcName: Ki Ageng Sinawang
+  requiredFlags:
+  - game_started
+  forbiddenFlags: []
+  triggerOnce: 1
+  playerTag: Player
+  hideAfterTrigger: 1
+  forceDialogueIndex: -1
+--- !u!114 &779106677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 779106670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adfc4b3259b475343842052de8906ac5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueAssetName: KiAgengSinawang_ID
+  dialogueEntryIndex: -1
+  requiredFlags:
+  - game_started
+  forbiddenFlags: []
+  triggerOnce: 1
+  playerTag: Player
+  hideAfterTrigger: 1
+  triggerSound: {fileID: 0}
 --- !u!1001 &779311950
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -89598,6 +89642,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 521504101471118165, guid: c31daf2a4d267d34382e3911bd8d713e, type: 3}
   m_PrefabInstance: {fileID: 941971309}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &942257275
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 942257276}
+  m_Layer: 7
+  m_Name: Entrance_Barak2
+  m_TagString: House
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &942257276
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 942257275}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.78, y: -1.01, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2106013021}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &942300769
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -105000,6 +105075,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1833568943503611214, guid: c31ac20805f3cd0409522e94ab04a6f7, type: 3}
   m_PrefabInstance: {fileID: 1113599928}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1113962149
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1113962150}
+  m_Layer: 7
+  m_Name: Entrance_siti1
+  m_TagString: House
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1113962150
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1113962149}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.39, y: -0.29, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1309645411}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1114660581
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -133990,6 +134096,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1833568943503611214, guid: be810c1f715b5f141b6e46cb45c01601, type: 3}
   m_PrefabInstance: {fileID: 1433602509}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1435484958
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1435484959}
+  m_Layer: 7
+  m_Name: Entrance_Barak1
+  m_TagString: House
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1435484959
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1435484958}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.5, y: -1.01, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2106013021}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1436681129
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -163354,7 +163491,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1833568943503611214, guid: 6813f204d07b4bf499d186a845f86be2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1113962150}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6813f204d07b4bf499d186a845f86be2, type: 3}
 --- !u!1001 &1666541423
@@ -332776,7 +332916,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1833568943503611214, guid: 4d8427d45debbea4e9726ddb44ee70d1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1435484959}
+    - targetCorrespondingSourceObject: {fileID: 1833568943503611214, guid: 4d8427d45debbea4e9726ddb44ee70d1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 942257276}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4d8427d45debbea4e9726ddb44ee70d1, type: 3}
 --- !u!4 &2106013021 stripped

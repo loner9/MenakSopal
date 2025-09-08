@@ -13,6 +13,7 @@ TagManager:
   - House
   - NPCTarget
   - ManualTrigger
+  - FadeImage
   layers:
   - Default
   - TransparentFX

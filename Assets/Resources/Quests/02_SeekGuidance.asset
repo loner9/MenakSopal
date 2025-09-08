@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questID: seek_guru_guidance
   questTitle: Wisdom of the Teacher
-  questDescription: Consult Ki Ageng Sinawang about the village's water crisis. Your
-    spiritual teacher's wisdom will guide you on the right path.
+  questDescription: Konsultasikan dengan Ki Ageng Sinawang mengenai krisis air di
+    desa. Kebijaksanaannya akan membimbing mu ke jalan yang benar.
   questType: 0
   questLevel: 1
   questIcon: {fileID: 0}
@@ -27,7 +27,7 @@ MonoBehaviour:
   flagsOnFail: []
   objectives:
   - objectiveID: consult_ki_ageng
-    description: Speak with Ki Ageng Sinawang about the crisis
+    description: Bicaralah dengan Ki Ageng Sinawang tentang krisis yang terjadi.
     type: 0
     isCompleted: 0
     isOptional: 0
@@ -41,7 +41,7 @@ MonoBehaviour:
     timeDelay: 0
     showProgress: 1
   - objectiveID: receive_permission
-    description: Ask for permission to help with the water project
+    description: Minta izin untuk membantu mengatasi masalah yang terjadi.
     type: 6
     isCompleted: 0
     isOptional: 0
@@ -54,7 +54,13 @@ MonoBehaviour:
     targetLocation: 
     timeDelay: 0
     showProgress: 1
-  rewards: []
+  rewards:
+  - type: 4
+    itemID: 
+    amount: 0
+    flagsToAdd:
+    - 
+    customRewardDescription: 
   isRepeatable: 0
   canAbandon: 1
   autoComplete: 1

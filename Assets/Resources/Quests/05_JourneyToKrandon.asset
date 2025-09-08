@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: 05_JourneyToKrandon
   m_EditorClassIdentifier: 
   questID: journey_to_krandon
-  questTitle: Path to the Sacred Beast
-  questDescription: Travel safely to Desa Krandon where the white elephant lives.
+  questTitle: Perjalanan ke Desa Krandon
+  questDescription: Pergilah ke desa Krandon dengan selamat untuk mendapatkan Gajah
+    Putih
   questType: 0
   questLevel: 5
   questIcon: {fileID: 0}
@@ -26,7 +27,7 @@ MonoBehaviour:
   flagsOnFail: []
   objectives:
   - objectiveID: forest_travel
-    description: Navigate the forest path safely
+    description: Telusuri hutan dengan aman
     type: 2
     isCompleted: 0
     isOptional: 0

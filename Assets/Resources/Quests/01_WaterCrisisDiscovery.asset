@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: 01_WaterCrisisDiscovery
   m_EditorClassIdentifier: 
   questID: water_crisis_discovery
-  questTitle: Voices of Thirst
-  questDescription: Investigate reports of suffering villagers at the old well. The
-    people are in desperate need of water, and their cries for help cannot be ignored.
+  questTitle: Derita Sumur Tua
+  questDescription: Selidiki laporan tentang penderitaan warga desa di sumur tua.
+    Warga desa sangat membutuhkan air, dan teriakan mereka meminta pertolongan tidak
+    boleh diabaikan.
   questType: 0
   questLevel: 1
   questIcon: {fileID: 0}
@@ -27,7 +28,7 @@ MonoBehaviour:
   flagsOnFail: []
   objectives:
   - objectiveID: reach_village_well
-    description: Travel to the village well
+    description: Pergi ke sumur desa
     type: 2
     isCompleted: 0
     isOptional: 0
@@ -41,7 +42,7 @@ MonoBehaviour:
     timeDelay: 0
     showProgress: 1
   - objectiveID: talk_to_villagers
-    description: Speak with the suffering villagers
+    description: Berbincang dengan warga yang terdampak
     type: 0
     isCompleted: 1
     isOptional: 0
@@ -55,8 +56,8 @@ MonoBehaviour:
     timeDelay: 0
     showProgress: 1
   - objectiveID: witness_crisis
-    description: Understand the extent of the water shortage
-    type: 0
+    description: Pahami sejauh mana krisis air yang terjadi.
+    type: 2
     isCompleted: 0
     isOptional: 0
     requiredFlags: []

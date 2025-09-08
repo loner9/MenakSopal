@@ -28,7 +28,7 @@ MonoBehaviour:
   flagsOnFail: []
   objectives:
   - objectiveID: gather_information
-    description: Learn about white elephant legends
+    description: Pelajari dimana keberadaan gajah putih
     type: 0
     isCompleted: 0
     isOptional: 0

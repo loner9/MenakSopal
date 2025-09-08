@@ -16,7 +16,7 @@ MonoBehaviour:
   scheduleDescription: Padepokan student 2 daily routine
   spawnHour: 5
   homeObjectTag: House
-  homeObjectName: Entrance_Barak
+  homeObjectName: Entrance_Barak2
   homePosition: {x: -1, y: -3}
   scheduleEvents:
   - hour: 6
@@ -69,7 +69,7 @@ MonoBehaviour:
     customDialogue: []
   - hour: 22
     targetObjectTag: House
-    targetObjectName: Entrance_Barak
+    targetObjectName: Entrance_Barak2
     targetPosition: {x: -1, y: -3}
     behavior: 3
     shouldIdleWhenReached: 1

@@ -15,7 +15,7 @@ public class QuestObjectiveUI : MonoBehaviour
     public Sprite checkedSprite;
     
     [Header("Visual Settings")]
-    public Color completedTextColor = Color.green;
+    public Color completedTextColor = Color.black;
     public Color activeTextColor = Color.white;
     public Color optionalTextColor = Color.gray;
     public Color progressBarColor = Color.yellow;

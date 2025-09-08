@@ -83,7 +83,7 @@ public class NPCInteractionSystem : MonoBehaviour
     private Sprite originalNPCBubble; // Store original bubble to restore later
     private Coroutine typingCoroutine;
     private DayNightCycle dayNightCycle;
-    
+
     // Flag queueing system - flags to add when dialogue ends
     private HashSet<string> queuedFlagsToAdd = new HashSet<string>();
 
@@ -93,7 +93,12 @@ public class NPCInteractionSystem : MonoBehaviour
     private DialogueEntry currentDialogueEntry;
     private bool waitingForChoiceResponse = false;
 
-    public bool IsInDialogue => isInDialogue;
+    public bool _IsInDialogue => isInDialogue;
+
+    public bool IsInDialogue()
+    {
+        return isInDialogue;
+    }
     public NPC CurrentDialogueNPC => currentNPC;
 
     public System.Action<NPC> OnDialogueStart;
@@ -140,7 +145,7 @@ public class NPCInteractionSystem : MonoBehaviour
             continueButton.onClick.AddListener(ContinueDialogue);
 
         if (endButton != null)
-            endButton.onClick.AddListener(EndDialogue);
+            endButton.onClick.AddListener(OnEndButtonClicked);
     }
 
     void OnEnable()
@@ -219,7 +224,7 @@ public class NPCInteractionSystem : MonoBehaviour
             if (Input.GetKeyDown(interactKey))
             {
                 Debug.Log($"[NPCInteraction] {interactKey} key pressed! currentNPC: {(currentNPC != null ? currentNPC.npcName : "NULL")}");
-                
+
                 if (currentNPC != null)
                 {
                     Debug.Log($"[NPCInteraction] Starting dialogue with {currentNPC.npcName}");
@@ -262,27 +267,27 @@ public class NPCInteractionSystem : MonoBehaviour
         if (player == null) return;
 
         Debug.Log($"[NPCInteraction] Checking for NPCs near player at {player.position}, range: {interactionRange}");
-        
+
         Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(player.position, interactionRange, npcLayerMask);
         Debug.Log($"[NPCInteraction] Found {nearbyColliders.Length} colliders in range");
-        
+
         NPC nearestNPC = null;
         float nearestDistance = float.MaxValue;
 
         foreach (var collider in nearbyColliders)
         {
             Debug.Log($"[NPCInteraction] Checking collider: {collider.name}");
-            
+
             NPC npc = collider.GetComponent<NPC>();
             if (npc != null)
             {
                 Debug.Log($"[NPCInteraction] Found NPC: {npc.npcName}, canInteract: {npc.canInteract}");
-                
+
                 if (npc.canInteract)
                 {
                     float distance = Vector2.Distance(player.position, npc.transform.position);
                     Debug.Log($"[NPCInteraction] NPC {npc.npcName} distance: {distance}");
-                    
+
                     if (distance < nearestDistance)
                     {
                         nearestDistance = distance;
@@ -332,8 +337,8 @@ public class NPCInteractionSystem : MonoBehaviour
     public void StartDialogue(NPC npc)
     {
         Debug.Log($"[NPCInteraction] StartDialogue called for: {npc?.npcName ?? "NULL NPC"}");
-        
-        if (npc == null || isInDialogue) 
+
+        if (npc == null || isInDialogue)
         {
             Debug.LogWarning($"[NPCInteraction] Cannot start dialogue - NPC: {npc?.npcName ?? "null"}, isInDialogue: {isInDialogue}");
             return;
@@ -353,7 +358,7 @@ public class NPCInteractionSystem : MonoBehaviour
             Debug.LogWarning($"No dialogue data found for NPC: {npc.npcName}");
             return;
         }
-        
+
         Debug.Log($"[NPCInteraction] Dialogue data found: {dialogueData.npcName}");
 
         currentNPC = npc;
@@ -379,6 +384,14 @@ public class NPCInteractionSystem : MonoBehaviour
                 {
                     playerMovements.enabled = false;
                 }
+                
+                // Reset player animation to idle
+                PlayerAnimation playerAnimation = playerGO.GetComponent<PlayerAnimation>();
+                if (playerAnimation != null)
+                {
+                    playerAnimation.setMovingAnimation(false);
+                    playerAnimation.setRunningAnimation(false);
+                }
             }
         }
 
@@ -395,10 +408,10 @@ public class NPCInteractionSystem : MonoBehaviour
 
         // Clear any previous dialogue content before showing UI
         ClearDialogueUI();
-        
+
         // Show dialogue with adventure book animation
         Debug.Log($"[NPCInteraction] Showing dialogue UI - enableBookAnimations: {enableBookAnimations}");
-        
+
         if (enableBookAnimations)
         {
             StartCoroutine(OpenBookAnimation());
@@ -423,10 +436,18 @@ public class NPCInteractionSystem : MonoBehaviour
         // Notify systems
         OnDialogueStart?.Invoke(npc);
 
-        // Force NPC to interaction state if not already
-        if (npc.StateMachine.CurrentNPCState != npc.InteractionState)
+        // Force NPC to interaction state if not already (with null checks)
+        if (npc.StateMachine != null && npc.InteractionState != null && npc.StateMachine.CurrentNPCState != npc.InteractionState)
         {
             npc.StateMachine.ChangeState(npc.InteractionState);
+        }
+        else if (npc.StateMachine == null)
+        {
+            Debug.LogWarning($"[NPCInteraction] NPC {npc.npcName} has no StateMachine component!");
+        }
+        else if (npc.InteractionState == null)
+        {
+            Debug.LogWarning($"[NPCInteraction] NPC {npc.npcName} has no InteractionState!");
         }
 
         Debug.Log($"Started dialogue with {npc.npcName}");
@@ -530,13 +551,125 @@ public class NPCInteractionSystem : MonoBehaviour
             if (availableFarewells.Length > 0)
             {
                 DisplayDialogue(availableFarewells[0]);
-                // End dialogue after farewell
-                StartCoroutine(EndDialogueAfterDelay(2f));
+                // Farewell shown, dialogue will remain open for manual close
             }
             else
             {
                 EndDialogue();
             }
+        }
+    }
+
+    /// <summary>
+    /// Start a dialogue using DialogueData directly (for triggers that don't need physical NPC)
+    /// </summary>
+    public void StartForcedDialogue(DialogueData dialogueData, int specificEntryIndex = -1)
+    {
+        Debug.Log($"[NPCInteraction] StartForcedDialogue called for: {dialogueData?.npcName ?? "NULL DialogueData"}");
+
+        if (dialogueData == null || isInDialogue)
+        {
+            Debug.LogWarning($"[NPCInteraction] Cannot start forced dialogue - DialogueData: {(dialogueData != null ? "assigned" : "null")}, isInDialogue: {isInDialogue}");
+            return;
+        }
+
+        // Set dummy NPC for forced dialogue
+        currentNPC = null; // No physical NPC
+        currentDialogue = dialogueData;
+        currentDialogueIndex = specificEntryIndex >= 0 ? specificEntryIndex : 0;
+        isInDialogue = true;
+
+        // Clear any previously queued flags from previous dialogue
+        queuedFlagsToAdd.Clear();
+
+        // Pause game time during dialogue
+        if (dayNightCycle != null)
+        {
+            dayNightCycle.PauseTime();
+            if (player != null)
+            {
+                Debug.Log("Disabling player movement for forced dialogue");
+                PlayerMovements playerMovements = playerGO.GetComponent<PlayerMovements>();
+                if (playerMovements != null)
+                {
+                    playerMovements.enabled = false;
+                }
+                
+                // Reset player animation to idle
+                PlayerAnimation playerAnimation = playerGO.GetComponent<PlayerAnimation>();
+                if (playerAnimation != null)
+                {
+                    playerAnimation.setMovingAnimation(false);
+                    playerAnimation.setRunningAnimation(false);
+                    // playerAnimation.setMovingAnimation(0f, 0f); // Reset direction to 0,0
+                    Debug.Log("Reset player animation to idle for forced dialogue");
+                }
+            }
+        }
+
+        // Play dialogue start sound
+        PlayAudioClip(dialogueData.dialogueStartSound ?? bookOpenSound);
+
+        // Clear any previous dialogue content before showing UI
+        ClearDialogueUI();
+
+        // Show dialogue with adventure book animation
+        if (dialogueCanvas != null)
+        {
+            dialogueCanvas.SetActive(true);
+            Debug.Log($"[NPCInteraction] dialogueCanvas activated: {dialogueCanvas.activeSelf}");
+        }
+
+        if (dialoguePanel != null)
+        {
+
+            dialoguePanel.SetActive(true);
+            Debug.Log($"[NPCInteraction] dialoguePanel activated: {dialoguePanel.activeSelf}");
+        }
+
+        // Show first dialogue or specific entry
+        if (specificEntryIndex >= 0)
+        {
+            ShowSpecificDialogueEntry(specificEntryIndex);
+        }
+        else
+        {
+            DisplayFirstDialogue();
+        }
+    }
+
+    private void ShowSpecificDialogueEntry(int entryIndex)
+    {
+        if (currentDialogue == null || currentDialogue.dialogueEntries == null ||
+            entryIndex >= currentDialogue.dialogueEntries.Length)
+        {
+            Debug.LogWarning($"[NPCInteraction] Invalid dialogue entry index: {entryIndex}");
+            DisplayFirstDialogue();
+            return;
+        }
+
+        DialogueEntry entry = currentDialogue.dialogueEntries[entryIndex];
+        DisplayDialogue(entry);
+    }
+
+    /// <summary>
+    /// Handle end button clicks - first stops typewriter, then ends dialogue
+    /// </summary>
+    private void OnEndButtonClicked()
+    {
+        if (!isInDialogue) return;
+
+        // If typewriter is active, stop it first
+        if (isTyping)
+        {
+            SkipTypewriter();
+            Debug.Log("[NPCInteraction] End button: Stopped typewriter effect");
+        }
+        else
+        {
+            // If typewriter is not active, end dialogue
+            EndDialogue();
+            Debug.Log("[NPCInteraction] End button: Ending dialogue");
         }
     }
 
@@ -662,12 +795,6 @@ public class NPCInteractionSystem : MonoBehaviour
         queuedFlagsToAdd.Clear();
     }
 
-    private IEnumerator EndDialogueAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        EndDialogue();
-    }
-
     private void DisplayDialogue(DialogueEntry entry)
     {
         if (entry == null) return;
@@ -778,7 +905,7 @@ public class NPCInteractionSystem : MonoBehaviour
             endButton.gameObject.SetActive(!hasMoreDialogue && !shouldHideButtons);
     }
 
-    private DialogueData GetDialogueForNPC(NPC npc)
+    public DialogueData GetDialogueForNPC(NPC npc)
     {
         // Priority 1: Check if NPC has DialogueData component attached
         if (npc.dialogueData != null)
@@ -1154,20 +1281,20 @@ public class NPCInteractionSystem : MonoBehaviour
         // Clear previous dialogue content to prevent showing old text
         if (speakerNameText != null)
             speakerNameText.text = "";
-            
+
         if (dialogueText != null)
             dialogueText.text = "";
-            
+
         // Clear any existing choices
         ClearChoiceButtons();
-        
+
         // Stop any ongoing typing animation
         if (typingCoroutine != null)
         {
             StopCoroutine(typingCoroutine);
             typingCoroutine = null;
         }
-        
+
         isTyping = false;
         isShowingChoices = false;
         waitingForChoiceResponse = false;

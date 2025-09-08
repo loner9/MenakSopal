@@ -25,7 +25,7 @@ public class QuestEntryUI : MonoBehaviour
     [Header("Visual Settings")]
     public Color selectedColor = new Color(1f, 0.84f, 0f, 0.3f); // Gold tint
     public Color normalColor = Color.white;
-    public Color completedColor = Color.green;
+    public Color completedColor = Color.black;
     public Color failedColor = Color.red;
     
     private QuestData questData;
@@ -175,7 +175,7 @@ public class QuestEntryUI : MonoBehaviour
             case QuestStatus.Failed:
                 return failedColor;
             case QuestStatus.Active:
-                return Color.white;
+                return Color.black;
             default:
                 return Color.gray;
         }

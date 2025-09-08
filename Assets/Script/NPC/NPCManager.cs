@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using Microsoft.Unity.VisualStudio.Editor;
 
 [System.Serializable]
 public class ConditionalSchedule
@@ -68,6 +69,8 @@ public class NPCManager : MonoBehaviour
     public System.Action<NPC> OnNPCDespawned;
     public System.Action<List<NPC>> OnNPCListUpdated;
 
+    private Animator fadeAnimator;
+
     #region Initialization
 
     private void Awake()
@@ -97,6 +100,9 @@ public class NPCManager : MonoBehaviour
         {
             dayNightCycle.OnTimeChanged += OnTimeChanged;
         }
+
+        GameObject ImageFadeGO = GameObject.FindGameObjectWithTag("FadeImage");
+        fadeAnimator = ImageFadeGO.GetComponent<Animator>();
 
         // Spawn initial NPCs
         SpawnInitialNPCs();
@@ -139,7 +145,13 @@ public class NPCManager : MonoBehaviour
         {
             try
             {
-                MovePlayerTo.Instance.MovePlayer();
+                if (fadeAnimator != null)
+                {
+                    fadeAnimator.Play("fade");
+                }
+                
+                Invoke("movePlayer", 0.8f);
+                
             }
             catch (Exception e)
             {
@@ -154,6 +166,11 @@ public class NPCManager : MonoBehaviour
             Debug.Log("[NPCManager] water_crisis_discovered flag detected - updating NPC schedules");
             UpdateNPCSchedules();
         });
+    }
+
+    private void movePlayer()
+    {
+        MovePlayerTo.Instance.MovePlayer();
     }
 
     #endregion

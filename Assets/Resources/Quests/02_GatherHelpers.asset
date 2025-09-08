@@ -13,14 +13,15 @@ MonoBehaviour:
   m_Name: 02_GatherHelpers
   m_EditorClassIdentifier: 
   questID: gather_construction_helpers
-  questTitle: Assembling the Team
-  questDescription: Recruit padepokan students to help with the dam construction
-    project.
+  questTitle: Mencari Bantuan
+  questDescription: Cari dan rekrutlah orang orang untuk membantu dalam proyek pembangunan
+    bendungan.
   questType: 0
   questLevel: 2
   questIcon: {fileID: 0}
   requiredFlags:
   - committed_to_help
+  - guru_guidance_received
   flagsOnStart: []
   flagsOnComplete:
   - construction_team_assembled
@@ -28,7 +29,7 @@ MonoBehaviour:
   flagsOnFail: []
   objectives:
   - objectiveID: recruit_andi
-    description: Ask Andi to help with construction
+    description: Minta Andi untuk membantu dalam pembangunan.
     type: 0
     isCompleted: 0
     isOptional: 0
@@ -42,7 +43,7 @@ MonoBehaviour:
     timeDelay: 0
     showProgress: 1
   - objectiveID: recruit_budi
-    description: Convince Budi to join the team
+    description: Yakinkan Budi untuk bergabung dengan tim.
     type: 0
     isCompleted: 0
     isOptional: 0
@@ -56,7 +57,7 @@ MonoBehaviour:
     timeDelay: 0
     showProgress: 1
   - objectiveID: recruit_candra
-    description: Get Candra's agreement to help
+    description: Minta persetujuan Candra untuk membantu.
     type: 0
     isCompleted: 0
     isOptional: 0

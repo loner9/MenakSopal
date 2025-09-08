@@ -38,7 +38,7 @@ public class QuestJournalUI : MonoBehaviour
     [Tooltip("Optional: Tab button for failed quests")]
     public Button failedTabButton;
     [Tooltip("Tab colors (only used if tab buttons are assigned)")]
-    public Color selectedTabColor = Color.yellow;
+    public Color selectedTabColor = Color.black;
     public Color unselectedTabColor = Color.white;
 
     [Header("Optional Quest Details Panel")]
@@ -207,7 +207,7 @@ public class QuestJournalUI : MonoBehaviour
         // Style quest title text
         if (questTitleText != null)
         {
-            questTitleText.color = new Color(1f, 0.84f, 0f, 1f); // Gold color
+            questTitleText.color = Color.black; // Black color
             questTitleText.fontStyle = FontStyles.Bold;
         }
 
@@ -231,6 +231,11 @@ public class QuestJournalUI : MonoBehaviour
     public void OpenJournal()
     {
         Debug.Log("[QuestJournal] OpenJournal() called!");
+
+        if (DayNightCycle.Instance != null)
+        {
+            DayNightCycle.Instance.PauseTime();
+        }
 
         if (isJournalOpen)
         {
@@ -264,6 +269,11 @@ public class QuestJournalUI : MonoBehaviour
     public void CloseJournal()
     {
         if (!isJournalOpen) return;
+
+        if (DayNightCycle.Instance != null)
+        {
+            DayNightCycle.Instance.ResumeTime();
+        }
 
         isJournalOpen = false;
 

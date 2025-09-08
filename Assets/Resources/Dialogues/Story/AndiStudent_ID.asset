@@ -19,7 +19,7 @@ MonoBehaviour:
     dialogueText: Menak Sopal! Aku dengar tentang proyek bendunganmu. Bisakah kami
       membantu? Kami kuat dan bersemangat melayani masyarakat!
     availableTimesOfDay: 0100000000000000
-    isRepeatable: 1
+    isRepeatable: 0
     requiredFlags:
     - dam_construction_started
     flagsToAdd: []

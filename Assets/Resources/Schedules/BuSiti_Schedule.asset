@@ -16,7 +16,7 @@ MonoBehaviour:
   scheduleDescription: Villager affected by water crisis
   spawnHour: 5
   homeObjectTag: House
-  homeObjectName: Entrance_siti
+  homeObjectName: Entrance_siti1
   homePosition: {x: -3, y: -8}
   scheduleEvents:
   - hour: 6

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questID: escape_krandon_pursuit
   questTitle: Flight from Justice
-  questDescription: Escape the angry villagers of Krandon pursuing you.
+  questDescription: Berlarilah dan hindari kejaran!
   questType: 0
   questLevel: 9
   questIcon: {fileID: 0}
