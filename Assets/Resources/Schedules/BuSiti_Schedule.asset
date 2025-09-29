@@ -46,7 +46,7 @@ MonoBehaviour:
     customDialogue: []
   - hour: 20
     targetObjectTag: House
-    targetObjectName: Entrance_siti
+    targetObjectName: Entrance_siti1
     targetPosition: {x: -3, y: -8}
     behavior: 3
     shouldIdleWhenReached: 1

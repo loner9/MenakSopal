@@ -71,6 +71,8 @@ public class NPCManager : MonoBehaviour
 
     private Animator fadeAnimator;
 
+    public static NPCManager Instance { get; private set; }
+
     #region Initialization
 
     private void Awake()
@@ -81,6 +83,15 @@ public class NPCManager : MonoBehaviour
             GameObject parentGO = new GameObject("NPCs");
             parentGO.transform.SetParent(transform);
             npcParent = parentGO.transform;
+        }
+
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
         }
     }
 

@@ -7,6 +7,7 @@ public class MovePlayerTo : MonoBehaviour
     GameObject player;
     Transform defaultTarget;
     Transform target;
+    Animator fadeAnimator;
     [SerializeField] float desiredTime = 0f;
     public static MovePlayerTo Instance { get; private set; }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -25,7 +26,8 @@ public class MovePlayerTo : MonoBehaviour
 
     void Start()
     {
-
+        GameObject ImageFadeGO = GameObject.FindGameObjectWithTag("FadeImage");
+        fadeAnimator = ImageFadeGO.GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -58,9 +60,37 @@ public class MovePlayerTo : MonoBehaviour
         }
     }
 
-    public void voidDelayCall(string name)
+    public void voidDelayCall(string name, float delay)
     {
-        Invoke(name, 2.5f);
+        Invoke(name, delay);
+    }
+
+    public void movePlayerWithDelay()
+    {
+        desiredTime = 5;
+        if (fadeAnimator != null)
+        {
+            fadeAnimator.Play("fade", 0, 0f);
+        }
+        else
+        {
+            Debug.Log("Error gess");
+        }
+        voidDelayCall("MovePlayer", 0.8f);
+    }
+
+    public void movePlayerWithDestinationFade(string destination)
+    {
+        desiredTime = 5;
+        if (fadeAnimator != null)
+        {
+            fadeAnimator.Play("fade", 0, 0f);
+        }
+        else
+        {
+            Debug.Log("Error gess");
+        }
+        MovePlayerDestination(destination);
     }
 
     public void MovePlayer()
@@ -109,9 +139,9 @@ public class MovePlayerTo : MonoBehaviour
         }
     }
 
-    public void MovePlayerDestination(String destination)
+    public void MovePlayerDestination(string destination)
     {
-        GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("MCLocation");
+        GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("NPCTarget");
         Transform currentTarget = null;
         foreach (GameObject p in gameObjects)
         {
@@ -131,7 +161,7 @@ public class MovePlayerTo : MonoBehaviour
 
                 // Get player components that might interfere
                 Rigidbody2D playerRb = player.GetComponent<Rigidbody2D>();
-            
+
                 player.transform.position = currentTarget.position;
                 Debug.Log("Player moved to " + player.transform.position);
 

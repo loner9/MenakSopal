@@ -19,7 +19,7 @@ MonoBehaviour:
     dialogueText: Bendungan ini terus rusak! Ada sesuatu yang tidak wajar tentang
       ini. Aku melihat riak aneh di air saat bendungan runtuh.
     availableTimesOfDay: 000000000200000003000000
-    isRepeatable: 1
+    isRepeatable: 0
     requiredFlags:
     - dam_repeatedly_destroyed
     flagsToAdd: []
@@ -29,7 +29,44 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
-  greetings: []
+  greetings:
+  - speakerName: Budi (Murid Padepokan)
+    dialogueText: Pagi saudara seperguruanku!
+    availableTimesOfDay: 01000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Budi (Murid Padepokan)
+    dialogueText: Hari ini begitu terik, aku jadi semakin bersemangat. Bukankah seperti
+      itu adik tingkat?!!
+    availableTimesOfDay: 00000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Budi (Murid Padepokan)
+    dialogueText: Aku begitu lelah, menak sopal...
+    availableTimesOfDay: 03000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
   farewells: []
   defaultConversationBubble: {fileID: 0}
   loopDialogue: 0

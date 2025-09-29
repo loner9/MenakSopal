@@ -16,16 +16,78 @@ MonoBehaviour:
   dialogueDescription: Warga yang menderita krisis air
   dialogueEntries:
   - speakerName: Pak Darmo
-    dialogueText: Tolong, anak muda! sudah berhari-hari kami tidak mendapat air bersih!
+    dialogueText: Tolong, nak muda! sudah berhari-hari kami tidak mendapat air bersih!
       Sumur ini hampir kering!
     availableTimesOfDay: 000000000200000003000000
-    isRepeatable: 1
+    isRepeatable: 0
     requiredFlags: []
     flagsToAdd:
     - water_crisis_discovered
     flagsToRemove: []
-    hasChoices: 0
-    choices: []
+    hasChoices: 1
+    choices:
+    - choiceText: Bertanya tentang sungai
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd:
+      - river_asked
+      flagsToRemove: []
+      targetDialogueIndex: 0
+      response:
+        speakerName: Menak Sopal
+        responseText: Saya dengar ada sungai disekitar desa ini pak, mengapa tidak
+          mengambil air dari sana??
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 1
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 1
+    pauseAfterDialogue: 0
+  - speakerName: Pak Darmo
+    dialogueText: Kalau itu, kamipun sudah mencoba nak. Namun air di sungai juga
+      sudah kering beberapa minggu ini. Air dari hulu tidak sampai ke tempat dimana
+      kami bisa mengambil air. Banyak hal hal berbahaya melebihi tempat kami biasa
+      mengambil air nak...
+    availableTimesOfDay: 000000000200000003000000
+    isRepeatable: 0
+    requiredFlags:
+    - river_asked
+    flagsToAdd:
+    - water_crisis_discovered
+    flagsToRemove: []
+    hasChoices: 1
+    choices:
+    - choiceText: Aku paham
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: 0
+      response:
+        speakerName: Menak Sopal
+        responseText: Seperti itu pak rupanya. Sangat disayangkan, kami dari padepokan
+          sendiri belum bisa banyak membantu juga, karena kamipun memiliki tanggungan
+          sendiri. Terimakasih atas informasinya pak, sebisanya saya akan membantu
+          mengatasi masalah ini!
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 0
+        nextDialogueIndex: -1
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: witness_crisis
+      questForObjective: water_crisis_discovery
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 1
     pauseAfterDialogue: 0

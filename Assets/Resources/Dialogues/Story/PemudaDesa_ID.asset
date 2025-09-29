@@ -19,6 +19,19 @@ MonoBehaviour:
     dialogueText: Eh! Kamu kelihatan kuat! Mau gabung kerja bakti desa? Kita selalu
       butuh tangan tambahan!
     availableTimesOfDay: 0100000000000000
+    isRepeatable: 0
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  greetings:
+  - speakerName: Pemuda Desa
+    dialogueText: Hari ini sangat terik bukan?
+    availableTimesOfDay: 000000000200000003000000
     isRepeatable: 1
     requiredFlags: []
     flagsToAdd: []
@@ -28,7 +41,18 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
-  greetings: []
+  - speakerName: Pemuda Desa
+    dialogueText: Siap untuk menghadapi Hari ini!
+    availableTimesOfDay: 000000000200000003000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
   farewells: []
   defaultConversationBubble: {fileID: 0}
   loopDialogue: 0

@@ -18,7 +18,7 @@ MonoBehaviour:
   - speakerName: Bu Siti
     dialogueText: Krisis air ini benar benar membuat kami kesusahan nak
     availableTimesOfDay: 010000000000000002000000
-    isRepeatable: 1
+    isRepeatable: 0
     requiredFlags:
     - water_crisis_discovered
     flagsToAdd: []
@@ -28,7 +28,31 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
-  greetings: []
+  greetings:
+  - speakerName: Bu Siti
+    dialogueText: Krisis air ini benar benar mengganggu kami, nak
+    availableTimesOfDay: 0200000000000000
+    isRepeatable: 0
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Bu Siti
+    dialogueText: Pagi, nak
+    availableTimesOfDay: 0000000001000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
   farewells: []
   defaultConversationBubble: {fileID: 0}
   loopDialogue: 0

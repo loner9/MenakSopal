@@ -16,10 +16,10 @@ MonoBehaviour:
   dialogueDescription: Ibu Menak Sopal, sosok ibu yang mendukung
   dialogueEntries:
   - speakerName: Raden Ayu Saraswati
-    dialogueText: Selamat pagi, anakku tersayang. Ibu bermimpi tentang air yang mengalir
-      tadi malam. Mungkin itu pertanda keberuntungan akan datang.
+    dialogueText: Selamat pagi, menak sopal anakku. Ibu bermimpi tentang air yang
+      mengalir tadi malam. Mungkin itu pertanda keberuntungan akan datang.
     availableTimesOfDay: 0100000000000000
-    isRepeatable: 1
+    isRepeatable: 0
     requiredFlags: []
     flagsToAdd: []
     flagsToRemove: []
@@ -31,8 +31,8 @@ MonoBehaviour:
   - speakerName: Raden Ayu Saraswati
     dialogueText: Ibu khawatir dengan proyek bendunganmu ini, nak. Roh-roh sungai
       tidak boleh dianggap enteng.
-    availableTimesOfDay: 02000000
-    isRepeatable: 1
+    availableTimesOfDay: 0200000000000000
+    isRepeatable: 0
     requiredFlags:
     - dam_construction_started
     flagsToAdd: []
@@ -88,7 +88,7 @@ MonoBehaviour:
     dialogueText: Anakku telah menjadi pria sejati hari ini. Bukan karena dia memecahkan
       masalah, tapi karena dia belajar menghadapi konsekuensi dari pilihannya.
     availableTimesOfDay: 000000000200000003000000
-    isRepeatable: 1
+    isRepeatable: 0
     requiredFlags:
     - story_completed
     flagsToAdd: []
@@ -98,7 +98,43 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 1
     pauseAfterDialogue: 0
-  greetings: []
+  greetings:
+  - speakerName: Raden Ayu Saraswati
+    dialogueText: Pagi, anakku...
+    availableTimesOfDay: 01000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Raden Ayu Saraswati
+    dialogueText: Hari ini begitu terik, dan keadaan air ini...
+    availableTimesOfDay: 00000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Raden Ayu Saraswati
+    dialogueText: Segeralah beristirahat, menak sopal...
+    availableTimesOfDay: 03000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
   farewells: []
   defaultConversationBubble: {fileID: 0}
   loopDialogue: 0

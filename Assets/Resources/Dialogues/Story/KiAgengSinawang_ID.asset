@@ -20,7 +20,7 @@ MonoBehaviour:
       tentang perubahan yang akan datang ke tanah kita. Bercengkeramalah dengan warga
       desa, mereka membutuhkan bantuanmu...
     availableTimesOfDay: 0100000000000000
-    isRepeatable: 1
+    isRepeatable: 0
     requiredFlags:
     - story_started
     flagsToAdd:
@@ -36,34 +36,33 @@ MonoBehaviour:
     dialogueText: Penderitaan rakyat kita memberatkan hatimu, muridku. Terkadang
       perbuatan mulia yang terbesar memerlukan pengorbanan yang besar pula.
     availableTimesOfDay: 010000000000000002000000
-    isRepeatable: 1
+    isRepeatable: 0
     requiredFlags:
     - water_crisis_discovered
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 1
     choices:
-    - choiceText: Guru, saya ingin membantu mengatasi kekurangan air ini
+    - choiceText: Ingin membantu
       requiredFlags: []
       availableTimesOfDay: 
       isRepeatable: 1
       flagsToAdd:
       - asked_permission_water_project
       flagsToRemove: []
-      targetDialogueIndex: -1
+      targetDialogueIndex: 3
       response:
-        speakerName: Ki Ageng Sinawang
-        responseText: Belas kasihanmu menghormati ajaran kita. Pergilah, tapi ingatlah
-          - kebijaksanaan sejati terletak pada pemahaman semua konsekuensi dari tindakan
-          kita.
+        speakerName: Menak Sopal
+        responseText: Ki Ageng, atas izinmu, izinkanlah aku untuk membantu tentang
+          masalah ini. Diriku terpanggil untuk membantu tentang masalah ini
         conversationBubbleSprite: {fileID: 0}
         pauseAfterResponse: 0
         continueToNext: 1
-        nextDialogueIndex: -1
-      questToStart: dam_construction_project
+        nextDialogueIndex: 3
+      questToStart: gather_construction_helpers
       questToComplete: 
-      objectiveToComplete: 
-      questForObjective: 
+      objectiveToComplete: receive_permission
+      questForObjective: seek_guru_guidance
       isImportantChoice: 0
       choiceColor: {r: 1, g: 1, b: 1, a: 1}
     conversationBubbleSprite: {fileID: 0}
@@ -74,7 +73,7 @@ MonoBehaviour:
       rasa sakit. Tapi dari rasa sakit ini, pemahaman tumbuh. Desa kini memiliki
       air, dan kamu memiliki kebijaksanaan.
     availableTimesOfDay: 00000000010000000200000003000000
-    isRepeatable: 1
+    isRepeatable: 0
     requiredFlags:
     - story_completed
     - reconciliation_complete
@@ -85,7 +84,57 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 1
     pauseAfterDialogue: 0
-  greetings: []
+  - speakerName: Ki Ageng Sinawang
+    dialogueText: Belas kasihanmu menghormati ajaran kita, muridku. Bergegaslah,
+      restuku membersamai niat baikmu.
+    availableTimesOfDay: 00000000010000000200000003000000
+    isRepeatable: 0
+    requiredFlags:
+    - asked_permission_water_project
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 1
+    pauseAfterDialogue: 0
+  greetings:
+  - speakerName: Ki Ageng Sinawang
+    dialogueText: Pagi, muridku
+    availableTimesOfDay: 01000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Ki Ageng Sinawang
+    dialogueText: Berlatihlah dengan sungguh sungguh nak
+    availableTimesOfDay: 00000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Ki Ageng Sinawang
+    dialogueText: Hmmm...
+    availableTimesOfDay: 03000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
   farewells: []
   defaultConversationBubble: {fileID: 0}
   loopDialogue: 0

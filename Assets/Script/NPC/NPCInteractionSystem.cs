@@ -83,6 +83,14 @@ public class NPCInteractionSystem : MonoBehaviour
     private Sprite originalNPCBubble; // Store original bubble to restore later
     private Coroutine typingCoroutine;
     private DayNightCycle dayNightCycle;
+    
+    // Track used non-repeatable dialogue entries per NPC
+    private Dictionary<string, HashSet<int>> usedDialogueEntries = new Dictionary<string, HashSet<int>>();
+    
+    // Choice response continuation tracking
+    private bool hasPendingNavigation = false;
+    private int pendingNavigationIndex = -1;
+    private bool shouldEndAfterResponse = false;
 
     // Flag queueing system - flags to add when dialogue ends
     private HashSet<string> queuedFlagsToAdd = new HashSet<string>();
@@ -266,50 +274,50 @@ public class NPCInteractionSystem : MonoBehaviour
     {
         if (player == null) return;
 
-        Debug.Log($"[NPCInteraction] Checking for NPCs near player at {player.position}, range: {interactionRange}");
+        // Debug.Log($"[NPCInteraction] Checking for NPCs near player at {player.position}, range: {interactionRange}");
 
         Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(player.position, interactionRange, npcLayerMask);
-        Debug.Log($"[NPCInteraction] Found {nearbyColliders.Length} colliders in range");
+        // Debug.Log($"[NPCInteraction] Found {nearbyColliders.Length} colliders in range");
 
         NPC nearestNPC = null;
         float nearestDistance = float.MaxValue;
 
         foreach (var collider in nearbyColliders)
         {
-            Debug.Log($"[NPCInteraction] Checking collider: {collider.name}");
+            // Debug.Log($"[NPCInteraction] Checking collider: {collider.name}");
 
             NPC npc = collider.GetComponent<NPC>();
             if (npc != null)
             {
-                Debug.Log($"[NPCInteraction] Found NPC: {npc.npcName}, canInteract: {npc.canInteract}");
+                // Debug.Log($"[NPCInteraction] Found NPC: {npc.npcName}, canInteract: {npc.canInteract}");
 
                 if (npc.canInteract)
                 {
                     float distance = Vector2.Distance(player.position, npc.transform.position);
-                    Debug.Log($"[NPCInteraction] NPC {npc.npcName} distance: {distance}");
+                    // Debug.Log($"[NPCInteraction] NPC {npc.npcName} distance: {distance}");
 
                     if (distance < nearestDistance)
                     {
                         nearestDistance = distance;
                         nearestNPC = npc;
-                        Debug.Log($"[NPCInteraction] {npc.npcName} is now nearest NPC");
+                        // Debug.Log($"[NPCInteraction] {npc.npcName} is now nearest NPC");
                     }
                 }
                 else
                 {
-                    Debug.LogWarning($"[NPCInteraction] NPC {npc.npcName} cannot interact!");
+                    // Debug.LogWarning($"[NPCInteraction] NPC {npc.npcName} cannot interact!");
                 }
             }
             else
             {
-                Debug.Log($"[NPCInteraction] Collider {collider.name} has no NPC component");
+                // Debug.Log($"[NPCInteraction] Collider {collider.name} has no NPC component");
             }
         }
 
         // Update current NPC and prompt
         if (nearestNPC != currentNPC)
         {
-            Debug.Log($"[NPCInteraction] Updating current NPC from {(currentNPC?.npcName ?? "NULL")} to {(nearestNPC?.npcName ?? "NULL")}");
+            // Debug.Log($"[NPCInteraction] Updating current NPC from {(currentNPC?.npcName ?? "NULL")} to {(nearestNPC?.npcName ?? "NULL")}");
             currentNPC = nearestNPC;
             UpdateInteractionPrompt();
         }
@@ -368,6 +376,11 @@ public class NPCInteractionSystem : MonoBehaviour
 
         // Clear any previously queued flags from previous dialogue
         queuedFlagsToAdd.Clear();
+        
+        // Clear choice response navigation state
+        hasPendingNavigation = false;
+        pendingNavigationIndex = -1;
+        shouldEndAfterResponse = false;
 
         // Check and complete TalkToNPC objectives
         CheckTalkToNPCObjectives(npc);
@@ -503,25 +516,39 @@ public class NPCInteractionSystem : MonoBehaviour
     private void DisplayFirstDialogue()
     {
         TimeOfDay currentTime = dayNightCycle != null ? dayNightCycle.CurrentTimeOfDay : TimeOfDay.Day;
+        HashSet<int> usedEntries = GetUsedDialogueEntries(currentDialogue.npcName);
 
-        // Start with greeting if available
-        DialogueEntry[] availableGreetings = currentDialogue.GetAvailableDialogues(currentDialogue.greetings, currentTime, gameFlags);
-        if (availableGreetings.Length > 0)
+        // First priority: Check for available main dialogues
+        DialogueEntry[] availableDialogues = currentDialogue.GetAvailableDialogues(currentDialogue.dialogueEntries, currentTime, gameFlags, usedEntries);
+        
+        if (availableDialogues.Length > 0)
         {
-            DisplayDialogue(availableGreetings[0]);
+            // Main dialogue available - show it (highest priority)
+            DisplayDialogue(availableDialogues[0]);
         }
         else
         {
-            // Start with first available dialogue
-            DialogueEntry[] availableDialogues = currentDialogue.GetAvailableDialogues(currentDialogue.dialogueEntries, currentTime, gameFlags);
-            if (availableDialogues.Length > 0)
+            // No main dialogue available - fallback to greetings/farewells
+            DialogueEntry[] availableGreetings = currentDialogue.GetAvailableDialogues(currentDialogue.greetings, currentTime, gameFlags, usedEntries);
+            if (availableGreetings.Length > 0)
             {
-                DisplayDialogue(availableDialogues[0]);
+                DisplayDialogue(availableGreetings[0]);
             }
             else
             {
-                EndDialogue();
-                return;
+                // No main dialogue or greeting - check for farewell
+                DialogueEntry[] availableFarewells = currentDialogue.GetAvailableDialogues(currentDialogue.farewells, currentTime, gameFlags, usedEntries);
+                if (availableFarewells.Length > 0)
+                {
+                    DisplayDialogue(availableFarewells[0]);
+                }
+                else
+                {
+                    // No dialogue available at all
+                    Debug.Log($"[NPCInteraction] No available dialogue entries for {currentDialogue.npcName}");
+                    EndDialogue();
+                    return;
+                }
             }
         }
     }
@@ -533,12 +560,30 @@ public class NPCInteractionSystem : MonoBehaviour
         // Play page flip sound
         PlayAudioClip(pageFlipSound);
 
+        // Handle pending navigation from choice response
+        if (hasPendingNavigation)
+        {
+            hasPendingNavigation = false;
+            NavigateToDialogueEntry(pendingNavigationIndex);
+            pendingNavigationIndex = -1;
+            return;
+        }
+
+        // Handle end after choice response
+        if (shouldEndAfterResponse)
+        {
+            shouldEndAfterResponse = false;
+            EndDialogue();
+            return;
+        }
+
         currentDialogueIndex++;
 
         TimeOfDay currentTime = dayNightCycle != null ? dayNightCycle.CurrentTimeOfDay : TimeOfDay.Day;
+        HashSet<int> usedEntries = GetUsedDialogueEntries(currentDialogue.npcName);
 
         // Get available dialogues for current time
-        DialogueEntry[] availableDialogues = currentDialogue.GetAvailableDialogues(currentDialogue.dialogueEntries, currentTime, gameFlags);
+        DialogueEntry[] availableDialogues = currentDialogue.GetAvailableDialogues(currentDialogue.dialogueEntries, currentTime, gameFlags, usedEntries);
 
         if (currentDialogueIndex < availableDialogues.Length)
         {
@@ -547,7 +592,7 @@ public class NPCInteractionSystem : MonoBehaviour
         else
         {
             // Check for farewell
-            DialogueEntry[] availableFarewells = currentDialogue.GetAvailableDialogues(currentDialogue.farewells, currentTime, gameFlags);
+            DialogueEntry[] availableFarewells = currentDialogue.GetAvailableDialogues(currentDialogue.farewells, currentTime, gameFlags, usedEntries);
             if (availableFarewells.Length > 0)
             {
                 DisplayDialogue(availableFarewells[0]);
@@ -581,6 +626,11 @@ public class NPCInteractionSystem : MonoBehaviour
 
         // Clear any previously queued flags from previous dialogue
         queuedFlagsToAdd.Clear();
+        
+        // Clear choice response navigation state
+        hasPendingNavigation = false;
+        pendingNavigationIndex = -1;
+        shouldEndAfterResponse = false;
 
         // Pause game time during dialogue
         if (dayNightCycle != null)
@@ -891,7 +941,8 @@ public class NPCInteractionSystem : MonoBehaviour
         if (currentDialogue == null) return;
 
         TimeOfDay currentTime = dayNightCycle != null ? dayNightCycle.CurrentTimeOfDay : TimeOfDay.Day;
-        DialogueEntry[] availableDialogues = currentDialogue.GetAvailableDialogues(currentDialogue.dialogueEntries, currentTime, gameFlags);
+        HashSet<int> usedEntries = GetUsedDialogueEntries(currentDialogue.npcName);
+        DialogueEntry[] availableDialogues = currentDialogue.GetAvailableDialogues(currentDialogue.dialogueEntries, currentTime, gameFlags, usedEntries);
         bool hasMoreDialogue = currentDialogueIndex < availableDialogues.Length - 1;
 
         // Hide buttons if showing choices or waiting for choice response
@@ -1175,23 +1226,29 @@ public class NPCInteractionSystem : MonoBehaviour
 
         waitingForChoiceResponse = false;
 
-        // Handle navigation after response
+        // Show dialogue buttons for manual continuation instead of auto-continuing
+        UpdateDialogueButtons();
+
+        // Store navigation info for when user manually continues
         if (response.continueToNext)
         {
             if (response.nextDialogueIndex >= 0)
             {
-                NavigateToDialogueEntry(response.nextDialogueIndex);
+                // Store the target dialogue index for manual navigation
+                pendingNavigationIndex = response.nextDialogueIndex;
+                hasPendingNavigation = true;
             }
             else
             {
-                // Continue to next dialogue in sequence
-                ContinueDialogue();
+                // Will continue to next dialogue in sequence when user presses continue
+                hasPendingNavigation = false;
             }
         }
         else
         {
-            // End dialogue
-            EndDialogue();
+            // Will end dialogue when user presses continue/end
+            hasPendingNavigation = false;
+            shouldEndAfterResponse = true;
         }
     }
 
@@ -1304,6 +1361,12 @@ public class NPCInteractionSystem : MonoBehaviour
     {
         if (entry == null) return;
 
+        // Mark this dialogue entry as used if it's not repeatable
+        if (!entry.isRepeatable && currentDialogue != null)
+        {
+            MarkDialogueEntryAsUsed(currentDialogue.npcName, entry);
+        }
+
         // Queue flags to add when dialogue ends
         if (entry.flagsToAdd != null)
         {
@@ -1334,6 +1397,63 @@ public class NPCInteractionSystem : MonoBehaviour
             }
         }
         activeChoiceButtons.Clear();
+    }
+
+    #endregion
+
+    #region Used Dialogue Tracking
+
+    /// <summary>
+    /// Get the set of used dialogue entry indices for a specific NPC
+    /// </summary>
+    private HashSet<int> GetUsedDialogueEntries(string npcName)
+    {
+        if (string.IsNullOrEmpty(npcName)) return new HashSet<int>();
+        
+        if (!usedDialogueEntries.ContainsKey(npcName))
+        {
+            usedDialogueEntries[npcName] = new HashSet<int>();
+        }
+        
+        return usedDialogueEntries[npcName];
+    }
+
+    /// <summary>
+    /// Mark a dialogue entry as used for a specific NPC
+    /// </summary>
+    private void MarkDialogueEntryAsUsed(string npcName, DialogueEntry entry)
+    {
+        if (string.IsNullOrEmpty(npcName) || entry == null || currentDialogue == null) return;
+
+        // Find the index of this entry in the current dialogue
+        int entryIndex = currentDialogue.GetDialogueEntryIndex(entry);
+        if (entryIndex >= 0)
+        {
+            HashSet<int> usedEntries = GetUsedDialogueEntries(npcName);
+            usedEntries.Add(entryIndex);
+            Debug.Log($"[NPCInteraction] Marked dialogue entry {entryIndex} as used for {npcName} (non-repeatable)");
+        }
+    }
+
+    /// <summary>
+    /// Reset used dialogue entries for a specific NPC (useful for testing or story resets)
+    /// </summary>
+    public void ResetUsedDialogueEntries(string npcName)
+    {
+        if (!string.IsNullOrEmpty(npcName) && usedDialogueEntries.ContainsKey(npcName))
+        {
+            usedDialogueEntries[npcName].Clear();
+            Debug.Log($"[NPCInteraction] Reset used dialogue entries for {npcName}");
+        }
+    }
+
+    /// <summary>
+    /// Reset all used dialogue entries (useful for new game or story resets)
+    /// </summary>
+    public void ResetAllUsedDialogueEntries()
+    {
+        usedDialogueEntries.Clear();
+        Debug.Log("[NPCInteraction] Reset all used dialogue entries");
     }
 
     #endregion
@@ -1541,13 +1661,22 @@ public class NPCInteractionSystem : MonoBehaviour
     public class DialogueSystemSaveData
     {
         public List<string> gameFlags;
+        public Dictionary<string, List<int>> usedDialogueEntries;
     }
 
     public DialogueSystemSaveData GetSaveData()
     {
+        // Convert HashSet<int> to List<int> for serialization
+        Dictionary<string, List<int>> serializedUsedEntries = new Dictionary<string, List<int>>();
+        foreach (var kvp in usedDialogueEntries)
+        {
+            serializedUsedEntries[kvp.Key] = new List<int>(kvp.Value);
+        }
+
         return new DialogueSystemSaveData
         {
-            gameFlags = this.gameFlags
+            gameFlags = this.gameFlags,
+            usedDialogueEntries = serializedUsedEntries
         };
     }
 
@@ -1556,6 +1685,16 @@ public class NPCInteractionSystem : MonoBehaviour
         if (data != null)
         {
             gameFlags = data.gameFlags ?? new List<string>();
+            
+            // Convert List<int> back to HashSet<int>
+            usedDialogueEntries.Clear();
+            if (data.usedDialogueEntries != null)
+            {
+                foreach (var kvp in data.usedDialogueEntries)
+                {
+                    usedDialogueEntries[kvp.Key] = new HashSet<int>(kvp.Value);
+                }
+            }
         }
     }
 }

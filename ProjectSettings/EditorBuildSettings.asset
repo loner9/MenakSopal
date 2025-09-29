@@ -13,6 +13,9 @@ EditorBuildSettings:
     guid: 0f183ca15ace0dc49979ded37b9961b1
   - enabled: 1
     path: Assets/Scenes/SceneAwal.unity
+    guid: d0ba4133868f8e64c846a4d0e8591ff7
+  - enabled: 1
+    path: Assets/Scenes/SceneBangunDam.unity
     guid: c914e7a6556facf468b5ea6dd9ab0381
   - enabled: 1
     path: Assets/Scenes/SceneDesaKrandon.unity

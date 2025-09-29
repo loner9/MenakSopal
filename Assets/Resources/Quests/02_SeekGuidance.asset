@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 02_SeekGuidance
   m_EditorClassIdentifier: 
   questID: seek_guru_guidance
-  questTitle: Wisdom of the Teacher
+  questTitle: Kebijksanaan dari guru
   questDescription: Konsultasikan dengan Ki Ageng Sinawang mengenai krisis air di
     desa. Kebijaksanaannya akan membimbing mu ke jalan yang benar.
   questType: 0
@@ -29,7 +29,7 @@ MonoBehaviour:
   - objectiveID: consult_ki_ageng
     description: Bicaralah dengan Ki Ageng Sinawang tentang krisis yang terjadi.
     type: 0
-    isCompleted: 0
+    isCompleted: 1
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 

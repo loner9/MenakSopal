@@ -1,4 +1,5 @@
 using TMPro;
+using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -28,6 +29,7 @@ public class GameSystemsManager : MonoBehaviour
     public bool enableReactionLogs = true;
 
     [SerializeField] GameObject ttsCanvas;
+    [SerializeField] Button ttsButton;
 
     void Start()
     {
@@ -38,6 +40,12 @@ public class GameSystemsManager : MonoBehaviour
         {
             questManager = QuestManager.Instance;
             Debug.Log($"[GameSystems] QuestManager found: {questManager != null}");
+        }
+
+        if (ttsButton != null)
+        {
+            Debug.Log("[GameSystems] Setting up TTS button...");
+            ttsButton.onClick.AddListener(MovePlayerTo.Instance.movePlayerWithDelay);
         }
         
         SetupFlagReactions();
@@ -70,10 +78,15 @@ public class GameSystemsManager : MonoBehaviour
         {
             DayNightCycle.Instance.SetTime(22.5f);
             DayNightCycle.Instance.PauseTime();
+            MovePlayerTo.Instance.stopPlayerMovement();
             ttsCanvas.SetActive(true);
         }
     }
 
+    void monologueAfterRecruit()
+    {
+        MonologueSystem.Instance.ShowSimpleMonologue("Hmm, aku telah selesai meminta izin dan mengumpulkan bala bantuan untuk membangun dam ini. Saatnya untuk menuju ke sungai!", new string[] { "to_river", "npc_to_river"});
+    }
 
     void SetupFlagReactions()
     {
@@ -164,6 +177,7 @@ public class GameSystemsManager : MonoBehaviour
         });
 
         // Chapter 3: Helper Recruitment
+        // setelah ini harus e ada sequence pindah dari map biasa ke map bangun bendungan
         FlagMonitorSystem.WatchFlagAdded("helpers_recruited", () =>
         {
             LogReaction("Students recruited - Construction can begin");
@@ -171,8 +185,29 @@ public class GameSystemsManager : MonoBehaviour
 
             if (questManager != null)
             {
+                Invoke("monologueAfterRecruit", 3.5f);
+                DayNightCycle.Instance.PauseTime();  
+                DayNightCycle.Instance.SetTimeOfDay(TimeOfDay.Day);
                 questManager.StartQuest("dam_construction_project");
             }
+        });
+
+        FlagMonitorSystem.WatchFlagAdded("to_river", () =>
+        {
+            MovePlayerTo.Instance.movePlayerWithDestinationFade("BantaranKali");
+        });
+
+        FlagMonitorSystem.WatchFlagAdded("npc_to_river", () =>
+        {
+            MovePlayerTo.Instance.movePlayerWithDestinationFade("BantaranKali");
+        });
+
+        FlagMonitorSystem.WatchFlagAdded("materials_collected", () =>
+        {
+            //hapus flag npc_to_river
+            NPCInteractionSystem.Instance.RemoveGameFlag("npc_to_river");
+            NPCManager.Instance.UpdateNPCSchedules();
+            
         });
 
         //trigger event dam rusak. setelah objective kelar dan "initial_dam_success" flag ini muncul

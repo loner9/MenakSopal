@@ -21,7 +21,7 @@ MonoBehaviour:
     availableTimesOfDay: 0100000000000000
     isRepeatable: 0
     requiredFlags:
-    - dam_construction_started
+    - committed_to_help
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 1
@@ -50,7 +50,43 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
-  greetings: []
+  greetings:
+  - speakerName: Andi (Murid Padepokan)
+    dialogueText: Pagi menak sopal!
+    availableTimesOfDay: 01000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Andi (Murid Padepokan)
+    dialogueText: Terik matahari bukan alasan untuk bermalas malasan!
+    availableTimesOfDay: 00000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Andi (Murid Padepokan)
+    dialogueText: Ah, malam menak sopal
+    availableTimesOfDay: 03000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
   farewells: []
   defaultConversationBubble: {fileID: 0}
   loopDialogue: 0

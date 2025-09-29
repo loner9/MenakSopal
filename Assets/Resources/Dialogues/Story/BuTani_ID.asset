@@ -17,8 +17,21 @@ MonoBehaviour:
   dialogueEntries:
   - speakerName: Bu Tani
     dialogueText: Panen yang baik dimulai dari benih yang baik, tapi diselesaikan
-      dengan masakan yang baik. Mau belajar resep desa?
+      dengan masakan yang baik. Ingin belajar cara untuk bertani?
     availableTimesOfDay: 0100000000000000
+    isRepeatable: 0
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  greetings:
+  - speakerName: Bu Tani
+    dialogueText: Halo nak sopal...
+    availableTimesOfDay: 0000000003000000
     isRepeatable: 1
     requiredFlags: []
     flagsToAdd: []
@@ -28,7 +41,6 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
-  greetings: []
   farewells: []
   defaultConversationBubble: {fileID: 0}
   loopDialogue: 0

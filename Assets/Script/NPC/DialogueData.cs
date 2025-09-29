@@ -140,17 +140,17 @@ public class DialogueData : ScriptableObject
     /// <summary>
     /// Get all dialogue entries that are available at the current time and with current game flags
     /// </summary>
-    public DialogueEntry[] GetAvailableDialogues(DialogueEntry[] entries, TimeOfDay currentTime, System.Collections.Generic.List<string> gameFlags)
+    public DialogueEntry[] GetAvailableDialogues(DialogueEntry[] entries, TimeOfDay currentTime, System.Collections.Generic.List<string> gameFlags, System.Collections.Generic.HashSet<int> usedDialogueIndices = null)
     {
         if (entries == null) return new DialogueEntry[0];
         
         System.Collections.Generic.List<DialogueEntry> available = new System.Collections.Generic.List<DialogueEntry>();
         
-        foreach (var entry in entries)
+        for (int i = 0; i < entries.Length; i++)
         {
-            if (IsDialogueAvailable(entry, currentTime, gameFlags))
+            if (IsDialogueAvailable(entries[i], currentTime, gameFlags, usedDialogueIndices, i))
             {
-                available.Add(entry);
+                available.Add(entries[i]);
             }
         }
         
@@ -160,8 +160,14 @@ public class DialogueData : ScriptableObject
     /// <summary>
     /// Check if a specific dialogue entry is available based on time and flags
     /// </summary>
-    public bool IsDialogueAvailable(DialogueEntry entry, TimeOfDay currentTime, System.Collections.Generic.List<string> gameFlags)
+    public bool IsDialogueAvailable(DialogueEntry entry, TimeOfDay currentTime, System.Collections.Generic.List<string> gameFlags, System.Collections.Generic.HashSet<int> usedDialogueIndices = null, int entryIndex = -1)
     {
+        // Check if this entry has been used and is not repeatable
+        if (!entry.isRepeatable && usedDialogueIndices != null && entryIndex >= 0 && usedDialogueIndices.Contains(entryIndex))
+        {
+            return false;
+        }
+        
         // Check time of day availability
         if (entry.availableTimesOfDay != null && entry.availableTimesOfDay.Length > 0)
         {
@@ -195,17 +201,17 @@ public class DialogueData : ScriptableObject
     /// <summary>
     /// Get the total number of available dialogue entries for current conditions
     /// </summary>
-    public int GetAvailableDialogueCount(TimeOfDay currentTime, System.Collections.Generic.List<string> gameFlags)
+    public int GetAvailableDialogueCount(TimeOfDay currentTime, System.Collections.Generic.List<string> gameFlags, System.Collections.Generic.HashSet<int> usedDialogueIndices = null)
     {
-        return GetAvailableDialogues(dialogueEntries, currentTime, gameFlags).Length;
+        return GetAvailableDialogues(dialogueEntries, currentTime, gameFlags, usedDialogueIndices).Length;
     }
     
     /// <summary>
     /// Get a random available dialogue entry
     /// </summary>
-    public DialogueEntry GetRandomDialogue(TimeOfDay currentTime, System.Collections.Generic.List<string> gameFlags)
+    public DialogueEntry GetRandomDialogue(TimeOfDay currentTime, System.Collections.Generic.List<string> gameFlags, System.Collections.Generic.HashSet<int> usedDialogueIndices = null)
     {
-        var available = GetAvailableDialogues(dialogueEntries, currentTime, gameFlags);
+        var available = GetAvailableDialogues(dialogueEntries, currentTime, gameFlags, usedDialogueIndices);
         if (available.Length == 0) return null;
         
         return available[Random.Range(0, available.Length)];

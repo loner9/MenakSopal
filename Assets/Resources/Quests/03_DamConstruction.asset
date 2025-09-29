@@ -22,6 +22,7 @@ MonoBehaviour:
   questIcon: {fileID: 0}
   requiredFlags:
   - asked_permission_water_project
+  - construction_team_assembled
   flagsOnStart: []
   flagsOnComplete:
   - dam_construction_started
@@ -34,7 +35,7 @@ MonoBehaviour:
     isCompleted: 0
     isOptional: 0
     requiredFlags: []
-    flagToSetOnComplete: 
+    flagToSetOnComplete: materials_collected
     targetNPC: 
     targetItem: construction_materials
     targetAmount: 10
@@ -47,7 +48,8 @@ MonoBehaviour:
     type: 0
     isCompleted: 0
     isOptional: 0
-    requiredFlags: []
+    requiredFlags:
+    - materials_collected
     flagToSetOnComplete: 
     targetNPC: murid_padepokan_2
     targetItem: 

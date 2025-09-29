@@ -16,17 +16,17 @@ MonoBehaviour:
   dialogueDescription: Pemandu perjalanan ke Desa Krandon
   dialogueEntries:
   - speakerName: Joko (Penunjuk Jalan Desa)
-    dialogueText: Aku tahu jalan ke Desa Krandon, anak muda. Perjalanan dua hari
-      melewati hutan.
+    dialogueText: Aku tahu jalan ke Desa Krandon, anak muda. Aku bisa memberitahumu
+      arah untuk mencapai desa itu!
     availableTimesOfDay: 0000000002000000
-    isRepeatable: 1
+    isRepeatable: 0
     requiredFlags:
     - seeking_white_elephant
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 1
     choices:
-    - choiceText: Tolong tunjukkan jalan ke rumah Mbok Randa
+    - choiceText: Tolong tunjukkan arah ke desa Krandon Paman Joko!
       requiredFlags: []
       availableTimesOfDay: 
       isRepeatable: 1
@@ -50,7 +50,19 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
-  greetings: []
+  greetings:
+  - speakerName: Joko (Penunjuk Jalan Desa)
+    dialogueText: Ah, halo nak
+    availableTimesOfDay: 000000000100000002000000
+    isRepeatable: 0
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
   farewells: []
   defaultConversationBubble: {fileID: 0}
   loopDialogue: 0
