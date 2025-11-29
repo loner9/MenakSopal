@@ -477,8 +477,30 @@ public class StoryProgressionDebugger : EditorWindow
     
     private bool ShouldFlagBeActiveAtPhase(StoryFlagManager.StoryFlagDefinition flag, string targetPhase)
     {
+        // Always include committed_to_help for Phase 1 and later
+        if (flag.flagName == "committed_to_help")
+        {
+            var phaseOrder = new Dictionary<string, int>
+            {
+                { "Phase 1: Discovery", 1 },
+                { "Phase 2: Planning", 2 },
+                { "Phase 2: Construction", 2 },
+                { "Phase 2", 2 },
+                { "Phase 3: Opposition", 3 },
+                { "Phase 4: Quest", 4 },
+                { "Phase 5: Sacrifice", 5 },
+                { "Phase 6: Reckoning", 6 },
+                { "Phase 7: Truth", 7 },
+                { "Phase 7: Resolution", 7 },
+                { "Phase 8: Legacy", 8 }
+            };
+
+            int targetPhaseLevell = phaseOrder.ContainsKey(targetPhase) ? phaseOrder[targetPhase] : 0;
+            return targetPhaseLevell >= 1;
+        }
+
         // Define phase progression order
-        var phaseOrder = new Dictionary<string, int>
+        var phaseOrderDict = new Dictionary<string, int>
         {
             { "Phase 1: Discovery", 1 },
             { "Phase 2: Planning", 2 },
@@ -492,10 +514,10 @@ public class StoryProgressionDebugger : EditorWindow
             { "Phase 7: Resolution", 7 },
             { "Phase 8: Legacy", 8 }
         };
-        
-        int targetPhaseLevel = phaseOrder.ContainsKey(targetPhase) ? phaseOrder[targetPhase] : 0;
-        int flagPhaseLevel = phaseOrder.ContainsKey(flag.phase) ? phaseOrder[flag.phase] : 0;
-        
+
+        int targetPhaseLevel = phaseOrderDict.ContainsKey(targetPhase) ? phaseOrderDict[targetPhase] : 0;
+        int flagPhaseLevel = phaseOrderDict.ContainsKey(flag.phase) ? phaseOrderDict[flag.phase] : 0;
+
         // Include core progression flags and story milestones from current and previous phases
         if (flagPhaseLevel <= targetPhaseLevel)
         {
@@ -503,7 +525,7 @@ public class StoryProgressionDebugger : EditorWindow
                    flag.category.Contains("Story Milestone") ||
                    flag.category.Contains("Story Revelation");
         }
-        
+
         return false;
     }
     

@@ -181,7 +181,14 @@ public class NPCManager : MonoBehaviour
 
     private void movePlayer()
     {
-        MovePlayerTo.Instance.MovePlayer();
+        if (MovePlayerTo.Instance != null)
+        {
+            MovePlayerTo.Instance.MovePlayer();
+        }
+        else
+        {
+            Debug.LogError("[NPCManager] Cannot move player - MovePlayerTo.Instance is null!");
+        }
     }
 
     #endregion
@@ -419,6 +426,25 @@ public class NPCManager : MonoBehaviour
                     if (dayNightCycle != null)
                     {
                         npc.currentTimeOfDay = dayNightCycle.CurrentTimeOfDay;
+
+                        // Get the new position for the current time from the new schedule
+                        float currentTime = dayNightCycle.CurrentTime;
+                        Vector2 newPosition = newSchedule.GetPositionForTime(currentTime);
+
+                        // Send movement command to NPC to move to new location
+                        var moveCommand = new ScheduleCommand
+                        {
+                            commandType = ScheduleCommandType.Move,
+                            targetPosition = newPosition,
+                            behavior = NPCBehavior.Idle,
+                            shouldIdleWhenReached = true,
+                            canInteract = true
+                        };
+
+                        npc.ReceiveScheduleCommand(moveCommand);
+                        npc.ProcessScheduleCommand();
+
+                        Debug.Log($"[NPCManager] Sent move command to {spawnData.npcID} to new position {newPosition} for time {currentTime:F1}");
                     }
                 }
             }
@@ -436,6 +462,138 @@ public class NPCManager : MonoBehaviour
         };
 
         return SpawnNPC(tempSpawnData);
+    }
+
+    /// <summary>
+    /// Spawns an NPC at their current scheduled location based on the current game time.
+    /// Automatically handles conditional schedules based on game flags.
+    /// </summary>
+    /// <param name="npcID">The ID of the NPC to spawn</param>
+    /// <returns>The spawned NPC, or null if spawn failed</returns>
+    public NPC SpawnNPCAtCurrentScheduledLocation(string npcID)
+    {
+        // Find the spawn data
+        var spawnData = npcSpawnList.FirstOrDefault(sd => sd.npcID == npcID);
+        if (spawnData == null)
+        {
+            Debug.LogError($"[NPCManager] SpawnNPCAtCurrentScheduledLocation: No spawn data found for NPC '{npcID}'");
+            return null;
+        }
+
+        // Check if NPC already exists
+        if (GetNPCByID(npcID) != null)
+        {
+            Debug.LogWarning($"[NPCManager] SpawnNPCAtCurrentScheduledLocation: NPC '{npcID}' already spawned");
+            return null;
+        }
+
+        // Check spawn conditions
+        if (!ShouldSpawnNPC(spawnData))
+        {
+            Debug.LogWarning($"[NPCManager] SpawnNPCAtCurrentScheduledLocation: Spawn conditions not met for '{npcID}'");
+            return null;
+        }
+
+        // Get the applicable schedule (handles conditional schedules automatically)
+        NPCScheduleData scheduleToUse = GetApplicableSchedule(spawnData);
+        if (scheduleToUse == null)
+        {
+            Debug.LogError($"[NPCManager] SpawnNPCAtCurrentScheduledLocation: No applicable schedule for '{npcID}'");
+            return null;
+        }
+
+        // Get current time
+        if (dayNightCycle == null)
+        {
+            Debug.LogError($"[NPCManager] SpawnNPCAtCurrentScheduledLocation: DayNightCycle not found");
+            return null;
+        }
+
+        int currentHour = Mathf.FloorToInt(dayNightCycle.CurrentTime);
+        Debug.Log($"[NPCManager] SpawnNPCAtCurrentScheduledLocation: Spawning '{npcID}' for current hour {currentHour}");
+
+        // Find the most recent schedule event before or at current time
+        ScheduleEvent currentEvent = FindMostRecentScheduleEvent(scheduleToUse, currentHour);
+
+        Vector2 spawnPosition;
+        NPCBehavior spawnBehavior = NPCBehavior.Idle;
+        bool shouldIdleWhenReached = true;
+
+        if (currentEvent != null)
+        {
+            spawnPosition = currentEvent.GetTargetPosition();
+            spawnBehavior = currentEvent.behavior;
+            shouldIdleWhenReached = currentEvent.shouldIdleWhenReached;
+            Debug.Log($"[NPCManager] SpawnNPCAtCurrentScheduledLocation: Using schedule event at hour {currentEvent.hour}, position {spawnPosition}, behavior {spawnBehavior}");
+        }
+        else
+        {
+            // No schedule event yet, spawn at home
+            spawnPosition = scheduleToUse.GetHomePosition();
+            Debug.Log($"[NPCManager] SpawnNPCAtCurrentScheduledLocation: No schedule event found, spawning at home position {spawnPosition}");
+        }
+
+        // Spawn the NPC at the calculated position
+        GameObject npcGO = Instantiate(spawnData.npcPrefab, spawnPosition, Quaternion.identity, npcParent);
+        NPC npc = npcGO.GetComponent<NPC>();
+
+        if (npc == null)
+        {
+            Debug.LogError($"[NPCManager] SpawnNPCAtCurrentScheduledLocation: Spawned object does not have NPC component!");
+            Destroy(npcGO);
+            return null;
+        }
+
+        // Configure NPC with the applicable schedule
+        npc.gameObject.name = $"NPC_{npcID}";
+        npc.scheduleData = scheduleToUse;
+
+        // Force schedule update based on current time
+        if (dayNightCycle != null)
+        {
+            npc.currentTimeOfDay = dayNightCycle.CurrentTimeOfDay;
+        }
+
+        // Track the NPC
+        spawnedNPCs.Add(npc);
+
+        // Notify systems
+        OnNPCSpawned?.Invoke(npc);
+        OnNPCListUpdated?.Invoke(spawnedNPCs);
+
+        Debug.Log($"[NPCManager] SpawnNPCAtCurrentScheduledLocation: Successfully spawned '{npc.npcName}' at {spawnPosition}");
+        return npc;
+    }
+
+    /// <summary>
+    /// Finds the most recent schedule event that should have occurred by the given hour.
+    /// Returns null if no events have occurred yet (spawn at home).
+    /// </summary>
+    private ScheduleEvent FindMostRecentScheduleEvent(NPCScheduleData scheduleData, int currentHour)
+    {
+        if (scheduleData == null || scheduleData.scheduleEvents == null || scheduleData.scheduleEvents.Length == 0)
+        {
+            return null;
+        }
+
+        ScheduleEvent mostRecentEvent = null;
+
+        foreach (var scheduleEvent in scheduleData.scheduleEvents)
+        {
+            if (scheduleEvent == null) continue;
+
+            // Only consider events at or before current hour
+            if (scheduleEvent.hour <= currentHour)
+            {
+                // If this is the first valid event or it's more recent than the current most recent
+                if (mostRecentEvent == null || scheduleEvent.hour > mostRecentEvent.hour)
+                {
+                    mostRecentEvent = scheduleEvent;
+                }
+            }
+        }
+
+        return mostRecentEvent;
     }
 
     public void DespawnNPC(string npcID)

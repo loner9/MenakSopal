@@ -945,15 +945,26 @@ public class NPCInteractionSystem : MonoBehaviour
         DialogueEntry[] availableDialogues = currentDialogue.GetAvailableDialogues(currentDialogue.dialogueEntries, currentTime, gameFlags, usedEntries);
         bool hasMoreDialogue = currentDialogueIndex < availableDialogues.Length - 1;
 
+        // Check if we have pending navigation from choice response
+        bool hasPendingContinuation = hasPendingNavigation || shouldEndAfterResponse;
+
         // Hide buttons if showing choices or waiting for choice response
         bool shouldHideButtons = isShowingChoices || waitingForChoiceResponse ||
                                (currentDialogueEntry != null && currentDialogueEntry.hasChoices);
 
         if (continueButton != null)
-            continueButton.gameObject.SetActive(hasMoreDialogue && !shouldHideButtons);
+        {
+            // Show continue button if there's more dialogue OR pending navigation
+            bool showContinue = (hasMoreDialogue || hasPendingContinuation) && !shouldHideButtons;
+            continueButton.gameObject.SetActive(showContinue);
+        }
 
         if (endButton != null)
-            endButton.gameObject.SetActive(!hasMoreDialogue && !shouldHideButtons);
+        {
+            // Show end button only if no more dialogue AND no pending navigation
+            bool showEnd = !hasMoreDialogue && !hasPendingContinuation && !shouldHideButtons;
+            endButton.gameObject.SetActive(showEnd);
+        }
     }
 
     public DialogueData GetDialogueForNPC(NPC npc)
@@ -1194,6 +1205,9 @@ public class NPCInteractionSystem : MonoBehaviour
     {
         var response = choice.response;
 
+        // Clear current dialogue entry to prevent it from showing choices after response
+        currentDialogueEntry = null;
+
         // Update NPC bubble if specified
         if (response.conversationBubbleSprite != null)
         {
@@ -1226,10 +1240,7 @@ public class NPCInteractionSystem : MonoBehaviour
 
         waitingForChoiceResponse = false;
 
-        // Show dialogue buttons for manual continuation instead of auto-continuing
-        UpdateDialogueButtons();
-
-        // Store navigation info for when user manually continues
+        // Store navigation info for when user manually continues (BEFORE updating buttons!)
         if (response.continueToNext)
         {
             if (response.nextDialogueIndex >= 0)
@@ -1250,6 +1261,9 @@ public class NPCInteractionSystem : MonoBehaviour
             hasPendingNavigation = false;
             shouldEndAfterResponse = true;
         }
+
+        // Show dialogue buttons for manual continuation (AFTER setting navigation state!)
+        UpdateDialogueButtons();
     }
 
     private void NavigateToDialogueEntry(int index)
@@ -1296,27 +1310,10 @@ public class NPCInteractionSystem : MonoBehaviour
         QuestManager questManager = QuestManager.Instance;
         if (questManager == null) return;
 
-        // Start quest
-        if (!string.IsNullOrEmpty(choice.questToStart))
-        {
-            bool started = questManager.StartQuest(choice.questToStart);
-            if (started)
-            {
-                Debug.Log($"Started quest '{choice.questToStart}' from dialogue choice");
-            }
-        }
+        // IMPORTANT: Process completions BEFORE starting new quests
+        // This ensures flags from completed quests are available for new quest requirements
 
-        // Complete quest
-        if (!string.IsNullOrEmpty(choice.questToComplete))
-        {
-            bool completed = questManager.CompleteQuest(choice.questToComplete);
-            if (completed)
-            {
-                Debug.Log($"Completed quest '{choice.questToComplete}' from dialogue choice");
-            }
-        }
-
-        // Complete objective
+        // Complete objective FIRST (may trigger quest completion and add flags)
         if (!string.IsNullOrEmpty(choice.objectiveToComplete))
         {
             string questID = !string.IsNullOrEmpty(choice.questForObjective) ?
@@ -1329,6 +1326,30 @@ public class NPCInteractionSystem : MonoBehaviour
                 {
                     Debug.Log($"Completed objective '{choice.objectiveToComplete}' in quest '{questID}' from dialogue choice");
                 }
+            }
+        }
+
+        // Complete quest SECOND
+        if (!string.IsNullOrEmpty(choice.questToComplete))
+        {
+            bool completed = questManager.CompleteQuest(choice.questToComplete);
+            if (completed)
+            {
+                Debug.Log($"Completed quest '{choice.questToComplete}' from dialogue choice");
+            }
+        }
+
+        // Start new quest LAST (after all completions and flag additions)
+        if (!string.IsNullOrEmpty(choice.questToStart))
+        {
+            bool started = questManager.StartQuest(choice.questToStart);
+            if (started)
+            {
+                Debug.Log($"Started quest '{choice.questToStart}' from dialogue choice");
+            }
+            else
+            {
+                Debug.LogWarning($"Failed to start quest '{choice.questToStart}' - check if required flags are present");
             }
         }
     }
@@ -1554,6 +1575,13 @@ public class NPCInteractionSystem : MonoBehaviour
                     if (string.Equals(objective.targetNPC, npcID, System.StringComparison.OrdinalIgnoreCase) ||
                         string.Equals(objective.targetNPC, npc.npcName, System.StringComparison.OrdinalIgnoreCase))
                     {
+                        // Check if required flags are present before completing
+                        if (!objective.IsAvailable(GetGameFlags()))
+                        {
+                            Debug.Log($"[TalkToNPC] Objective '{objective.description}' cannot be completed yet - missing required flags");
+                            continue;
+                        }
+
                         // Complete the objective
                         bool completed = questManager.CompleteObjective(quest.questID, objective.objectiveID);
 

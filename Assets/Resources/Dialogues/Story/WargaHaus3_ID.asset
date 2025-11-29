@@ -1,0 +1,126 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
+  m_Name: WargaHaus3_ID
+  m_EditorClassIdentifier: 
+  npcName: Karto
+  dialogueDescription: Description of this dialogue set...
+  dialogueEntries:
+  - speakerName: Karto
+    dialogueText: Ah, terik sekali. Air semakin menipis tiap hari. Ada perlu apa
+      nak denganku?
+    availableTimesOfDay: 
+    isRepeatable: 0
+    requiredFlags:
+    - committed_to_help
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices:
+    - choiceText: Meminta bantuan
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: -1
+      response:
+        speakerName: Menak Sopal
+        responseText: Begini kang, apakah dirimu bersedia untuk membantuku dalam
+          membangun dam ...
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 2
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Karto
+    dialogueText: Membangun dam?, di tengah terik matahari seperti ini?. Tentu saja!!.
+      Dirimu pasti berniat untuk membendung air agar lebih mudah diambil bukan. Tidak
+      perlu banyak bertele tele, ayo kita bangun dam ini!!!
+    availableTimesOfDay: 
+    isRepeatable: 0
+    requiredFlags:
+    - committed_to_help
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Karto
+    dialogueText: Cukup kisah asmaraku saja yang kering, tak perlu sumber sumber
+      air disekitar pemukiman ini yang kering. Hal ini membuatku benar benar frustasi
+      nak!
+    availableTimesOfDay: 0100000000000000
+    isRepeatable: 0
+    requiredFlags:
+    - 
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Karto
+    dialogueText: Aku siap membantu membangun dam ini Menak Sopal!
+    availableTimesOfDay: 
+    isRepeatable: 0
+    requiredFlags:
+    - to_river
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  greetings:
+  - speakerName: Karto
+    dialogueText: Pagi Menak Sopal!
+    availableTimesOfDay: 0100000000000000
+    isRepeatable: 0
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Karto
+    dialogueText: Hari sudah petang, saatnya beristirahat.
+    availableTimesOfDay: 0300000002000000
+    isRepeatable: 0
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  farewells: []
+  defaultConversationBubble: {fileID: 0}
+  loopDialogue: 0
+  canBeInterrupted: 1
+  dialogueStartSound: {fileID: 0}
+  typewriterSound: {fileID: 0}

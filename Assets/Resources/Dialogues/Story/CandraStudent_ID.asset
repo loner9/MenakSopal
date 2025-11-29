@@ -21,7 +21,8 @@ MonoBehaviour:
     availableTimesOfDay: 0000000002000000
     isRepeatable: 0
     requiredFlags:
-    - students_permission_granted
+    - committed_to_help
+    - guru_guidance_received
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0

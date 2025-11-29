@@ -31,7 +31,7 @@ MonoBehaviour:
   - objectiveID: recruit_andi
     description: Minta Andi untuk membantu dalam pembangunan.
     type: 0
-    isCompleted: 0
+    isCompleted: 1
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
@@ -45,7 +45,7 @@ MonoBehaviour:
   - objectiveID: recruit_budi
     description: Yakinkan Budi untuk bergabung dengan tim.
     type: 0
-    isCompleted: 0
+    isCompleted: 1
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
@@ -59,11 +59,53 @@ MonoBehaviour:
   - objectiveID: recruit_candra
     description: Minta persetujuan Candra untuk membantu.
     type: 0
-    isCompleted: 0
+    isCompleted: 1
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
     targetNPC: murid_padepokan_3
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: recruit_yf
+    description: Minta bantuan dari petani muda, Bayu
+    type: 0
+    isCompleted: 1
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: young_farmer
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: recruit_joko
+    description: Mintalah Joko untuk bergabung membangun dam
+    type: 0
+    isCompleted: 1
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: pemandu_jalan
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: recruit_wh
+    description: Ajak Karto untuk membantu membangun dam
+    type: 0
+    isCompleted: 1
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: warga_haus_3
     targetItem: 
     targetAmount: 1
     currentAmount: 0

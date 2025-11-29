@@ -12,9 +12,11 @@ public class MonologueSystem : MonoBehaviour
     public GameObject monologuePanel;
     public GameObject monologueCanvas;
     public TextMeshProUGUI monologueText;
+    public TextMeshProUGUI speakerNameText; // Set to "Menak Sopal" during monologue
     public Image backgroundImage;
     public Button continueButton;
     public Button endButton;
+    public Transform choiceContainer; // Hide this during monologue
     
     [Header("Audio")]
     public AudioSource audioSource;
@@ -121,10 +123,14 @@ public class MonologueSystem : MonoBehaviour
                 monologueCanvas = npcInteractionSystem.dialogueCanvas;
             if (monologueText == null)
                 monologueText = npcInteractionSystem.dialogueText;
+            if (speakerNameText == null)
+                speakerNameText = npcInteractionSystem.speakerNameText;
             if (continueButton == null)
                 continueButton = npcInteractionSystem.continueButton;
             if (endButton == null)
                 endButton = npcInteractionSystem.endButton;
+            if (choiceContainer == null)
+                choiceContainer = npcInteractionSystem.choiceContainer;
         }
         
         // Validate UI components
@@ -222,84 +228,239 @@ public class MonologueSystem : MonoBehaviour
     
     /// <summary>
     /// Quick way to show a simple text monologue (useful for FlagMonitorSystem callbacks)
+    /// Uses the NPCInteractionSystem to display monologue like a dialogue
     /// </summary>
     public void ShowSimpleMonologue(string text, string[] flagsToAdd = null, string objectiveToComplete = "", string questForObjective = "")
     {
-        MonologueEntry simpleMonologue = new MonologueEntry
+        if (npcInteractionSystem == null)
+        {
+            Debug.LogError("[MonologueSystem] NPCInteractionSystem not found! Cannot show monologue.");
+            return;
+        }
+
+        // Create a temporary dialogue data for the monologue
+        DialogueData tempDialogue = ScriptableObject.CreateInstance<DialogueData>();
+        tempDialogue.npcName = "Menak Sopal";
+        tempDialogue.dialogueEntries = new DialogueEntry[]
+        {
+            new DialogueEntry
+            {
+                dialogueText = text,
+                speakerName = "Menak Sopal",
+                flagsToAdd = flagsToAdd ?? new string[0],
+                pauseAfterDialogue = 0f
+            }
+        };
+
+        // Create a temporary NPC object for the monologue
+        GameObject tempNPCObj = new GameObject("TempMonologueNPC");
+        tempNPCObj.SetActive(false); // Keep it hidden
+        NPC tempNPC = tempNPCObj.AddComponent<NPC>();
+        tempNPC.npcName = "Menak Sopal";
+        tempNPC.dialogueData = tempDialogue;
+
+        // Queue objectives and additional flags to be added after dialogue ends
+        if (!string.IsNullOrEmpty(objectiveToComplete) && !string.IsNullOrEmpty(questForObjective))
+        {
+            queuedObjectiveActions.Add(new QuestObjectiveAction
+            {
+                questID = questForObjective,
+                objectiveID = objectiveToComplete
+            });
+        }
+
+        // Store the monologue entry to pass to the event
+        MonologueEntry tempMonologueEntry = new MonologueEntry
         {
             monologueText = text,
             flagsToAdd = flagsToAdd ?? new string[0],
             objectiveToComplete = objectiveToComplete,
-            questForObjective = questForObjective,
-            isRepeatable = false,
-            priority = 0
+            questForObjective = questForObjective
         };
-        
-        ShowMonologue(simpleMonologue);
+
+        // Subscribe to dialogue end event to clean up and process queued actions
+        System.Action<NPC> onDialogueEndHandler = null;
+        onDialogueEndHandler = (npc) =>
+        {
+            // Process queued objectives
+            foreach (var objectiveAction in queuedObjectiveActions)
+            {
+                if (questManager != null)
+                {
+                    questManager.CompleteObjective(objectiveAction.questID, objectiveAction.objectiveID);
+                }
+            }
+            queuedObjectiveActions.Clear();
+
+            // Invoke the OnMonologueEnded event so other systems can react
+            OnMonologueEnded?.Invoke(tempMonologueEntry);
+            Debug.Log("[MonologueSystem] OnMonologueEnded event invoked");
+
+            // Cleanup temporary objects
+            if (tempNPCObj != null)
+                Destroy(tempNPCObj);
+            if (tempDialogue != null)
+                Destroy(tempDialogue);
+
+            // Unsubscribe
+            npcInteractionSystem.OnDialogueEnd -= onDialogueEndHandler;
+        };
+
+        npcInteractionSystem.OnDialogueEnd += onDialogueEndHandler;
+
+        // Start the dialogue (which will display like a monologue)
+        npcInteractionSystem.StartDialogue(tempNPC);
     }
     
     private IEnumerator ShowMonologueCoroutine(MonologueEntry monologue)
     {
+        Debug.Log("[MonologueSystem] Starting ShowMonologueCoroutine...");
+
         currentMonologue = monologue;
         isInMonologue = true;
-        
+
         // Clear any previously queued flags and objectives
         queuedFlagsToAdd.Clear();
         queuedFlagsToRemove.Clear();
         queuedObjectiveActions.Clear();
-        
+
         // Queue flags and objectives for later processing
         QueueMonologueConsequences(monologue);
-        
+
         // Pause game time and disable player movement
         if (dayNightCycle != null)
         {
             dayNightCycle.PauseTime();
+            Debug.Log("[MonologueSystem] Time paused");
         }
-        
+
         if (playerMovements != null)
         {
             playerMovements.enabled = false;
+            Debug.Log("[MonologueSystem] Player movement disabled");
         }
-        
-        // Setup UI
-        SetupMonologueUI(monologue);
-        
+
         // Show monologue canvas/panel
         if (monologueCanvas != null)
+        {
             monologueCanvas.SetActive(true);
+            Debug.Log($"[MonologueSystem] Monologue canvas activated: {monologueCanvas.name}");
+        }
+        else
+        {
+            Debug.LogError("[MonologueSystem] monologueCanvas is NULL!");
+        }
+
         if (monologuePanel != null)
+        {
             monologuePanel.SetActive(true);
-        
+            Debug.Log($"[MonologueSystem] Monologue panel activated: {monologuePanel.name}");
+        }
+        else
+        {
+            Debug.LogError("[MonologueSystem] monologuePanel is NULL!");
+        }
+
+        // Setup UI
+        SetupMonologueUI(monologue);
+
         // Play start sound
         PlayAudioClip(defaultMonologueStartSound);
-        
+
         // Show text with typewriter effect
         if (enableTypewriterEffect)
         {
+            Debug.Log("[MonologueSystem] Starting typewriter effect...");
             yield return StartCoroutine(TypewriterEffect(monologue.monologueText));
         }
         else
         {
             monologueText.text = monologue.monologueText;
+            Debug.Log("[MonologueSystem] Text set directly (no typewriter)");
         }
-        
+
+        Debug.Log("[MonologueSystem] Monologue display complete");
         OnMonologueStarted?.Invoke(monologue);
     }
     
     private void SetupMonologueUI(MonologueEntry monologue)
     {
+        Debug.Log("[MonologueSystem] Setting up monologue UI...");
+
+        // Set speaker name to "Menak Sopal" for monologues
+        if (speakerNameText != null)
+        {
+            // Ensure parent hierarchy is active
+            Transform parent = speakerNameText.transform.parent;
+            while (parent != null && parent != monologuePanel.transform)
+            {
+                if (!parent.gameObject.activeSelf)
+                {
+                    Debug.LogWarning($"[MonologueSystem] Activating parent: {parent.name}");
+                    parent.gameObject.SetActive(true);
+                }
+                parent = parent.parent;
+            }
+
+            speakerNameText.text = "Menak Sopal";
+            speakerNameText.gameObject.SetActive(true);
+            Debug.Log($"[MonologueSystem] Speaker name set to 'Menak Sopal' - Active: {speakerNameText.gameObject.activeInHierarchy}");
+        }
+        else
+        {
+            Debug.LogWarning("[MonologueSystem] speakerNameText is NULL!");
+        }
+
         if (monologueText != null)
         {
+            // Ensure parent hierarchy is active
+            Transform parent = monologueText.transform.parent;
+            while (parent != null && parent != monologuePanel.transform)
+            {
+                if (!parent.gameObject.activeSelf)
+                {
+                    Debug.LogWarning($"[MonologueSystem] Activating parent: {parent.name}");
+                    parent.gameObject.SetActive(true);
+                }
+                parent = parent.parent;
+            }
+
             monologueText.text = "";
             monologueText.color = monologue.textColor;
+            monologueText.gameObject.SetActive(true);
+            Debug.Log($"[MonologueSystem] Monologue text component initialized - Active: {monologueText.gameObject.activeInHierarchy}");
         }
-        
+        else
+        {
+            Debug.LogWarning("[MonologueSystem] monologueText is NULL!");
+        }
+
         if (backgroundImage != null)
         {
+            // Ensure parent hierarchy is active
+            Transform parent = backgroundImage.transform.parent;
+            while (parent != null && parent != monologuePanel.transform)
+            {
+                if (!parent.gameObject.activeSelf)
+                {
+                    Debug.LogWarning($"[MonologueSystem] Activating parent: {parent.name}");
+                    parent.gameObject.SetActive(true);
+                }
+                parent = parent.parent;
+            }
+
             backgroundImage.color = monologue.backgroundColor;
+            backgroundImage.gameObject.SetActive(true);
+            Debug.Log($"[MonologueSystem] Background image set - Active: {backgroundImage.gameObject.activeInHierarchy}");
         }
-        
+
+        // Hide choice container if it exists (it might be blocking the text)
+        if (choiceContainer != null)
+        {
+            choiceContainer.gameObject.SetActive(false);
+            Debug.Log("[MonologueSystem] Choice container hidden");
+        }
+
         // Setup buttons for monologue mode
         // Hide continue button during typing, show end button
         UpdateMonologueButtons(true); // isTyping = true initially
@@ -324,21 +485,30 @@ public class MonologueSystem : MonoBehaviour
     {
         isTyping = true;
         monologueText.text = "";
-        
+
+        Debug.Log($"[MonologueSystem] TypewriterEffect - Text length: {text.Length}, Font size: {monologueText.fontSize}, Color: {monologueText.color}, Alpha: {monologueText.color.a}");
+
         for (int i = 0; i <= text.Length; i++)
         {
             monologueText.text = text.Substring(0, i);
-            
+
+            // Log first few characters to verify text is being set
+            if (i <= 10 || i == text.Length)
+            {
+                Debug.Log($"[MonologueSystem] Typewriter progress {i}/{text.Length}: '{monologueText.text}'");
+            }
+
             // Play typewriter sound occasionally
             if (i % 3 == 0)
             {
                 PlayAudioClip(defaultTypewriterSound);
             }
-            
+
             yield return new WaitForSeconds(typewriterSpeed);
         }
-        
+
         isTyping = false;
+        Debug.Log($"[MonologueSystem] Typewriter complete. Final text: '{monologueText.text}'");
         UpdateMonologueButtons(false); // Update buttons when typing is finished
     }
     

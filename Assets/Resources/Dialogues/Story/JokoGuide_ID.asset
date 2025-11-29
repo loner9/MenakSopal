@@ -15,7 +15,7 @@ MonoBehaviour:
   npcName: Joko (Penunjuk Jalan Desa)
   dialogueDescription: Pemandu perjalanan ke Desa Krandon
   dialogueEntries:
-  - speakerName: Joko (Penunjuk Jalan Desa)
+  - speakerName: Joko
     dialogueText: Aku tahu jalan ke Desa Krandon, anak muda. Aku bisa memberitahumu
       arah untuk mencapai desa itu!
     availableTimesOfDay: 0000000002000000
@@ -25,22 +25,36 @@ MonoBehaviour:
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 1
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Joko
+    dialogueText: Hei nak, kau seperti dalam masalah. Ada hal yang bisa ku bantu?
+    availableTimesOfDay: 000000000200000001000000
+    isRepeatable: 0
+    requiredFlags:
+    - committed_to_help
+    - guru_guidance_received
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 1
     choices:
-    - choiceText: Tolong tunjukkan arah ke desa Krandon Paman Joko!
+    - choiceText: Meminta bantuan
       requiredFlags: []
       availableTimesOfDay: 
-      isRepeatable: 1
-      flagsToAdd:
-      - guide_hired
+      isRepeatable: 0
+      flagsToAdd: []
       flagsToRemove: []
       targetDialogueIndex: -1
       response:
-        speakerName: 
-        responseText: 
+        speakerName: Menak Sopal
+        responseText: Paman Joko, bersediakah engkau untuk membantuku dalam membangun
+          dam untuk membantu krisis air di pemukiman ini?
         conversationBubbleSprite: {fileID: 0}
         pauseAfterResponse: 0
         continueToNext: 1
-        nextDialogueIndex: -1
+        nextDialogueIndex: 2
       questToStart: journey_to_krandon
       questToComplete: 
       objectiveToComplete: 
@@ -50,8 +64,36 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
+  - speakerName: Joko
+    dialogueText: Oh, tentu saja nak!. Krisis air ini telah membuat gaduh kehidupan
+      orang orang disini!. Pun ke sungai, air tidak sampai di tempat yang aman bagi
+      kami. Bersama keahlianmu, pastinya membangun dam ini menjadi lebih aman hahaha.
+    availableTimesOfDay: 0000000002000000
+    isRepeatable: 0
+    requiredFlags:
+    - committed_to_help
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Joko
+    dialogueText: Ayo nak, saatnya kita bangun dam ini!
+    availableTimesOfDay: 0000000002000000
+    isRepeatable: 0
+    requiredFlags:
+    - to_river
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 1
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
   greetings:
-  - speakerName: Joko (Penunjuk Jalan Desa)
+  - speakerName: Joko
     dialogueText: Ah, halo nak
     availableTimesOfDay: 000000000100000002000000
     isRepeatable: 0

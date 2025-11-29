@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class StartStory : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class StartStory : MonoBehaviour
     {
         if (NPCInteractionSystem.Instance.HasGameFlag("story_started"))
         {
+            Debug.Log("Story already started. Disabling parent object.");
             if (parentGameObject != null)
             {
                 parentGameObject.SetActive(false);
@@ -26,9 +28,19 @@ public class StartStory : MonoBehaviour
         }
         else
         {
-            DayNightCycle.Instance.PauseTime();
-            DayNightCycle.Instance.SetTime(8);
+            Debug.Log("Starting story...");
+            StartCoroutine(InitializeStory());
         }
+    }
+
+    private IEnumerator InitializeStory()
+    {
+        // Wait one frame to ensure DayNightCycle.Start() has executed
+        yield return null;
+
+        DayNightCycle.Instance.PauseTime();
+        DayNightCycle.Instance.SetTime(8);
+        Debug.Log("Time paused at 8:00");
     }
 
     // Update is called once per frame

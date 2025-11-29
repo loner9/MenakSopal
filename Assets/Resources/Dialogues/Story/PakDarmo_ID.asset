@@ -33,7 +33,7 @@ MonoBehaviour:
       flagsToAdd:
       - river_asked
       flagsToRemove: []
-      targetDialogueIndex: 0
+      targetDialogueIndex: -1
       response:
         speakerName: Menak Sopal
         responseText: Saya dengar ada sungai disekitar desa ini pak, mengapa tidak
@@ -58,8 +58,7 @@ MonoBehaviour:
       mengambil air nak...
     availableTimesOfDay: 000000000200000003000000
     isRepeatable: 0
-    requiredFlags:
-    - river_asked
+    requiredFlags: []
     flagsToAdd:
     - water_crisis_discovered
     flagsToRemove: []
@@ -71,7 +70,7 @@ MonoBehaviour:
       isRepeatable: 0
       flagsToAdd: []
       flagsToRemove: []
-      targetDialogueIndex: 0
+      targetDialogueIndex: -1
       response:
         speakerName: Menak Sopal
         responseText: Seperti itu pak rupanya. Sangat disayangkan, kami dari padepokan

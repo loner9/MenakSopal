@@ -16,12 +16,42 @@ MonoBehaviour:
   dialogueDescription: Murid yang mengamati fenomena aneh
   dialogueEntries:
   - speakerName: Budi (Murid Padepokan)
+    dialogueText: Sekarang semua bahan meterial terkumpul, mari kita selesaikan bendungan
+      ini, Menak Sopal!
+    availableTimesOfDay: 000000000200000003000000
+    isRepeatable: 0
+    requiredFlags:
+    - materials_collected
+    flagsToAdd:
+    - dam_dialog_built
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Budi (Murid Padepokan)
     dialogueText: Bendungan ini terus rusak! Ada sesuatu yang tidak wajar tentang
       ini. Aku melihat riak aneh di air saat bendungan runtuh.
     availableTimesOfDay: 000000000200000003000000
     isRepeatable: 0
     requiredFlags:
-    - dam_repeatedly_destroyed
+    - dam_broken
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Budi (Murid Padepokan)
+    dialogueText: Kabar berlalu cepat nak, dan aku disini siap untuk membantu niat
+      baikmu!
+    availableTimesOfDay: 000000000200000003000000
+    isRepeatable: 0
+    requiredFlags:
+    - committed_to_help
+    - guru_guidance_received
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0

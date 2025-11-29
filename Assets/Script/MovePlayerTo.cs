@@ -9,6 +9,7 @@ public class MovePlayerTo : MonoBehaviour
     Transform target;
     Animator fadeAnimator;
     [SerializeField] float desiredTime = 0f;
+    public String desiredTarget = "";
     public static MovePlayerTo Instance { get; private set; }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
@@ -28,6 +29,7 @@ public class MovePlayerTo : MonoBehaviour
     {
         GameObject ImageFadeGO = GameObject.FindGameObjectWithTag("FadeImage");
         fadeAnimator = ImageFadeGO.GetComponent<Animator>();
+        desiredTarget = "MCHome";
     }
 
     // Update is called once per frame
@@ -90,7 +92,8 @@ public class MovePlayerTo : MonoBehaviour
         {
             Debug.Log("Error gess");
         }
-        MovePlayerDestination(destination);
+        desiredTarget = destination;
+        Invoke("MovePlayerDestination", 1.8f);
     }
 
     public void MovePlayer()
@@ -139,13 +142,13 @@ public class MovePlayerTo : MonoBehaviour
         }
     }
 
-    public void MovePlayerDestination(string destination)
+    public void MovePlayerDestination()
     {
         GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("NPCTarget");
         Transform currentTarget = null;
         foreach (GameObject p in gameObjects)
         {
-            if (p.name == destination)
+            if (p.name == desiredTarget)
             {
                 currentTarget = p.transform;
                 break;
@@ -193,15 +196,30 @@ public class MovePlayerTo : MonoBehaviour
 
     private void OnSceneChanged(Scene arg0, LoadSceneMode arg1)
     {
-        GameObject[] targets = GameObject.FindGameObjectsWithTag("House");
-        foreach (GameObject p in targets)
+        if (arg0.name == "SceneAwal")
         {
-            if (p.name == "MCHome")
+            GameObject[] targets = GameObject.FindGameObjectsWithTag("House");
+            foreach (GameObject p in targets)
             {
-                target = p.transform;
-                break;
+                if (p.name == "MCHome")
+                {
+                    target = p.transform;
+                    break;
+                }
+            }
+        } else {
+            try
+            {
+                GameObject targets = GameObject.FindGameObjectWithTag("SpawnMC");
+                target = targets.transform;    
+            }
+            catch (Exception e)
+            {
+                target = null;
             }
         }
+
+
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject p in players)
         {

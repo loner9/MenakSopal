@@ -30,15 +30,15 @@ MonoBehaviour:
     - Tolong, anak muda! Anak-anakku sudah berhari-hari tidak mendapat air bersih!
   - hour: 15
     targetObjectTag: NPCTarget
-    targetObjectName: VillageWell1
+    targetObjectName: VillageWell3
     targetPosition: {x: 0, y: -6}
     behavior: 4
     shouldIdleWhenReached: 1
     shouldDespawn: 0
     customDialogue: []
   - hour: 18
-    targetObjectTag: House
-    targetObjectName: Entrance_siti
+    targetObjectTag: NPCTarget
+    targetObjectName: VillageWell1
     targetPosition: {x: -3, y: -8}
     behavior: 0
     shouldIdleWhenReached: 0

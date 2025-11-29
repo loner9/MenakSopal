@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questID: investigate_dam_destruction
   questTitle: Sabotasi Misterius
-  questDescription: Temukan alasan mengapa bendungan terus hancur setiap malam. Ada
-    kekuatan tak kasat mata yang berperan, dan kebenaran harus diungkap.
+  questDescription: Temukan alasan mengapa bendungan hancur terus menerus. Ada kekuatan
+    tak kasat mata yang berperan, dan kebenaran harus diungkap.
   questType: 0
   questLevel: 3
   questIcon: {fileID: 0}
@@ -47,22 +47,8 @@ MonoBehaviour:
     isCompleted: 0
     isOptional: 0
     requiredFlags: []
-    flagToSetOnComplete: 
+    flagToSetOnComplete: talked_with_witness
     targetNPC: murid_padepokan_2
-    targetItem: 
-    targetAmount: 1
-    currentAmount: 0
-    targetLocation: 
-    timeDelay: 0
-    showProgress: 1
-  - objectiveID: consult_shaman
-    description: Mencari bimbingan spiritual dari Ki Ageng
-    type: 0
-    isCompleted: 0
-    isOptional: 0
-    requiredFlags: []
-    flagToSetOnComplete: 
-    targetNPC: ki_ageng_sinawang
     targetItem: 
     targetAmount: 1
     currentAmount: 0

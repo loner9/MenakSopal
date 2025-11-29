@@ -28,14 +28,6 @@ MonoBehaviour:
     shouldDespawn: 0
     customDialogue:
     - Padi tumbuh dengan baik setelah bendungan selesai. Air mengalir lancar sekarang.
-  - hour: 8
-    targetObjectTag: NPCTarget
-    targetObjectName: VillageWell2
-    targetPosition: {x: 6, y: -6}
-    behavior: 2
-    shouldIdleWhenReached: 1
-    shouldDespawn: 0
-    customDialogue: []
   - hour: 12
     targetObjectTag: NPCTarget
     targetObjectName: WorkField3

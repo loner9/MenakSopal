@@ -38,7 +38,7 @@ MonoBehaviour:
     targetItem: 
     targetAmount: 1
     currentAmount: 0
-    targetLocation: 
+    targetLocation: DamSite
     timeDelay: 0
     showProgress: 1
   - objectiveID: confront_river_spirit
@@ -46,9 +46,25 @@ MonoBehaviour:
     type: 0
     isCompleted: 0
     isOptional: 0
-    requiredFlags: []
-    flagToSetOnComplete: 
+    requiredFlags:
+    - spiritual_vision_active
+    flagToSetOnComplete: talk_pemandu_jalan
     targetNPC: buaya_putih_spirit
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: ask_for_elephant
+    description: Tanyakan tentang keberadaan gajah putih
+    type: 0
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags:
+    - monsters_defeated
+    flagToSetOnComplete: 
+    targetNPC: pemandu_jalan
     targetItem: 
     targetAmount: 1
     currentAmount: 0

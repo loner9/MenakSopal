@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 /// <summary>
 /// Example implementation showing how different game systems can react to flag changes.
@@ -27,9 +28,24 @@ public class GameSystemsManager : MonoBehaviour
 
     [Header("Debug")]
     public bool enableReactionLogs = true;
+    public bool unDisturbedTime = false;
 
     [SerializeField] GameObject ttsCanvas;
     [SerializeField] Button ttsButton;
+
+    public static GameSystemsManager Instance { get; private set; }
+
+    void Awake()
+    {
+         if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }       
+    }
 
     void Start()
     {
@@ -83,9 +99,100 @@ public class GameSystemsManager : MonoBehaviour
         }
     }
 
+    IEnumerator WaitForDialogueEndThenShowMonologue()
+    {
+        // Wait until player finishes the current dialogue naturally
+        while (NPCInteractionSystem.Instance != null &&
+               NPCInteractionSystem.Instance.IsInDialogue())
+        {
+            yield return null; // Wait one frame and check again
+        }
+
+        Debug.Log("[GameSystemsManager] Dialogue ended, waiting 0.5-1 second before showing monologue");
+
+        // Add delay between dialogue end and monologue start (0.5-1 second)
+        yield return new WaitForSeconds(2.35f);
+
+        Debug.Log("[GameSystemsManager] Showing monologue after recruitment");
+
+        // Subscribe to monologue end event BEFORE showing monologue
+        System.Action<MonologueEntry> onMonologueEndHandler = null;
+        onMonologueEndHandler = (entry) =>
+        {
+            Debug.Log("[GameSystemsManager] Monologue ended, executing post-monologue actions");
+
+            // Unsubscribe from event to prevent memory leaks
+            if (MonologueSystem.Instance != null)
+            {
+                MonologueSystem.Instance.OnMonologueEnded -= onMonologueEndHandler;
+            }
+
+            // Now execute the actions that should happen AFTER monologue ends
+            OnMonologueCompletedAfterRecruitment();
+        };
+
+        // Subscribe to the event
+        if (MonologueSystem.Instance != null)
+        {
+            MonologueSystem.Instance.OnMonologueEnded += onMonologueEndHandler;
+        }
+
+        // Pause time DURING the monologue
+        DayNightCycle.Instance.PauseTime();
+
+        // Show monologue with clean UI state
+        MonologueSystem.Instance.ShowSimpleMonologue("Hmm, aku telah selesai meminta izin dan mengumpulkan bala bantuan untuk membangun dam ini. Saatnya untuk menuju ke sungai!", new string[] { "to_river", "npc_to_river"});
+    }
+
+    void OnMonologueCompletedAfterRecruitment()
+    {
+        Debug.Log("[GameSystemsManager] Executing post-monologue sequence: move to river and set time to day");
+
+        // These happen AFTER the monologue ends (not immediately)
+        // The move is triggered by "npc_to_river" flag which is added by the monologue
+        // So we just need to set time to day and start quest here
+        DayNightCycle.Instance.SetTimeOfDay(TimeOfDay.Day);
+
+        if (questManager != null)
+        {
+            questManager.StartQuest("dam_construction_project");
+        }
+    }
+
     void monologueAfterRecruit()
     {
+        // This method now just shows the monologue (no force-close needed)
         MonologueSystem.Instance.ShowSimpleMonologue("Hmm, aku telah selesai meminta izin dan mengumpulkan bala bantuan untuk membangun dam ini. Saatnya untuk menuju ke sungai!", new string[] { "to_river", "npc_to_river"});
+    }
+
+    void dialogueWithAndiAfterDam()
+    {
+        ForceDialogueTrigger.Instance.TriggerDialogue();
+    }
+
+    IEnumerator WaitForDialogueEndThenTriggerDamBuiltSequence()
+    {
+        // Wait until player finishes the current dialogue naturally
+        while (NPCInteractionSystem.Instance != null &&
+               NPCInteractionSystem.Instance.IsInDialogue())
+        {
+            yield return null; // Wait one frame and check again
+        }
+
+        Debug.Log("[GameSystemsManager] Dialogue ended, starting dam built sequence");
+
+        // Pindah MC ke bantaran kali disebelah salah satu NPC, kemudian mereka ngobrol
+        MovePlayerTo.Instance.movePlayerWithDestinationFade("TempatMCKali");
+
+        // Add flag for Andi's comment
+        NPCInteractionSystem.Instance.AddGameFlag("andi_comment_after_dam");
+
+        // Wait for teleport to complete, then trigger dialogue
+        yield return new WaitForSeconds(4.5f);
+        dialogueWithAndiAfterDam();
+
+        // Ketika ngobrol belum selesai (secara sistem diselesaiin), tiba tiba ada suara ledakan dan
+        // nanti ada semacam screen shake. Ketika dialog selesai maka akan ditambahkan game flag baru untuk trigger next quest
     }
 
     void SetupFlagReactions()
@@ -126,7 +233,7 @@ public class GameSystemsManager : MonoBehaviour
         {
             LogReaction("Water crisis discovered - Starting Chapter 2");
             PlayMusic(urgentMusic);
-            ShowUrgentMessage("Ber-Interaksilah dan Cari tahu apa yang terjadi di desa!");
+            // ShowUrgentMessage("Ber-Interaksilah dan Cari tahu apa yang terjadi di desa!");
 
             // Show player monologue about discovering the crisis
             // if (MonologueSystem.Instance != null)
@@ -155,9 +262,9 @@ public class GameSystemsManager : MonoBehaviour
             ShowUrgentMessage("Temuilah Ki Ageng dan mintalah petunjuk darinya!");
             if (questManager != null)
             {
-                Debug.Log("[GameSystems] Attempting to start quest seek_guru_guidance");
+                // Debug.Log("[GameSystems] Attempting to start quest seek_guru_guidance");
                 bool started = questManager.StartQuest("seek_guru_guidance");
-                Debug.Log($"[GameSystems] Quest start result: {started}");
+                // Debug.Log($"[GameSystems] Quest start result: {started}");
             }
             else
             {
@@ -181,72 +288,132 @@ public class GameSystemsManager : MonoBehaviour
         FlagMonitorSystem.WatchFlagAdded("helpers_recruited", () =>
         {
             LogReaction("Students recruited - Construction can begin");
-            ShowMessage("Murid murid Padepokan siap untuk membantumu!");
+            ShowMessage("Bala bantuan telah terkumpul, saatnya membangun dam!");
 
             if (questManager != null)
             {
-                Invoke("monologueAfterRecruit", 3.5f);
-                DayNightCycle.Instance.PauseTime();  
-                DayNightCycle.Instance.SetTimeOfDay(TimeOfDay.Day);
-                questManager.StartQuest("dam_construction_project");
+                // Start the proper sequence:
+                // 1. Wait for dialogue to end
+                // 2. Wait 0.5-1 second
+                // 3. Show monologue + pause time
+                // 4. When monologue ends → move to river (via flag) + set time to day + start quest
+                StartCoroutine(WaitForDialogueEndThenShowMonologue());
             }
         });
 
-        FlagMonitorSystem.WatchFlagAdded("to_river", () =>
-        {
-            MovePlayerTo.Instance.movePlayerWithDestinationFade("BantaranKali");
-        });
+        // FlagMonitorSystem.WatchFlagAdded("to_river", () =>
+        // {
+        //     MovePlayerTo.Instance.movePlayerWithDestinationFade("BantaranKali");
+        // });
 
         FlagMonitorSystem.WatchFlagAdded("npc_to_river", () =>
         {
             MovePlayerTo.Instance.movePlayerWithDestinationFade("BantaranKali");
+            GameObject materialHolder = GameObject.FindGameObjectWithTag("MaterialsDam");
+
+            if (materialHolder != null)
+            {
+                materialHolder.SetActive(true);
+            }
+
+            unDisturbedTime = true;
+
+            // Despawn NPCs from their current locations, then respawn them at the river
+            // This makes them instantly appear at the river based on their conditional schedules
+            string[] npcIDsToMove = new string[]
+            {
+                "murid_padepokan_1",
+                "murid_padepokan_2",
+                "murid_padepokan_3",
+                "young_farmer",
+                "pemandu_jalan",
+                "warga_haus_3"
+            };
+
+            foreach (string npcID in npcIDsToMove)
+            {
+                // Despawn if already spawned
+                NPCManager.Instance.DespawnNPC(npcID);
+
+                // Respawn at their current scheduled location (will use conditional schedule with npc_to_river flag)
+                NPCManager.Instance.SpawnNPCAtCurrentScheduledLocation(npcID);
+            }
         });
 
         FlagMonitorSystem.WatchFlagAdded("materials_collected", () =>
         {
+            NPCInteractionSystem.Instance.AddGameFlag("materials_collected_del");
+        });
+
+        FlagMonitorSystem.WatchFlagAdded("materials_collected_del", () =>
+        {
             //hapus flag npc_to_river
             NPCInteractionSystem.Instance.RemoveGameFlag("npc_to_river");
             NPCManager.Instance.UpdateNPCSchedules();
-            
         });
 
-        //trigger event dam rusak. setelah objective kelar dan "initial_dam_success" flag ini muncul
+        //harus bikin gameobjek yang bisa dibuat muncul sesuai kondisi adanya flag atau engga
+
+        //trigger event dam rusak. setelah objective kelar dan "initial_dam_built" flag ini muncul
         //ada animasi fade yang nunjukin bangunan selesai. MC ngobrol sama murid2 padepokan, sehabis itu selesai, animasi fade
         //pindah tempat, dan cerita berikutnya dimulai, enggak lama dari fade ini akan ada suara ledakan
         //mc bergegas ke dam.
-        FlagMonitorSystem.WatchFlagAdded("initial_dam_success", () =>
+        FlagMonitorSystem.WatchFlagAdded("initial_dam_built", () =>
         {
-            // Show player monologue about dam completion
-            // if (MonologueSystem.Instance != null)
-            // {
-            //     MonologueSystem.Instance.ShowSimpleMonologue(
-            //         "Akhirnya... Bendungan ini selesai. Air akan mengalir kembali ke desa dan rakyat tidak akan kehausan lagi. Tapi... mengapa hatiku merasa gelisah? Apakah ini benar-benar solusi yang tepat?",
-            //         new string[] { "dam_completion_reflection" }
-            //     );
-            // }
-        }); 
+            // Wait for any ongoing dialogue to finish before executing
+            StartCoroutine(WaitForDialogueEndThenTriggerDamBuiltSequence());
+        });
+
+        FlagMonitorSystem.WatchFlagAdded("dam_broken", () =>
+        {
+            //trigger screen shake dan suara ledakan atau bangunan rubuh disini
+            //disable movement player selama durasi ledakan
+            //munculin monologue setelah ledakan
+            MovePlayerTo.Instance.stopPlayerMovement();
+            CameraShake.Instance.ShakeExplosion(() =>
+            {
+                MovePlayerTo.Instance.resumePlayerMovement();
+                MonologueSystem.Instance.ShowSimpleMonologue("Astaga!, dentuman kali ini keras sekali. Sebaiknya aku memastikan tidak ada yang terluka disana!", new string[] { "", ""});
+            });
+            questManager.StartQuest("investigate_dam_destruction");
+        });
 
         // Chapter 4: Mystical Encounters
-        FlagMonitorSystem.WatchFlagAdded("spiritual_vision_active", () =>
+        FlagMonitorSystem.WatchFlagAdded("spiritual_interference_confirmed", () =>
         {
-            LogReaction("Spiritual vision activated - Mystical chapter begins");
+            questManager.StartQuest("spiritual_vision_encounter");
+        });
+
+        //spiritual_vision_active <- iki active, pindah scene dimana
+        //ada sequence gelut, dan kalau udah selesai gelut, buaya muncul
+
+
+        FlagMonitorSystem.WatchFlagAdded("river_spirit_encountered", () =>
+        {
             PlayMusic(mysticalMusic);
 
             if (questManager != null)
             {
-                questManager.StartQuest("spiritual_vision_encounter");
+                questManager.StartQuest("journey_to_krandon");
             }
         });
 
-        FlagMonitorSystem.WatchFlagAdded("spirit_pact_complete", () =>
-        {
-            LogReaction("Spirit pact completed - Sacred quest unlocked");
-            ShowMessage("Penunggu sungai menerima pemberianmu!");
+        // FlagMonitorSystem.WatchFlagAdded("spirit_pact_complete", () =>
+        // {
+        //     ShowMessage("Penunggu sungai menerima pemberianmu!");
 
+        //     if (questManager != null)
+        //     {
+        //         questManager.CompleteQuest("spiritual_vision_encounter");
+        //         questManager.StartQuest("complete_spirit_sacrifice");
+        //     }
+        // });
+
+        FlagMonitorSystem.WatchFlagAdded("arrived_desa_krandon", () =>
+        {
             if (questManager != null)
             {
-                questManager.CompleteQuest("spiritual_vision_encounter");
-                questManager.StartQuest("complete_spirit_sacrifice");
+                questManager.StartQuest("negotiate_elephant_loan");
             }
         });
 
@@ -324,7 +491,7 @@ public class GameSystemsManager : MonoBehaviour
         FlagMonitorSystem.WatchFlagAdded("guru_guidance_received", () =>
         {
             LogReaction("Guru guidance received - Wisdom gained");
-            ShowMessage("Pengetahuan Ki Ageng Sinawang membimbingmu!");
+            ShowMessage("Petunjuk dan restu dari guru telah diterima!");
         });
 
         // Mystical events

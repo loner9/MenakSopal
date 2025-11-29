@@ -46,10 +46,11 @@ MonoBehaviour:
   - objectiveID: build_dam_structure
     description: Selesaikan Pembangunan Dam
     type: 0
-    isCompleted: 0
+    isCompleted: 1
     isOptional: 0
     requiredFlags:
     - materials_collected
+    - materials_collected_del
     flagToSetOnComplete: 
     targetNPC: murid_padepokan_2
     targetItem: 

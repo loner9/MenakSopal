@@ -28,14 +28,6 @@ MonoBehaviour:
     shouldDespawn: 0
     customDialogue:
     - Tolong, anak muda! Anak-anakku sudah berhari-hari tidak mendapat air bersih!
-  - hour: 9
-    targetObjectTag: House
-    targetObjectName: Entrance_haus1
-    targetPosition: {x: -1, y: -8}
-    behavior: 0
-    shouldIdleWhenReached: 1
-    shouldDespawn: 0
-    customDialogue: []
   - hour: 15
     targetObjectTag: NPCTarget
     targetObjectName: VillageWell5

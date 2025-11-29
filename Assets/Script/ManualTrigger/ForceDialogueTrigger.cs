@@ -34,7 +34,20 @@ public class ForceDialogueTrigger : MonoBehaviour
     private bool hasTriggered = false;
     private NPCInteractionSystem npcInteractionSystem;
     private AudioSource audioSource;
+    public static ForceDialogueTrigger Instance { get; private set; }
     
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
+
     void Start()
     {
         npcInteractionSystem = FindObjectOfType<NPCInteractionSystem>();

@@ -545,7 +545,7 @@ public class DayNightCycle : MonoBehaviour
     
     public void ResumeTime()
     {
-        if (timeProgressionCoroutine == null)
+        if (timeProgressionCoroutine == null && !GameSystemsManager.Instance.unDisturbedTime)
         {
             timeProgressionCoroutine = StartCoroutine(TimeProgressionCoroutine());
         }

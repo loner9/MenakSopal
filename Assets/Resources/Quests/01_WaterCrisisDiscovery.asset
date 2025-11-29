@@ -30,7 +30,7 @@ MonoBehaviour:
   - objectiveID: reach_village_well
     description: Pergi ke sumur desa
     type: 2
-    isCompleted: 0
+    isCompleted: 1
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
@@ -57,8 +57,8 @@ MonoBehaviour:
     showProgress: 1
   - objectiveID: witness_crisis
     description: Pahami sejauh mana krisis air yang terjadi.
-    type: 2
-    isCompleted: 0
+    type: 0
+    isCompleted: 1
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 

@@ -26,18 +26,33 @@ MonoBehaviour:
   - arrived_desa_krandon
   flagsOnFail: []
   objectives:
+  - objectiveID: looking_for_way
+    description: Cari tahu untuk ke desa Krandon
+    type: 0
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: path_obtained
+    targetNPC: pemandu_jalan
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
   - objectiveID: forest_travel
     description: Telusuri hutan dengan aman
     type: 2
     isCompleted: 0
     isOptional: 0
-    requiredFlags: []
+    requiredFlags:
+    - path_obtained
     flagToSetOnComplete: 
     targetNPC: 
     targetItem: 
     targetAmount: 1
     currentAmount: 0
-    targetLocation: ForestPath
+    targetLocation: ForestPathFinal
     timeDelay: 0
     showProgress: 1
   - objectiveID: arrive_krandon
@@ -46,7 +61,7 @@ MonoBehaviour:
     isCompleted: 0
     isOptional: 0
     requiredFlags: []
-    flagToSetOnComplete: 
+    flagToSetOnComplete: path_obtained
     targetNPC: 
     targetItem: 
     targetAmount: 1

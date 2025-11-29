@@ -34,7 +34,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: heard_white_elephant_legend
-    targetNPC: nenek_bijak
+    targetNPC: pemandu_jalan
     targetItem: 
     targetAmount: 1
     currentAmount: 0

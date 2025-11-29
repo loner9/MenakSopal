@@ -16,9 +16,9 @@ MonoBehaviour:
   dialogueDescription: Pemimpin padepokan, guru spiritual Menak Sopal
   dialogueEntries:
   - speakerName: Ki Ageng Sinawang
-    dialogueText: Ah, Menak Sopal. Aku merasakan hatimu gelisah hari ini. Angin bercerita
-      tentang perubahan yang akan datang ke tanah kita. Bercengkeramalah dengan warga
-      desa, mereka membutuhkan bantuanmu...
+    dialogueText: Ah, Menak Sopal. Kekeringan ini membuat kita dan para warga dalam
+      selimut kegelisahan. Bercengkeramalah dengan warga desa, mereka membutuhkan
+      bantuanmu...
     availableTimesOfDay: 0100000000000000
     isRepeatable: 0
     requiredFlags:
@@ -33,7 +33,7 @@ MonoBehaviour:
     isImportantDialogue: 0
     pauseAfterDialogue: 0
   - speakerName: Ki Ageng Sinawang
-    dialogueText: Penderitaan rakyat kita memberatkan hatimu, muridku. Terkadang
+    dialogueText: Penderitaan warga disekitar kita memberatkan hatimu, muridku. Terkadang
       perbuatan mulia yang terbesar memerlukan pengorbanan yang besar pula.
     availableTimesOfDay: 010000000000000002000000
     isRepeatable: 0
@@ -95,6 +95,157 @@ MonoBehaviour:
     flagsToRemove: []
     hasChoices: 0
     choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 1
+    pauseAfterDialogue: 0
+  - speakerName: Ki Ageng Sinawang
+    dialogueText: Menak Sopal, perihal apa yang menimpamu. Sehingga wajahmu terlihat
+      begitu murung sedari gerbang padepokan kita?
+    availableTimesOfDay: 00000000010000000200000003000000
+    isRepeatable: 0
+    requiredFlags:
+    - talked_with_witness
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices:
+    - choiceText: Menjelaskan Situasi
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd:
+      - hearing_situation
+      flagsToRemove: []
+      targetDialogueIndex: 5
+      response:
+        speakerName: Menak Sopal
+        responseText: Jadi seperti ini guru, kami telah berhasil membangun dam untuk
+          membendung air agar dapat digunakan oleh warga sekitar dan juga padepokan.
+          Namun entah mengapa, dam ini selalu hancur berkali kali ketika kami selesai
+          membangunnya. Aku sungguh frustasi guru...
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 5
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 1
+    pauseAfterDialogue: 0
+  - speakerName: Ki Ageng Sinawang
+    dialogueText: Seperti itu rupanya. Agaknya terdapat kekuatan asing tak terlihat
+      yang mengganggu niat baik kalian. Cobalah bertapa disekitar tempat yang kau
+      bangun dam itu muridku. Persiapkanlah dirimu, hal ini memerlukan ketenangan
+      dan kesiapan yang matang.
+    availableTimesOfDay: 00000000010000000200000003000000
+    isRepeatable: 0
+    requiredFlags:
+    - talked_with_witness
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices:
+    - choiceText: Menjelaskan Situasi
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd:
+      - hearing_situation
+      flagsToRemove: []
+      targetDialogueIndex: 0
+      response:
+        speakerName: Menak Sopal
+        responseText: Jadi seperti ini gurru, kami telah berhasil membangun dam untuk
+          membendung air agar dapat digunakan oleh warga sekitar dan juga padepokan.
+          Namun entah mengapa, dam ini selalu hancur berkali kali ketika kami selesai
+          membangunnya. Aku sungguh frustasi guru...
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 0
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 1
+    pauseAfterDialogue: 0
+  - speakerName: Ki Ageng Sinawang
+    dialogueText: Bagaimana muridku, apakah pertapaanmu menghasilkan sesuatu?
+    availableTimesOfDay: 00000000010000000200000003000000
+    isRepeatable: 0
+    requiredFlags:
+    - talk_ki_ageng
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 1
+    choices:
+    - choiceText: Menjelaskan Situasi
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd:
+      - hearing_situation
+      flagsToRemove: []
+      targetDialogueIndex: 7
+      response:
+        speakerName: Menak Sopal
+        responseText: Aku menemukan sesuatu yang menyebabkan hancurnya dam yang kami
+          bangun berkali kali guru. Ternyata terdapat penunggu sungai yang mengingkan
+          sesuatu dari kami, sebuah kepala gajah putih!
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 0
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 1
+    pauseAfterDialogue: 0
+  - speakerName: Ki Ageng Sinawang
+    dialogueText: Hmm, gajah putih. Sebuah permintaan yang cukup sulit. Aku kenal
+      dengan seseorang dari desa Krandon yang memilikinya. Namun aku tidak yakin
+      ia akan memberikan gajah itu dengan begitu saja. Apakah tidak ada cara lain?
+    availableTimesOfDay: 00000000010000000200000003000000
+    isRepeatable: 0
+    requiredFlags:
+    - talk_ki_ageng
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 1
+    choices:
+    - choiceText: Berfikir
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd:
+      - hearing_situation
+      flagsToRemove: []
+      targetDialogueIndex: -1
+      response:
+        speakerName: Menak Sopal
+        responseText: Aku kurang tau guru. Ada baiknya aku pergi menemui penunggu
+          sungai lagi untuk memastikannya.
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 0
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 1
     pauseAfterDialogue: 0

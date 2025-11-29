@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 06_NegotiateElephant
   m_EditorClassIdentifier: 
   questID: negotiate_elephant_loan
-  questTitle: Convincing the Owner
+  questTitle: '"Meminjam" Gajah Putih'
   questDescription: Berbicaralah dengan mbok Randa agar bisa meminjamkan gajah putihnya
   questType: 0
   questLevel: 6
@@ -27,7 +27,7 @@ MonoBehaviour:
   flagsOnFail: []
   objectives:
   - objectiveID: meet_mbok_randa
-    description: Perkenalkan dirimu kepada mbok randa
+    description: Cari keberadaan mbok Randa, dan jelaskan dirimu
     type: 0
     isCompleted: 0
     isOptional: 0
