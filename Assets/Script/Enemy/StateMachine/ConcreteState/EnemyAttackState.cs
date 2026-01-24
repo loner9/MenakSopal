@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class EnemyAttackState : EnemyState
 {
-    private float _attackCooldown = 1.2f;
+    private float _attackCooldown = 1.8f;
     private float _attackTimer;
     private bool _isAttacking = false;
     private Transform _playerTransform;
@@ -28,9 +28,9 @@ public class EnemyAttackState : EnemyState
         enemy.rb.bodyType = RigidbodyType2D.Kinematic;
 
         enemy.animator.SetBool(IsMoving, false);
-        
+
         enemy.MoveEnemy(Vector2.zero);
-        
+
         // Start attack
         _attackTimer = 0;
         _isAttacking = true;
@@ -74,7 +74,7 @@ public class EnemyAttackState : EnemyState
                 enemy.animator.SetTrigger(AttackHash);
             }
         }
-        
+
     }
 
     public override void PhysicsUpdate()

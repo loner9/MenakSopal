@@ -33,7 +33,7 @@ MonoBehaviour:
     isCompleted: 0
     isOptional: 0
     requiredFlags: []
-    flagToSetOnComplete: 
+    flagToSetOnComplete: done_examine
     targetNPC: 
     targetItem: 
     targetAmount: 1
@@ -46,7 +46,8 @@ MonoBehaviour:
     type: 0
     isCompleted: 0
     isOptional: 0
-    requiredFlags: []
+    requiredFlags:
+    - done_examine
     flagToSetOnComplete: talked_with_witness
     targetNPC: murid_padepokan_2
     targetItem: 

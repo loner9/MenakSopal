@@ -16,16 +16,16 @@ MonoBehaviour:
   dialogueDescription: Penjaga mistis, mewakili tuntutan alam dan kerjasama akhir
   dialogueEntries:
   - speakerName: Buaya Putih
-    dialogueText: Siapa yang berani mengganggu air kuno tanpa meminta izin dari penjaganya?
+    dialogueText: Siapa yang berani beraninya mengganggu istirahatku!
     availableTimesOfDay: 000000000200000003000000
-    isRepeatable: 1
+    isRepeatable: 0
     requiredFlags:
     - spiritual_vision_active
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 1
     choices:
-    - choiceText: Saya Menak Sopal. Saya berusaha membantu rakyat saya
+    - choiceText: Menak Sopal
       requiredFlags: []
       availableTimesOfDay: 
       isRepeatable: 1
@@ -33,35 +33,13 @@ MonoBehaviour:
       flagsToRemove: []
       targetDialogueIndex: -1
       response:
-        speakerName: Buaya Putih
-        responseText: Membantu? Dengan membangun bendungan di sungaiKU? Niatmu mungkin
-          murni, tapi caramu menunjukkan ketidakhormatan.
+        speakerName: Menak Sopal
+        responseText: Aku, Menak Sopal. Murid dari padepokan Sinawang!. Hendak mencari
+          alasan bendunganku hancur berkali kali
         conversationBubbleSprite: {fileID: 0}
         pauseAfterResponse: 0
         continueToNext: 1
-        nextDialogueIndex: -1
-      questToStart: 
-      questToComplete: 
-      objectiveToComplete: 
-      questForObjective: 
-      isImportantChoice: 0
-      choiceColor: {r: 1, g: 1, b: 1, a: 1}
-    - choiceText: Roh agung, saya tidak bermaksud menyinggung
-      requiredFlags: []
-      availableTimesOfDay: 
-      isRepeatable: 1
-      flagsToAdd:
-      - showed_respect_to_spirit
-      flagsToRemove: []
-      targetDialogueIndex: -1
-      response:
-        speakerName: Buaya Putih
-        responseText: Penghormatan ditunjukkan melalui tindakan, bukan kata-kata.
-          Kamu membangun tanpa bertanya, mengambil tanpa memberi.
-        conversationBubbleSprite: {fileID: 0}
-        pauseAfterResponse: 0
-        continueToNext: 1
-        nextDialogueIndex: -1
+        nextDialogueIndex: 4
       questToStart: 
       questToComplete: 
       objectiveToComplete: 
@@ -75,9 +53,9 @@ MonoBehaviour:
     dialogueText: Jika kamu ingin bendunganmu berdiri, kamu harus menawarkan persembahan
       yang layak. Bawakan aku kepala gajah putih, dan aku akan menghentikan kerusakanku.
     availableTimesOfDay: 000000000200000003000000
-    isRepeatable: 1
+    isRepeatable: 0
     requiredFlags:
-    - first_contact_complete
+    - 
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 1
@@ -97,7 +75,7 @@ MonoBehaviour:
         pauseAfterResponse: 0
         continueToNext: 1
         nextDialogueIndex: -1
-      questToStart: find_white_elephant
+      questToStart: 
       questToComplete: 
       objectiveToComplete: 
       questForObjective: 
@@ -107,8 +85,8 @@ MonoBehaviour:
     isImportantDialogue: 1
     pauseAfterDialogue: 0
   - speakerName: Buaya Putih
-    dialogueText: Persembahan itu dapat diterima. Bendunganmu akan berdiri, dan air
-      akan mengalir sesuai kebutuhan. Keseimbangan telah dipulihkan.
+    dialogueText: Permintaanku telah terpenuhi. Bendunganmu akan berdiri, dan aku
+      tak akan menggagu lagi.
     availableTimesOfDay: 000000000200000003000000
     isRepeatable: 1
     requiredFlags:
@@ -132,6 +110,55 @@ MonoBehaviour:
     - rescued_by_crocodile
     flagsToRemove: []
     hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 1
+    pauseAfterDialogue: 0
+  - speakerName: Buaya Putih
+    dialogueText: Hmm, jadi muara gemuruh gaduh dari tempat istirahatku akhir akhir
+      ini adalah ulahmu!. Berulang kali ku redam namun tak kunjung padam juga, apa
+      kau ingin menantangku nak?!
+    availableTimesOfDay: 000000000200000003000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 1
+    choices:
+    - choiceText: Menjelaskan
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: -1
+      response:
+        speakerName: Menak Sopal
+        responseText: Tidak, aku tidak berniat menggagumu wahai penunggu tempat ini.
+          Aku hanya ingin membantu hajat banyak orang dengan membangun bendungan
+          ini.
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 1
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 1
+    pauseAfterDialogue: 0
+  - speakerName: Buaya Putih
+    dialogueText: 'Begitu rupanya. Kali ini aku sedang dalam suasana baik. Tapi ingat,
+      lain kali izinlah terlebih dahulu dimanapun kau berpijak. '
+    availableTimesOfDay: 000000000200000003000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 1
     choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 1

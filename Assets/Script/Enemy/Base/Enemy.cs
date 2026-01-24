@@ -1,7 +1,7 @@
+using System.Collections.Generic;
+using Aoiti.Pathfinding;
 using Unity.VisualScripting;
 using UnityEngine;
-using Aoiti.Pathfinding;
-using System.Collections.Generic;
 
 public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckable, IAnimationHandler, IKnockbackable
 {
@@ -32,6 +32,7 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
     [field: SerializeField] float gridSize = 0.5f;
     [field: SerializeField] bool searchShortcut = false;
     [field: SerializeField] bool snapToGrid = false;
+    [field: SerializeField] string enemyType = "";
     List<Vector2> path;
     public List<Vector2> pathLeftToGo { get; set; } = new List<Vector2>();
     // [SerializeField] Transform initialPosition;
@@ -318,6 +319,10 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
 
     public void Die()
     {
+        if (ObjectiveAutoCompletion.Instance != null)
+        {
+            ObjectiveAutoCompletion.Instance.OnEnemyDefeated(enemyType);
+        }
         Debug.Log($"{gameObject.name} has died!");
 
         // Trigger death animation if available
@@ -347,12 +352,13 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
 
         // Destroy after a delay to allow death animation
         // Destroy(gameObject, 2f);
+        DestroyEnemy();
     }
 
     public void DestroyEnemy()
     {
         Debug.Log($"{gameObject.name} is being destroyed");
-        Destroy(gameObject,0.2f);
+        Destroy(gameObject, 0.5f);
     }
 
     #endregion

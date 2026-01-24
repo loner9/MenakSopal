@@ -24,6 +24,7 @@ public class NPC : MonoBehaviour
     public Animator animator;
     public string SpriteSheetName = "chara_01"; // Default sprite sheet
     public SpriteRenderer spriteRenderer;
+    public bool usingCustomSpriteSheet = true;
 
     [Header("Status Bubble System")]
     public GameObject bubblePrefab; // Assign a UI bubble prefab
@@ -200,6 +201,10 @@ public class NPC : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (!usingCustomSpriteSheet)
+        {
+            return;
+        }
         // Check if sprite sheet name changed
         if (LoadedSpriteSheetName != SpriteSheetName)
         {

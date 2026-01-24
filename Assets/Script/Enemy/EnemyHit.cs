@@ -87,6 +87,9 @@ public class EnemyHit : MonoBehaviour
                 enemyDamageable.Damage(damage);
                 Debug.Log($"Enemy {gameObject.name} took {damage} damage");
             }
+        }else
+        {
+            Debug.Log("Collision :" + collision.name+", "+ collision.tag);
         }
 
 

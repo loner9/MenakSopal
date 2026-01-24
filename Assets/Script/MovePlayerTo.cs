@@ -81,7 +81,7 @@ public class MovePlayerTo : MonoBehaviour
         voidDelayCall("MovePlayer", 0.8f);
     }
 
-    public void movePlayerWithDestinationFade(string destination)
+    public void movePlayerWithDestinationFade(string destination, System.Action onComplete = null)
     {
         desiredTime = 5;
         if (fadeAnimator != null)
@@ -93,7 +93,22 @@ public class MovePlayerTo : MonoBehaviour
             Debug.Log("Error gess");
         }
         desiredTarget = destination;
-        Invoke("MovePlayerDestination", 1.8f);
+        StartCoroutine(MovePlayerWithFadeSequence(onComplete));
+    }
+
+    private System.Collections.IEnumerator MovePlayerWithFadeSequence(System.Action onComplete)
+    {
+        // Wait for fade animation
+        yield return new WaitForSeconds(1.8f);
+
+        // Move player to destination
+        MovePlayerDestination();
+
+        // Wait for player movement to resume
+        yield return new WaitForSeconds(0.2f);
+
+        // Call completion callback
+        onComplete?.Invoke();
     }
 
     public void MovePlayer()
@@ -201,6 +216,11 @@ public class MovePlayerTo : MonoBehaviour
             GameObject[] targets = GameObject.FindGameObjectsWithTag("House");
             foreach (GameObject p in targets)
             {
+                //todo : kasih kondisi spawn mc berdasarkan flag
+                //ketika ngehadepin buaya, kasih di mcSpawn1
+                //ketika sequence hutan, kasih di mcSpawn2\
+                //ketika di krandon, kasih di mcKrandon
+                //selesai quest, kasih di mcHome7
                 if (p.name == "MCHome")
                 {
                     target = p.transform;

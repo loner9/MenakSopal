@@ -19,6 +19,9 @@ TagManager:
   - BrokenDam
   - BuiltDam
   - MaterialsDam
+  - SceneRoot
+  - EnemiesContainer
+  - LightSpiritiual
   layers:
   - Default
   - TransparentFX

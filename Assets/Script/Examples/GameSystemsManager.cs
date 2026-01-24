@@ -1,8 +1,8 @@
+using System.Collections;
 using TMPro;
-using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections;
+using UnityEngine.UI;
 
 /// <summary>
 /// Example implementation showing how different game systems can react to flag changes.
@@ -32,25 +32,26 @@ public class GameSystemsManager : MonoBehaviour
 
     [SerializeField] GameObject ttsCanvas;
     [SerializeField] Button ttsButton;
+    InvisibleObjectHolder invisibleObjectHolder;
 
     public static GameSystemsManager Instance { get; private set; }
 
     void Awake()
     {
-         if (Instance != null && Instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(this);
         }
         else
         {
             Instance = this;
-        }       
+        }
     }
 
     void Start()
     {
         Debug.Log("[GameSystems] GameSystemsManager starting up...");
-        
+
         // Try to find QuestManager if not assigned
         if (questManager == null)
         {
@@ -58,21 +59,24 @@ public class GameSystemsManager : MonoBehaviour
             Debug.Log($"[GameSystems] QuestManager found: {questManager != null}");
         }
 
+        invisibleObjectHolder = GetComponent<InvisibleObjectHolder>();
+
         if (ttsButton != null)
         {
             Debug.Log("[GameSystems] Setting up TTS button...");
             ttsButton.onClick.AddListener(MovePlayerTo.Instance.movePlayerWithDelay);
         }
-        
+
         SetupFlagReactions();
-        
+        SetupSubAreaEventHandlers();
+
         // Check if story_started flag exists and trigger water crisis discovery
         var interactionSystem = FindObjectOfType<NPCInteractionSystem>();
         if (interactionSystem != null)
         {
             var flags = interactionSystem.GetGameFlags();
             Debug.Log($"[GameSystems] Current flags: {string.Join(", ", flags)}");
-            
+
             // If story_started flag exists but water_crisis_discovered doesn't, add it
             if (flags.Contains("story_started") && !flags.Contains("water_crisis_discovered"))
             {
@@ -141,7 +145,7 @@ public class GameSystemsManager : MonoBehaviour
         DayNightCycle.Instance.PauseTime();
 
         // Show monologue with clean UI state
-        MonologueSystem.Instance.ShowSimpleMonologue("Hmm, aku telah selesai meminta izin dan mengumpulkan bala bantuan untuk membangun dam ini. Saatnya untuk menuju ke sungai!", new string[] { "to_river", "npc_to_river"});
+        MonologueSystem.Instance.ShowSimpleMonologue("Hmm, aku telah selesai meminta izin dan mengumpulkan bala bantuan untuk membangun dam ini. Saatnya untuk menuju ke sungai!", new string[] { "to_river", "npc_to_river" });
     }
 
     void OnMonologueCompletedAfterRecruitment()
@@ -162,7 +166,7 @@ public class GameSystemsManager : MonoBehaviour
     void monologueAfterRecruit()
     {
         // This method now just shows the monologue (no force-close needed)
-        MonologueSystem.Instance.ShowSimpleMonologue("Hmm, aku telah selesai meminta izin dan mengumpulkan bala bantuan untuk membangun dam ini. Saatnya untuk menuju ke sungai!", new string[] { "to_river", "npc_to_river"});
+        MonologueSystem.Instance.ShowSimpleMonologue("Hmm, aku telah selesai meminta izin dan mengumpulkan bala bantuan untuk membangun dam ini. Saatnya untuk menuju ke sungai!", new string[] { "to_river", "npc_to_river" });
     }
 
     void dialogueWithAndiAfterDam()
@@ -182,17 +186,20 @@ public class GameSystemsManager : MonoBehaviour
         Debug.Log("[GameSystemsManager] Dialogue ended, starting dam built sequence");
 
         // Pindah MC ke bantaran kali disebelah salah satu NPC, kemudian mereka ngobrol
-        MovePlayerTo.Instance.movePlayerWithDestinationFade("TempatMCKali");
+        MovePlayerTo.Instance.movePlayerWithDestinationFade("TempatMCKali", () =>
+        {
+            // Called after teleport completes
+            Debug.Log("[GameSystemsManager] Teleport to TempatMCKali completed");
 
-        // Add flag for Andi's comment
-        NPCInteractionSystem.Instance.AddGameFlag("andi_comment_after_dam");
+            // Add flag for Andi's comment
+            NPCInteractionSystem.Instance.AddGameFlag("andi_comment_after_dam");
 
-        // Wait for teleport to complete, then trigger dialogue
-        yield return new WaitForSeconds(4.5f);
-        dialogueWithAndiAfterDam();
+            // Wait a bit more before triggering dialogue (adjusted from 4.5s since teleport already waited 2s)
+            Invoke("dialogueWithAndiAfterDam", 2.3f);
 
-        // Ketika ngobrol belum selesai (secara sistem diselesaiin), tiba tiba ada suara ledakan dan
-        // nanti ada semacam screen shake. Ketika dialog selesai maka akan ditambahkan game flag baru untuk trigger next quest
+            // Ketika ngobrol belum selesai (secara sistem diselesaiin), tiba tiba ada suara ledakan dan
+            // nanti ada semacam screen shake. Ketika dialog selesai maka akan ditambahkan game flag baru untuk trigger next quest
+        });
     }
 
     void SetupFlagReactions()
@@ -202,13 +209,13 @@ public class GameSystemsManager : MonoBehaviour
         FlagMonitorSystem.WatchFlagAdded("story_started", () =>
         {
             LogReaction("Story Started - Starting Chapter 1");
-            
+
             // Show player reflection monologue using MonologueData asset
             // if (MonologueSystem.Instance != null)
             // {
             //     MonologueSystem.Instance.ShowMonologue("PlayerReflections");
             // }
-            
+
             // Auto-start related quest if QuestManager exists
             if (questManager != null)
             {
@@ -373,7 +380,7 @@ public class GameSystemsManager : MonoBehaviour
             CameraShake.Instance.ShakeExplosion(() =>
             {
                 MovePlayerTo.Instance.resumePlayerMovement();
-                MonologueSystem.Instance.ShowSimpleMonologue("Astaga!, dentuman kali ini keras sekali. Sebaiknya aku memastikan tidak ada yang terluka disana!", new string[] { "", ""});
+                MonologueSystem.Instance.ShowSimpleMonologue("Astaga!, dentuman kali ini keras sekali. Sebaiknya aku memastikan tidak ada yang terluka disana!", new string[] { "", "" });
             });
             questManager.StartQuest("investigate_dam_destruction");
         });
@@ -387,6 +394,47 @@ public class GameSystemsManager : MonoBehaviour
         //spiritual_vision_active <- iki active, pindah scene dimana
         //ada sequence gelut, dan kalau udah selesai gelut, buaya muncul
 
+        FlagMonitorSystem.WatchFlagAdded("spiritual_vision_active", () =>
+        {
+            //todo: pindah ke scene spiritual plane
+
+            // StartCoroutine(HandleSpiritualVisianEncounter());
+            EnterSubArea("SpiritualPlane");
+
+        });
+
+        FlagMonitorSystem.WatchFlagAdded("mc_done_talking", () =>
+        {
+            ShowMessage("Kalahkan rintangan yang ada!");
+            //todo : enable enemies container
+            GameObject enemiesContainer = GameObject.FindGameObjectWithTag("EnemiesContainer");
+            if (enemiesContainer != null)
+            {
+                enemiesContainer.SetActive(true);
+            }
+            else
+            {
+                Debug.Log("Engga ada");
+            }
+        });
+
+        FlagMonitorSystem.WatchFlagAdded("monsters_defeated", () =>
+        {
+            // ShowMessage("Selamat! Anda berhasil mengalahkan semua rintangan!");
+            CameraShake.Instance.ShakeMedium(() =>
+            {
+                // spawn buaya putih
+
+                // NPCManager.Instance.DespawnNPC("buaya_putih_spirit");
+                NPCManager.Instance.SpawnNPCAtCurrentScheduledLocation("buaya_putih_spirit");
+            });
+        });
+
+        FlagMonitorSystem.WatchFlagAdded("accepted_spirit_demand", () =>
+        {
+
+
+        });
 
         FlagMonitorSystem.WatchFlagAdded("river_spirit_encountered", () =>
         {
@@ -509,6 +557,307 @@ public class GameSystemsManager : MonoBehaviour
         });
     }
 
+
+
+    #region Sub-Area Event Handlers
+
+    void SetupSubAreaEventHandlers()
+    {
+        OnSubAreaLoaded += HandleSubAreaLoaded;
+        OnSubAreaUnloaded += HandleSubAreaUnloaded;
+        OnSubAreaRestarted += HandleSubAreaRestarted;
+
+
+        Debug.Log("[GameSystems] Sub-area event handlers registered");
+    }
+
+    void HandleSubAreaLoaded(string sceneName)
+    {
+        Debug.Log($"[GameSystems] Sub-area loaded: {sceneName}");
+
+        // Handle specific scenes
+
+        switch (sceneName)
+        {
+            case "SpiritualPlane":
+                StartCoroutine(InitializeSpiritualPlane());
+                break;
+
+                // Add more cases for other sub-areas as needed
+                // case "MiniGame":
+                //     StartCoroutine(InitializeMiniGame());
+                //     break;
+
+        }
+    }
+
+    void HandleSubAreaUnloaded(string sceneName)
+    {
+        Debug.Log($"[GameSystems] Sub-area unloaded: {sceneName}");
+
+        // Cleanup logic if needed
+
+        switch (sceneName)
+        {
+            case "SpiritualPlane":
+                NPCInteractionSystem.Instance.RemoveGameFlag("mc_done_talking");
+                break;
+        }
+    }
+
+    void HandleSubAreaRestarted(string sceneName)
+    {
+        Debug.Log($"[GameSystems] Sub-area restarted: {sceneName}");
+        switch (sceneName)
+        {
+            case "SpiritualPlane":
+                NPCInteractionSystem.Instance.RemoveGameFlag("mc_done_talking");
+                StartCoroutine(SpiritualPlaneRestarted());
+                break;
+        }
+    }
+
+    IEnumerator SpiritualPlaneRestarted()
+    {
+        // Wait a moment for scene to fully initialize
+        yield return new WaitForSeconds(0.5f);
+
+
+        Debug.Log("[GameSystems] Spiritual Plane restarted...");
+        MonologueSystem.Instance.ShowSimpleMonologue("Sepertinya aku harus menyelesaikan semua rintangan agar bisa keluar!", new string[] { "mc_done_talking" });
+    }
+
+    IEnumerator InitializeSpiritualPlane()
+    {
+        // Wait a moment for scene to fully initialize
+        yield return new WaitForSeconds(0.5f);
+
+        GameObject light2d = GameObject.FindGameObjectWithTag("LightSpiritual");
+        // light2d.SetActive(true);
+        DayNightCycle.Instance.SetTime(20f);
+        DayNightCycle.Instance.PauseTime();
+        Debug.Log("[GameSystems] Initializing Spiritual Plane encounter...");
+        MonologueSystem.Instance.ShowSimpleMonologue("Tempat ini, sepertinya ini ruang spiritual. Aku harus berhati hati disini!", new string[] { "mc_done_talking" });
+    }
+
+    IEnumerator HandleExitSubArea()
+    {
+        yield return new WaitForSeconds(0.7f);
+
+
+        DayNightCycle.Instance.SetTimeOfDay(TimeOfDay.Day);
+        DayNightCycle.Instance.PauseTime();
+
+        ExitSubArea();
+    }
+
+    #endregion
+
+    #region Sub-Area Scene Management
+
+    // Store the current sub-area scene name for unloading
+
+    private string currentSubAreaScene = "";
+
+    // ===== EVENTS =====
+    /// <summary>Event fired when a sub-area scene finishes loading.</summary>
+    public event System.Action<string> OnSubAreaLoaded;
+
+    /// <summary>Event fired when a sub-area scene finishes unloading.</summary>
+    public event System.Action<string> OnSubAreaUnloaded;
+
+    /// <summary>Event fired when a sub-area scene finishes restarting.</summary>
+    public event System.Action<string> OnSubAreaRestarted;
+
+    // ===== ENTER SUB-AREA =====
+
+    /// <summary>Enter a sub-area scene (no callback).</summary>
+    public void EnterSubArea(string subAreaScene)
+    {
+        StartCoroutine(LoadSubArea(subAreaScene, null));
+    }
+
+    /// <summary>Enter a sub-area scene with callback when loading completes.</summary>
+    public void EnterSubArea(string subAreaScene, System.Action onComplete)
+    {
+        StartCoroutine(LoadSubArea(subAreaScene, onComplete));
+    }
+
+    IEnumerator LoadSubArea(string subAreaScene, System.Action onComplete)
+    {
+        // 1. Load the sub-area additively
+        AsyncOperation loadOp = SceneManager.LoadSceneAsync(subAreaScene, LoadSceneMode.Additive);
+        yield return loadOp;
+
+        // 2. HIDE main scene objects AND disable Light2D components (but keep in memory!)
+        GameObject[] sceneRoots = GameObject.FindGameObjectsWithTag("SceneRoot");
+        foreach (GameObject root in sceneRoots)
+        {
+            // Disable all Light2D components to prevent global light conflicts
+            var lights = root.GetComponentsInChildren<UnityEngine.Rendering.Universal.Light2D>(true);
+            foreach (var light in lights)
+            {
+                if (light != null)
+                {
+                    light.enabled = false;
+                    Debug.Log($"[GameSystems] Disabled Light2D: {light.gameObject.name} (Type: {light.lightType})");
+                }
+            }
+
+            root.SetActive(false);
+        }
+
+        // 3. Set sub-area as active scene
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName(subAreaScene));
+
+        // 4. Track the current sub-area
+        currentSubAreaScene = subAreaScene;
+
+        Debug.Log($"[GameSystems] Entered sub-area: {subAreaScene}");
+
+        // 5. Fire event and callback
+        OnSubAreaLoaded?.Invoke(subAreaScene);
+        onComplete?.Invoke();
+    }
+
+    // ===== EXIT SUB-AREA =====
+
+    /// <summary>Exit the current sub-area (no callback).</summary>
+    public void ExitSubArea()
+    {
+        ExitSubArea((System.Action)null);
+    }
+
+    /// <summary>Exit the current sub-area with callback when unloading completes.</summary>
+    public void ExitSubArea(System.Action onComplete)
+    {
+        if (!string.IsNullOrEmpty(currentSubAreaScene))
+        {
+            StartCoroutine(UnloadSubArea(currentSubAreaScene, onComplete));
+        }
+        else
+        {
+            Debug.LogWarning("[GameSystems] No sub-area scene is currently loaded!");
+            onComplete?.Invoke(); // Still call callback even if nothing to unload
+        }
+    }
+
+    /// <summary>Exit a specific sub-area by name (no callback).</summary>
+    public void ExitSubArea(string subAreaScene)
+    {
+        StartCoroutine(UnloadSubArea(subAreaScene, (System.Action)null));
+    }
+
+    /// <summary>Exit a specific sub-area by name with callback.</summary>
+    public void ExitSubArea(string subAreaScene, System.Action onComplete)
+    {
+        StartCoroutine(UnloadSubArea(subAreaScene, onComplete));
+    }
+
+    IEnumerator UnloadSubArea(string subAreaScene, System.Action onComplete)
+    {
+        // 1. Restore visibility of main scene objects AND re-enable Light2D components
+        GameObject[] sceneRoots = GameObject.FindGameObjectsWithTag("SceneRoot");
+        foreach (GameObject root in sceneRoots)
+        {
+            root.SetActive(true);
+
+            // Re-enable all Light2D components
+
+            var lights = root.GetComponentsInChildren<UnityEngine.Rendering.Universal.Light2D>(true);
+            foreach (var light in lights)
+            {
+                if (light != null)
+                {
+                    light.enabled = true;
+                    Debug.Log($"[GameSystems] Re-enabled Light2D: {light.gameObject.name} (Type: {light.lightType})");
+                }
+            }
+        }
+
+        // 2. Set main scene as active again
+        Scene mainScene = SceneManager.GetSceneByName("SceneAwal");
+        if (mainScene.IsValid())
+        {
+            SceneManager.SetActiveScene(mainScene);
+        }
+
+        // 3. Unload the sub-area scene
+        AsyncOperation unloadOp = SceneManager.UnloadSceneAsync(subAreaScene);
+        yield return unloadOp;
+
+        // 4. Clear the current sub-area reference
+        currentSubAreaScene = "";
+
+        Debug.Log($"[GameSystems] Exited sub-area: {subAreaScene}");
+
+        // 5. Fire event and callback
+        OnSubAreaUnloaded?.Invoke(subAreaScene);
+        onComplete?.Invoke();
+    }
+
+    // ===== RESTART SUB-AREA =====
+
+    /// <summary>Restart the current sub-area (no callback).</summary>
+    public void RestartSubArea()
+    {
+        RestartSubArea(null);
+    }
+
+    /// <summary>Restart the current sub-area with callback when restart completes.</summary>
+    public void RestartSubArea(System.Action onComplete)
+    {
+        if (!string.IsNullOrEmpty(currentSubAreaScene))
+        {
+            StartCoroutine(ReloadSubArea(currentSubAreaScene, onComplete));
+        }
+        else
+        {
+            Debug.LogWarning("[GameSystems] No sub-area scene to restart!");
+            onComplete?.Invoke();
+        }
+    }
+
+    IEnumerator ReloadSubArea(string subAreaScene, System.Action onComplete)
+    {
+        // 1. Unload current sub-area
+        AsyncOperation unloadOp = SceneManager.UnloadSceneAsync(subAreaScene);
+        yield return unloadOp;
+
+        // 2. Load it fresh
+        AsyncOperation loadOp = SceneManager.LoadSceneAsync(subAreaScene, LoadSceneMode.Additive);
+        yield return loadOp;
+
+        // 3. Set as active scene
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName(subAreaScene));
+
+        Debug.Log($"[GameSystems] Restarted sub-area: {subAreaScene}");
+
+        // 4. Fire event and callback
+        OnSubAreaRestarted?.Invoke(subAreaScene);
+        onComplete?.Invoke();
+    }
+
+    /// <summary>Get the currently loaded sub-area scene name (empty if none).</summary>
+    public string GetCurrentSubArea() => currentSubAreaScene;
+
+    /// <summary>Check if a sub-area is currently loaded.</summary>
+    public bool IsInSubArea() => !string.IsNullOrEmpty(currentSubAreaScene);
+
+    #endregion
+
+    private IEnumerator HandleSpiritualVisianEncounter()
+    {
+        MovePlayerTo.Instance.stopPlayerMovement();
+
+        yield return new WaitForSeconds(0.8f);
+
+        MovePlayerTo.Instance.movePlayerWithDestinationFade("SpiritualPlane", () =>
+        {
+            MovePlayerTo.Instance.resumePlayerMovement();
+        });
+    }
+
     #region Reaction Helper Methods
 
     void LogReaction(string message)
@@ -584,28 +933,28 @@ public class GameSystemsManager : MonoBehaviour
     private System.Collections.IEnumerator HandleStoryCompletion()
     {
         LogReaction("Initiating story completion sequence");
-        
+
         // Wait for final story elements to complete
         yield return new WaitForSeconds(5f);
-        
+
         // Show completion message
         ShowMessage("Terima kasih telah menyelesaikan perjalanan Menak Sopal!");
-        
+
         // Wait a bit more for player to read
         yield return new WaitForSeconds(3f);
-        
+
         // Auto-save the completion
         if (GameSaveManager.Instance != null)
         {
             GameSaveManager.Instance.AutoSave("StoryComplete_Final");
         }
-        
+
         // Wait before returning to menu
         yield return new WaitForSeconds(2f);
-        
+
         // Return to main menu
         SceneManager.LoadScene("MainMenu");
-        
+
         LogReaction("Story completion sequence finished - returned to main menu");
     }
 }

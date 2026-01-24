@@ -41,14 +41,29 @@ MonoBehaviour:
     targetLocation: DamSite
     timeDelay: 0
     showProgress: 1
+  - objectiveID: defeat_monter
+    description: Kalahkan Rintangan!
+    type: 3
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags:
+    - spiritual_vision_active
+    flagToSetOnComplete: monsters_defeated
+    targetNPC: 
+    targetItem: slime
+    targetAmount: 3
+    currentAmount: 0
+    targetLocation: 
+    timeDelay: 0
+    showProgress: 1
   - objectiveID: confront_river_spirit
     description: Berbicaralah dengan penunggu sungai
     type: 0
     isCompleted: 0
     isOptional: 0
     requiredFlags:
-    - spiritual_vision_active
-    flagToSetOnComplete: talk_pemandu_jalan
+    - monsters_defeated
+    flagToSetOnComplete: 
     targetNPC: buaya_putih_spirit
     targetItem: 
     targetAmount: 1
@@ -63,7 +78,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags:
     - monsters_defeated
-    flagToSetOnComplete: 
+    flagToSetOnComplete: talk_pemandu_jalan
     targetNPC: pemandu_jalan
     targetItem: 
     targetAmount: 1
