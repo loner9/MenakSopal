@@ -1,9 +1,9 @@
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class NPCInteractionSystem : MonoBehaviour
 {
@@ -83,10 +83,10 @@ public class NPCInteractionSystem : MonoBehaviour
     private Sprite originalNPCBubble; // Store original bubble to restore later
     private Coroutine typingCoroutine;
     private DayNightCycle dayNightCycle;
-    
+
     // Track used non-repeatable dialogue entries per NPC
     private Dictionary<string, HashSet<int>> usedDialogueEntries = new Dictionary<string, HashSet<int>>();
-    
+
     // Choice response continuation tracking
     private bool hasPendingNavigation = false;
     private int pendingNavigationIndex = -1;
@@ -376,7 +376,7 @@ public class NPCInteractionSystem : MonoBehaviour
 
         // Clear any previously queued flags from previous dialogue
         queuedFlagsToAdd.Clear();
-        
+
         // Clear choice response navigation state
         hasPendingNavigation = false;
         pendingNavigationIndex = -1;
@@ -397,7 +397,7 @@ public class NPCInteractionSystem : MonoBehaviour
                 {
                     playerMovements.enabled = false;
                 }
-                
+
                 // Reset player animation to idle
                 PlayerAnimation playerAnimation = playerGO.GetComponent<PlayerAnimation>();
                 if (playerAnimation != null)
@@ -520,7 +520,7 @@ public class NPCInteractionSystem : MonoBehaviour
 
         // First priority: Check for available main dialogues
         DialogueEntry[] availableDialogues = currentDialogue.GetAvailableDialogues(currentDialogue.dialogueEntries, currentTime, gameFlags, usedEntries);
-        
+
         if (availableDialogues.Length > 0)
         {
             // Main dialogue available - show it (highest priority)
@@ -626,7 +626,7 @@ public class NPCInteractionSystem : MonoBehaviour
 
         // Clear any previously queued flags from previous dialogue
         queuedFlagsToAdd.Clear();
-        
+
         // Clear choice response navigation state
         hasPendingNavigation = false;
         pendingNavigationIndex = -1;
@@ -644,7 +644,7 @@ public class NPCInteractionSystem : MonoBehaviour
                 {
                     playerMovements.enabled = false;
                 }
-                
+
                 // Reset player animation to idle
                 PlayerAnimation playerAnimation = playerGO.GetComponent<PlayerAnimation>();
                 if (playerAnimation != null)
@@ -1430,12 +1430,12 @@ public class NPCInteractionSystem : MonoBehaviour
     private HashSet<int> GetUsedDialogueEntries(string npcName)
     {
         if (string.IsNullOrEmpty(npcName)) return new HashSet<int>();
-        
+
         if (!usedDialogueEntries.ContainsKey(npcName))
         {
             usedDialogueEntries[npcName] = new HashSet<int>();
         }
-        
+
         return usedDialogueEntries[npcName];
     }
 
@@ -1480,11 +1480,19 @@ public class NPCInteractionSystem : MonoBehaviour
     #endregion
 
     // Public methods for external systems
+    // Syncs with FlagManager when available for centralized flag management
     public void AddGameFlag(string flag)
     {
         if (!gameFlags.Contains(flag))
         {
             gameFlags.Add(flag);
+
+            // Sync with centralized FlagManager
+            if (FlagManager.Instance != null)
+            {
+                FlagManager.Instance.AddFlag(flag);
+            }
+
             // Notify flag monitor system for automatic reactions
             FlagMonitorSystem.NotifyFlagAdded(flag);
         }
@@ -1494,6 +1502,12 @@ public class NPCInteractionSystem : MonoBehaviour
     {
         if (gameFlags.Remove(flag))
         {
+            // Sync with centralized FlagManager
+            if (FlagManager.Instance != null)
+            {
+                FlagManager.Instance.RemoveFlag(flag);
+            }
+
             // Notify flag monitor system for automatic reactions
             FlagMonitorSystem.NotifyFlagRemoved(flag);
         }
@@ -1501,17 +1515,47 @@ public class NPCInteractionSystem : MonoBehaviour
 
     public bool HasGameFlag(string flag)
     {
+        // Check FlagManager first if available, fallback to local
+        if (FlagManager.Instance != null)
+        {
+            return FlagManager.Instance.HasFlag(flag);
+        }
         return gameFlags.Contains(flag);
     }
 
     public void SetGameFlags(List<string> flags)
     {
         gameFlags = new List<string>(flags);
+
+        // Sync with FlagManager
+        if (FlagManager.Instance != null)
+        {
+            FlagManager.Instance.ClearAllFlags();
+            FlagManager.Instance.AddFlags(flags);
+        }
     }
 
     public List<string> GetGameFlags()
     {
+        // Return from FlagManager if available for consistency
+        if (FlagManager.Instance != null)
+        {
+            return FlagManager.Instance.GetAllFlags();
+        }
         return new List<string>(gameFlags);
+    }
+
+    /// <summary>
+    /// Sync flags from FlagManager to local storage.
+    /// Call this during initialization if FlagManager loaded save data first.
+    /// </summary>
+    public void SyncFromFlagManager()
+    {
+        if (FlagManager.Instance != null)
+        {
+            gameFlags = FlagManager.Instance.GetAllFlags();
+            Debug.Log($"[NPCInteractionSystem] Synced {gameFlags.Count} flags from FlagManager");
+        }
     }
 
     // Methods for external control of conversation bubbles
@@ -1713,7 +1757,7 @@ public class NPCInteractionSystem : MonoBehaviour
         if (data != null)
         {
             gameFlags = data.gameFlags ?? new List<string>();
-            
+
             // Convert List<int> back to HashSet<int>
             usedDialogueEntries.Clear();
             if (data.usedDialogueEntries != null)
