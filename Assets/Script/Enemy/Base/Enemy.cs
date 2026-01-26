@@ -45,6 +45,7 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
     void Awake()
     {
         StateMachine = new EnemyStateMachine();
+        StateMachine.SetOwner(this); // Enable state change events
         IdleState = new EnemyIdleState(this, StateMachine);
         AttackState = new EnemyAttackState(this, StateMachine);
         ChaseState = new EnemyChaseState(this, StateMachine);
@@ -80,6 +81,9 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
         }
 
         pathfinder = new Pathfinder<Vector2>(GetDistance, GetNeighbourNodes, 1000);
+
+        // Fire spawn event
+        EnemyEvents.RaiseEnemySpawned(this);
     }
 
     // Update is called once per frame
@@ -146,6 +150,7 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
         if (this.isAggroed != isAggroed)
         {
             Debug.Log($"{gameObject.name}: Aggro Status Changed: {this.isAggroed} -> {isAggroed}");
+            EnemyEvents.RaiseEnemyAggroChanged(this, isAggroed);
         }
         this.isAggroed = isAggroed;
     }
@@ -155,6 +160,7 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
         if (this.isInAttackRange != isInAttackRange)
         {
             Debug.Log($"{gameObject.name}: Attack Range Status Changed: {this.isInAttackRange} -> {isInAttackRange}");
+            EnemyEvents.RaiseEnemyAttackRangeChanged(this, isInAttackRange);
         }
         this.isInAttackRange = isInAttackRange;
     }
@@ -285,6 +291,9 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
 
         // Apply knockback through handler
         knockbackHandler.ApplyKnockback(knockbackDirection, knockbackForce, duration);
+
+        // Fire knockback event
+        EnemyEvents.RaiseEnemyKnockedBack(this, knockbackDirection, knockbackForce);
     }
 
     #endregion
@@ -297,6 +306,9 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
 
         CurrentHealth -= damageAmount;
         Debug.Log($"{gameObject.name} took {damageAmount} damage. Health: {CurrentHealth}/{MaxHealth}");
+
+        // Fire damage event
+        EnemyEvents.RaiseEnemyDamaged(this, damageAmount, CurrentHealth);
 
         // Trigger damage animation if available
         if (animator != null)
@@ -319,11 +331,14 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
 
     public void Die()
     {
+        // Fire death event BEFORE cleanup
+        EnemyEvents.RaiseEnemyDied(this, enemyType);
+
         if (ObjectiveAutoCompletion.Instance != null)
         {
             ObjectiveAutoCompletion.Instance.OnEnemyDefeated(enemyType);
         }
-        Debug.Log($"{gameObject.name} has died!");
+        Debug.Log($"{gameObject.name} has died!"); ;
 
         // Trigger death animation if available
         if (animator != null)
@@ -358,6 +373,7 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
     public void DestroyEnemy()
     {
         Debug.Log($"{gameObject.name} is being destroyed");
+        EnemyEvents.RaiseEnemyDestroyed(this);
         Destroy(gameObject, 0.5f);
     }
 
