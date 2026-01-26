@@ -1,6 +1,6 @@
-using UnityEngine;
 using System.Collections.Generic;
 using Aoiti.Pathfinding;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class NPC : MonoBehaviour
@@ -120,6 +120,7 @@ public class NPC : MonoBehaviour
     private void Awake()
     {
         StateMachine = new NPCStateMachine();
+        StateMachine.SetOwner(this); // Enable state change events
         IdleState = new NPCIdleState(this, StateMachine);
         MoveState = new NPCMoveState(this, StateMachine);
         InteractionState = new NPCInteractionState(this, StateMachine);
@@ -165,6 +166,9 @@ public class NPC : MonoBehaviour
         // Initialize with idle state - NPCManager will send commands as needed
         currentIdlePosition = transform.position;
         StateMachine.Initialize(IdleState);
+
+        // Fire spawn event
+        NPCEvents.RaiseNPCSpawned(this);
     }
 
     private void Update()
@@ -397,12 +401,12 @@ public class NPC : MonoBehaviour
         }
         return neighbours;
     }
-    
+
     Vector2 GetClosestNode(Vector2 target)
     {
         return new Vector2(Mathf.Round(target.x / gridSize) * gridSize, Mathf.Round(target.y / gridSize) * gridSize);
     }
-    
+
     List<Vector2> ShortenPath(List<Vector2> path)
     {
         List<Vector2> newPath = new List<Vector2>();
@@ -427,7 +431,7 @@ public class NPC : MonoBehaviour
     public void GetMoveCommand(Vector2 target)
     {
         Vector2 startPos = (Vector2)transform.position;
-        
+
         Vector2 closestStartNode = GetClosestNode(startPos);
         Vector2 closestTargetNode = GetClosestNode(target);
 
@@ -440,9 +444,12 @@ public class NPC : MonoBehaviour
                 pathLeftToGo = new List<Vector2>(path);
                 if (!snapToGrid) pathLeftToGo.Add(target);
             }
-            
+
             currentDestination = target;
             hasDestination = true;
+
+            // Fire movement started event
+            NPCEvents.RaiseNPCMovementStarted(this, target);
         }
         else
         {
@@ -565,6 +572,9 @@ public class NPC : MonoBehaviour
 
     public void NotifyDestinationReached()
     {
+        // Fire destination reached event
+        NPCEvents.RaiseNPCReachedDestination(this);
+
         // Notify NPCManager that we've reached our destination
         NPCManager npcManager = FindObjectOfType<NPCManager>();
         if (npcManager != null)
@@ -575,6 +585,9 @@ public class NPC : MonoBehaviour
 
     public void RequestDespawn()
     {
+        // Fire despawn event
+        NPCEvents.RaiseNPCDespawned(this);
+
         NPCManager npcManager = FindObjectOfType<NPCManager>();
         if (npcManager != null)
         {
@@ -635,6 +648,9 @@ public class NPC : MonoBehaviour
         // Trigger interaction state change if needed
         if (isPlayerInRange && !wasInRange && canInteract)
         {
+            // Fire player entered range event
+            NPCEvents.RaisePlayerEnteredRange(this);
+
             // Player entered range - could switch to interaction state
             if (StateMachine.CurrentNPCState != InteractionState)
             {
@@ -647,6 +663,9 @@ public class NPC : MonoBehaviour
         }
         else if (!isPlayerInRange && wasInRange)
         {
+            // Fire player left range event
+            NPCEvents.RaisePlayerLeftRange(this);
+
             // Player left range - return to previous behavior
             if (StateMachine.CurrentNPCState == InteractionState)
             {
@@ -667,6 +686,9 @@ public class NPC : MonoBehaviour
     {
         if (!canInteract) return;
 
+        // Fire interaction started event
+        NPCEvents.RaiseNPCInteractionStarted(this);
+
         // Don't hide bubble during interaction - let interaction system handle it
 
         OnInteractionStart?.Invoke(this);
@@ -675,6 +697,9 @@ public class NPC : MonoBehaviour
 
     public void EndInteraction()
     {
+        // Fire interaction ended event
+        NPCEvents.RaiseNPCInteractionEnded(this);
+
         OnInteractionEnd?.Invoke(this);
         Debug.Log($"Ended interaction with {npcName}");
 
