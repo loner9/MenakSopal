@@ -1,0 +1,6 @@
+EXTERNAL startQuest(questId)
+EXTERNAL completeQuest(questId)
+EXTERNAL completeObjective(questId, objectiveId)
+EXTERNAL addFlag(flagName)
+EXTERNAL removeFlag(flagName)
+EXTERNAL hasFlag(flagName)
