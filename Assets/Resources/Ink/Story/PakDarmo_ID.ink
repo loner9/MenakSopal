@@ -3,11 +3,6 @@ INCLUDE Globals.ink
 -> start
 
 === start ===
-// This assumes water_crisis_discovered logic is handled by the conversation itself if not already set
-{ !hasFlag("water_crisis_discovered"):
-    -> discovery
-}
-
 Pak Darmo: Selamat pagi nak.
 -> END
 

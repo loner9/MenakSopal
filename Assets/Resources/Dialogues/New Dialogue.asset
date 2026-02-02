@@ -20,6 +20,8 @@ MonoBehaviour:
     availableTimesOfDay: 
     isRepeatable: 0
     requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
     hasChoices: 1
     choices:
     - choiceText: Namaku adalah sigma, kau
@@ -36,6 +38,10 @@ MonoBehaviour:
         pauseAfterResponse: 1.2
         continueToNext: 1
         nextDialogueIndex: 1
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
       isImportantChoice: 0
       choiceColor: {r: 0, g: 0, b: 0, a: 0}
     - choiceText: Aku seorang pengembara dari barat, panggil saja west
@@ -52,6 +58,10 @@ MonoBehaviour:
         pauseAfterResponse: 0
         continueToNext: 1
         nextDialogueIndex: 1
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
       isImportantChoice: 0
       choiceColor: {r: 0, g: 0, b: 0, a: 0}
     conversationBubbleSprite: {fileID: 0}
@@ -62,6 +72,8 @@ MonoBehaviour:
     availableTimesOfDay: 
     isRepeatable: 0
     requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
     hasChoices: 1
     choices:
     - choiceText: Aku ingin melihat lihat kota ini
@@ -78,6 +90,10 @@ MonoBehaviour:
         pauseAfterResponse: 2
         continueToNext: 0
         nextDialogueIndex: 1
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
       isImportantChoice: 0
       choiceColor: {r: 0, g: 0, b: 0, a: 0}
     conversationBubbleSprite: {fileID: 0}

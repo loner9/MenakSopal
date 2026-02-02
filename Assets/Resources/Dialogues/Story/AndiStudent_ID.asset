@@ -27,7 +27,7 @@ MonoBehaviour:
     flagsToRemove: []
     hasChoices: 1
     choices:
-    - choiceText: Ya, saya sangat membutuhkan tenaga bantuan tambahan!
+    - choiceText: Tentu
       requiredFlags: []
       availableTimesOfDay: 
       isRepeatable: 1
@@ -37,7 +37,7 @@ MonoBehaviour:
       targetDialogueIndex: -1
       response:
         speakerName: 
-        responseText: 
+        responseText: Benar sekali kak Andi, bantuanmu akan sangat membantu ku!
         conversationBubbleSprite: {fileID: 0}
         pauseAfterResponse: 0
         continueToNext: 1

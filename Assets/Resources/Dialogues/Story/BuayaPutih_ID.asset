@@ -60,7 +60,7 @@ MonoBehaviour:
     flagsToRemove: []
     hasChoices: 1
     choices:
-    - choiceText: Saya akan mencari gajah putih ini
+    - choiceText: Menerima
       requiredFlags: []
       availableTimesOfDay: 
       isRepeatable: 1
@@ -70,7 +70,7 @@ MonoBehaviour:
       targetDialogueIndex: -1
       response:
         speakerName: 
-        responseText: 
+        responseText: Baiklah, saya akan mencari gajah putih ini
         conversationBubbleSprite: {fileID: 0}
         pauseAfterResponse: 0
         continueToNext: 1

@@ -16,8 +16,8 @@ MonoBehaviour:
   dialogueDescription: Pemandu perjalanan ke Desa Krandon
   dialogueEntries:
   - speakerName: Joko
-    dialogueText: Aku tahu jalan ke Desa Krandon, anak muda. Aku bisa memberitahumu
-      arah untuk mencapai desa itu!
+    dialogueText: Aku tahu jalan ke Desa Krandon, pal. Aku bisa memberitahumu arah
+      untuk mencapai desa itu!
     availableTimesOfDay: 0000000002000000
     isRepeatable: 0
     requiredFlags:

@@ -20,6 +20,10 @@ MonoBehaviour:
     availableTimesOfDay: 
     isRepeatable: 0
     requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -28,6 +32,10 @@ MonoBehaviour:
     availableTimesOfDay: 
     isRepeatable: 0
     requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -36,6 +44,10 @@ MonoBehaviour:
     availableTimesOfDay: 00000000
     isRepeatable: 0
     requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -45,6 +57,10 @@ MonoBehaviour:
     availableTimesOfDay: 00000000
     isRepeatable: 0
     requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -53,6 +69,10 @@ MonoBehaviour:
     availableTimesOfDay: 02000000
     isRepeatable: 0
     requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -62,6 +82,10 @@ MonoBehaviour:
     availableTimesOfDay: 
     isRepeatable: 0
     requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
