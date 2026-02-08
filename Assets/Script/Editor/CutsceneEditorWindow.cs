@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MenakSopal.Cutscenes;
 using UnityEditor;
 using UnityEngine;
 
@@ -232,15 +233,26 @@ public class CutsceneEditorWindow : EditorWindow
 
         stepsScroll = EditorGUILayout.BeginScrollView(stepsScroll);
 
+        int stepToMove = -1;
+        int moveDirection = 0;
+        int stepToDelete = -1;
+
         if (selectedCutscene.steps != null)
         {
             for (int i = 0; i < selectedCutscene.steps.Count; i++)
             {
-                DrawStepPreview(i);
+                int action = DrawStepPreview(i);
+                if (action == 1) { stepToMove = i; moveDirection = -1; }
+                else if (action == 2) { stepToMove = i; moveDirection = 1; }
+                else if (action == 3) { stepToDelete = i; }
             }
         }
 
         EditorGUILayout.EndScrollView();
+
+        // Process deferred actions after the GUI loop to avoid Layout errors
+        if (stepToMove != -1) MoveStep(stepToMove, moveDirection);
+        if (stepToDelete != -1) DeleteStep(stepToDelete);
 
         // Add step buttons
         EditorGUILayout.BeginHorizontal();
@@ -264,17 +276,15 @@ public class CutsceneEditorWindow : EditorWindow
         }
     }
 
-    private void DrawStepPreview(int index)
+    private int DrawStepPreview(int index)
     {
         var step = selectedCutscene.steps[index];
         bool isSelected = selectedStepIndex == index;
+        int actionResult = 0; // 0: none, 1: up, 2: down, 3: delete
 
-        // Get color based on step type category
-        Color bgColor = GetStepTypeColor(step.type);
         var style = isSelected ? selectedStepStyle : stepStyle;
 
-        // Draw colored background
-        Rect rect = EditorGUILayout.BeginVertical(style);
+        EditorGUILayout.BeginVertical(style);
 
         EditorGUILayout.BeginHorizontal();
 
@@ -287,17 +297,10 @@ public class CutsceneEditorWindow : EditorWindow
 
         // Move buttons
         GUI.enabled = index > 0;
-        if (GUILayout.Button("↑", GUILayout.Width(25)))
-        {
-            MoveStep(index, -1);
-            return;
-        }
+        if (GUILayout.Button("↑", GUILayout.Width(25))) actionResult = 1;
+
         GUI.enabled = index < selectedCutscene.steps.Count - 1;
-        if (GUILayout.Button("↓", GUILayout.Width(25)))
-        {
-            MoveStep(index, 1);
-            return;
-        }
+        if (GUILayout.Button("↓", GUILayout.Width(25))) actionResult = 2;
         GUI.enabled = true;
 
         // Select button
@@ -307,11 +310,7 @@ public class CutsceneEditorWindow : EditorWindow
         }
 
         // Delete button
-        if (GUILayout.Button("×", GUILayout.Width(25)))
-        {
-            DeleteStep(index);
-            return;
-        }
+        if (GUILayout.Button("×", GUILayout.Width(25))) actionResult = 3;
 
         EditorGUILayout.EndHorizontal();
 
@@ -323,6 +322,7 @@ public class CutsceneEditorWindow : EditorWindow
         }
 
         EditorGUILayout.EndVertical();
+        return actionResult;
     }
 
     private string GetStepTypeIcon(CutsceneStep.StepType type)
@@ -337,15 +337,19 @@ public class CutsceneEditorWindow : EditorWindow
             case CutsceneStep.StepType.EnablePlayerMovement:
             case CutsceneStep.StepType.TeleportPlayer:
             case CutsceneStep.StepType.MovePlayerTo:
+            case CutsceneStep.StepType.MovePlayerWalk:
                 return "🚶";
             case CutsceneStep.StepType.SpawnNPC:
-            case CutsceneStep.StepType.DespawnNPC:
-                return "👤";
+            case CutsceneStep.StepType.EnterSubArea:
+            case CutsceneStep.StepType.ExitSubArea:
+                return "🚪";
             case CutsceneStep.StepType.CameraShake:
-                return "📷";
+            case CutsceneStep.StepType.CameraFocusOn:
+            case CutsceneStep.StepType.CameraFollowPlayer:
+                return "🎥";
+            case CutsceneStep.StepType.TriggerEvent:
             case CutsceneStep.StepType.SetFlag:
             case CutsceneStep.StepType.RemoveFlag:
-                return "🏳";
             case CutsceneStep.StepType.StartQuest:
             case CutsceneStep.StepType.CompleteQuest:
                 return "📜";
@@ -386,6 +390,7 @@ public class CutsceneEditorWindow : EditorWindow
             case CutsceneStep.StepType.EnablePlayerMovement:
             case CutsceneStep.StepType.TeleportPlayer:
             case CutsceneStep.StepType.MovePlayerTo:
+            case CutsceneStep.StepType.MovePlayerWalk:
                 return "Player";
             case CutsceneStep.StepType.SpawnNPC:
             case CutsceneStep.StepType.DespawnNPC:
@@ -437,7 +442,10 @@ public class CutsceneEditorWindow : EditorWindow
             case CutsceneStep.StepType.SetFlag:
             case CutsceneStep.StepType.RemoveFlag:
             case CutsceneStep.StepType.EnterSubArea:
+            case CutsceneStep.StepType.MovePlayerWalk:
                 return !string.IsNullOrEmpty(step.targetID) ? $"→ {step.targetID}" : "";
+            case CutsceneStep.StepType.MoveNPCTo:
+                return $"{step.targetID} → {step.secondaryTargetID}";
             case CutsceneStep.StepType.ShowMonologue:
             case CutsceneStep.StepType.ShowMessage:
                 return !string.IsNullOrEmpty(step.textContent)
@@ -524,6 +532,7 @@ public class CutsceneEditorWindow : EditorWindow
         {
             case CutsceneStep.StepType.ShowDialogue:
                 step.targetID = EditorGUILayout.TextField("NPC ID", step.targetID);
+                step.dialogueOverride = (DialogueData)EditorGUILayout.ObjectField("Dialogue Override", step.dialogueOverride, typeof(DialogueData), false);
                 break;
 
             case CutsceneStep.StepType.ShowMonologue:
@@ -534,6 +543,7 @@ public class CutsceneEditorWindow : EditorWindow
 
             case CutsceneStep.StepType.TeleportPlayer:
             case CutsceneStep.StepType.MovePlayerTo:
+            case CutsceneStep.StepType.MovePlayerWalk:
                 step.targetID = EditorGUILayout.TextField("Destination Name", step.targetID);
                 EditorGUILayout.HelpBox("Use the name of a destination GameObject in the scene", MessageType.Info);
                 break;
@@ -543,9 +553,23 @@ public class CutsceneEditorWindow : EditorWindow
                 step.targetID = EditorGUILayout.TextField("NPC ID", step.targetID);
                 break;
 
+            case CutsceneStep.StepType.MoveNPCTo:
+                step.targetID = EditorGUILayout.TextField("NPC ID", step.targetID);
+                step.secondaryTargetID = EditorGUILayout.TextField("Destination ID", step.secondaryTargetID);
+                break;
+
             case CutsceneStep.StepType.CameraShake:
                 step.shakeIntensity = EditorGUILayout.Slider("Intensity", step.shakeIntensity, 0.1f, 3f);
                 EditorGUILayout.HelpBox("0-0.5 = Light, 0.5-1.5 = Medium, 1.5+ = Explosion", MessageType.Info);
+                break;
+
+            case CutsceneStep.StepType.CameraFocusOn:
+                step.targetID = EditorGUILayout.TextField("Focus Target ID", step.targetID);
+                step.duration = EditorGUILayout.FloatField("Pan Duration", step.duration);
+                break;
+
+            case CutsceneStep.StepType.CameraFollowPlayer:
+                step.duration = EditorGUILayout.FloatField("Pan back Duration", step.duration);
                 break;
 
             case CutsceneStep.StepType.SetFlag:
@@ -624,7 +648,7 @@ public class CutsceneEditorWindow : EditorWindow
 
         EditorGUILayout.LabelField("Step Categories:", EditorStyles.boldLabel);
         EditorGUILayout.LabelField("💬 Dialogue - ShowDialogue, ShowMonologue, ShowMessage");
-        EditorGUILayout.LabelField("🚶 Player - Disable/Enable Movement, Teleport, Move");
+        EditorGUILayout.LabelField("🚶 Player - Disable/Enable Movement, Teleport, Move, Walk");
         EditorGUILayout.LabelField("👤 NPC - Spawn, Despawn, Move, Face Direction");
         EditorGUILayout.LabelField("📷 Camera - Shake, Focus, Follow");
         EditorGUILayout.LabelField("🏳 Flags - SetFlag, RemoveFlag");
@@ -703,15 +727,19 @@ public class CutsceneEditorWindow : EditorWindow
         menu.AddItem(new GUIContent("Player/Disable Movement"), false, () => QuickAddStep(CutsceneStep.StepType.DisablePlayerMovement));
         menu.AddItem(new GUIContent("Player/Enable Movement"), false, () => QuickAddStep(CutsceneStep.StepType.EnablePlayerMovement));
         menu.AddItem(new GUIContent("Player/Teleport"), false, () => QuickAddStep(CutsceneStep.StepType.TeleportPlayer));
+        menu.AddItem(new GUIContent("Player/Walk to Location"), false, () => QuickAddStep(CutsceneStep.StepType.MovePlayerWalk));
 
         menu.AddSeparator("");
 
         menu.AddItem(new GUIContent("NPC/Spawn"), false, () => QuickAddStep(CutsceneStep.StepType.SpawnNPC));
         menu.AddItem(new GUIContent("NPC/Despawn"), false, () => QuickAddStep(CutsceneStep.StepType.DespawnNPC));
+        menu.AddItem(new GUIContent("NPC/Walk to Location"), false, () => QuickAddStep(CutsceneStep.StepType.MoveNPCTo));
 
         menu.AddSeparator("");
 
         menu.AddItem(new GUIContent("Camera/Shake"), false, () => QuickAddStep(CutsceneStep.StepType.CameraShake));
+        menu.AddItem(new GUIContent("Camera/Focus on Target"), false, () => QuickAddStep(CutsceneStep.StepType.CameraFocusOn));
+        menu.AddItem(new GUIContent("Camera/Focus on Player"), false, () => QuickAddStep(CutsceneStep.StepType.CameraFollowPlayer));
 
         menu.AddSeparator("");
 

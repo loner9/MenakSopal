@@ -92,6 +92,7 @@ public class NPC : MonoBehaviour
     private bool shouldIdleWhenReached = true;
     private bool shouldMoveAroundWhenIdle = false;
     private bool shouldDespawnOnReachingDestination = false;
+    private bool isCutsceneControlled = false;
 
     // Interaction system
     public System.Action<NPC> OnInteractionStart;
@@ -497,6 +498,8 @@ public class NPC : MonoBehaviour
 
     public void ProcessScheduleCommand()
     {
+        if (isCutsceneControlled) return;
+
         if (!pendingScheduleCommand.HasValue)
         {
             Debug.Log($"[NPC DEBUG] {npcName}: No pending schedule command to process");
@@ -763,6 +766,16 @@ public class NPC : MonoBehaviour
     {
         // In the new system, simply return to idle and let NPCManager handle scheduling
         StateMachine.ChangeState(IdleState);
+    }
+
+    public void StopScheduleExecution()
+    {
+        isCutsceneControlled = true;
+    }
+
+    public void ResumeScheduleExecution()
+    {
+        isCutsceneControlled = false;
     }
     #endregion
 

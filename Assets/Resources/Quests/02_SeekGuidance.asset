@@ -25,6 +25,9 @@ MonoBehaviour:
   flagsOnComplete:
   - guru_guidance_received
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: consult_ki_ageng
     description: Bicaralah dengan Ki Ageng Sinawang tentang krisis yang terjadi.

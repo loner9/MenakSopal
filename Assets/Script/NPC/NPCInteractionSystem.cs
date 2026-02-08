@@ -344,6 +344,12 @@ public class NPCInteractionSystem : MonoBehaviour
 
     public void StartDialogue(NPC npc)
     {
+        DialogueData data = GetDialogueForNPC(npc);
+        StartDialogue(npc, data);
+    }
+
+    public void StartDialogue(NPC npc, DialogueData dialogueData)
+    {
         Debug.Log($"[NPCInteraction] StartDialogue called for: {npc?.npcName ?? "NULL NPC"}");
 
         if (npc == null || isInDialogue)
@@ -352,22 +358,13 @@ public class NPCInteractionSystem : MonoBehaviour
             return;
         }
 
-        // Check UI components
-        Debug.Log($"[NPCInteraction] UI Components Check:");
-        Debug.Log($"  - dialoguePanel: {(dialoguePanel != null ? "ASSIGNED" : "NULL")}");
-        Debug.Log($"  - dialogueCanvas: {(dialogueCanvas != null ? "ASSIGNED" : "NULL")}");
-        Debug.Log($"  - speakerNameText: {(speakerNameText != null ? "ASSIGNED" : "NULL")}");
-        Debug.Log($"  - dialogueText: {(dialogueText != null ? "ASSIGNED" : "NULL")}");
-
-        // Get dialogue data from NPC
-        DialogueData dialogueData = GetDialogueForNPC(npc);
         if (dialogueData == null)
         {
-            Debug.LogWarning($"No dialogue data found for NPC: {npc.npcName}");
+            Debug.LogWarning($"No dialogue data found or provided for NPC: {npc.npcName}");
             return;
         }
 
-        Debug.Log($"[NPCInteraction] Dialogue data found: {dialogueData.npcName}");
+        Debug.Log($"[NPCInteraction] Dialogue data: {dialogueData.npcName}");
 
         currentNPC = npc;
         currentDialogue = dialogueData;

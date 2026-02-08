@@ -1,5 +1,6 @@
-using UnityEngine;
 using System.Collections;
+using MenakSopal.Cutscenes;
+using UnityEngine;
 
 public class StartStory : MonoBehaviour
 {
@@ -18,18 +19,22 @@ public class StartStory : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if (NPCInteractionSystem.Instance.HasGameFlag("story_started"))
+        // if (NPCInteractionSystem.Instance.HasGameFlag("story_started"))
+        // {
+        //     Debug.Log("Story already started. Disabling parent object.");
+        //     if (parentGameObject != null)
+        //     {
+        //         parentGameObject.SetActive(false);
+        //     }
+        // }
+        // else
+        // {
+        //     Debug.Log("Starting story...");
+        //     StartCoroutine(InitializeStory());
+        // }
+        if (NPCInteractionSystem.Instance.HasGameFlag("game_started"))
         {
-            Debug.Log("Story already started. Disabling parent object.");
-            if (parentGameObject != null)
-            {
-                parentGameObject.SetActive(false);
-            }
-        }
-        else
-        {
-            Debug.Log("Starting story...");
-            StartCoroutine(InitializeStory());
+            CutsceneController.Instance.PlayCutscene("startCutscene");
         }
     }
 
@@ -49,15 +54,15 @@ public class StartStory : MonoBehaviour
 
     }
 
-    void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-        {
-            NPCInteractionSystem.Instance.AddGameFlag("story_started");
-            if (parentGameObject != null)
-            {
-                parentGameObject.SetActive(false);
-            }
-        }
-    }
+    // void OnTriggerEnter2D(Collider2D collision)
+    // {
+    //     if (collision.CompareTag("Player"))
+    //     {
+    //         NPCInteractionSystem.Instance.AddGameFlag("story_started");
+    //         if (parentGameObject != null)
+    //         {
+    //             parentGameObject.SetActive(false);
+    //         }
+    //     }
+    // }
 }
