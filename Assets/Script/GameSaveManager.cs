@@ -356,22 +356,42 @@ public class GameSaveManager : MonoBehaviour
 
     System.Collections.IEnumerator LoadSceneAndApplyData(GameSaveData saveData, string slotName)
     {
-        // Load scene
-        AsyncOperation sceneLoad = SceneManager.LoadSceneAsync(saveData.currentScene);
-        yield return sceneLoad;
+        if (LoadingManager.Instance != null)
+        {
+            // Use the professional loading screen
+            LoadingManager.Instance.RegisterSystemBusy("SaveData");
+            LoadingManager.Instance.LoadScene(saveData.currentScene);
 
-        // Wait a frame for scene to initialize
+            // Wait until the scene is actually loaded and active
+            while (SceneManager.GetActiveScene().name != saveData.currentScene)
+            {
+                yield return null;
+            }
 
-        yield return null;
+            // Wait a frame for the new scene's objects to run Awake/Start
+            yield return new WaitForEndOfFrame();
+            yield return null;
+        }
+        else
+        {
+            // Fallback: Load scene
+            AsyncOperation sceneLoad = SceneManager.LoadSceneAsync(saveData.currentScene);
+            yield return sceneLoad;
+
+            // Wait a frame for scene to initialize
+            yield return null;
+        }
 
         // Refresh references after scene load
-
         RefreshSystemReferences();
 
         // Apply save data
-
         ApplySaveDataToSystems(saveData);
 
+        if (LoadingManager.Instance != null)
+        {
+            LoadingManager.Instance.ReportSystemReady("SaveData");
+        }
 
         currentSaveSlot = slotName;
         LogDebug($"Game loaded with scene change: {slotName}");
@@ -728,6 +748,7 @@ public class SaveFileInfo
         return $"{time.Hours:D2}:{time.Minutes:D2}:{time.Seconds:D2}";
     }
 }
+
 
 
 #endregion
