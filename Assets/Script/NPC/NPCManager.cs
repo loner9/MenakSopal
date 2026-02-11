@@ -1,8 +1,8 @@
-using UnityEngine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 using Microsoft.Unity.VisualStudio.Editor;
+using UnityEngine;
 
 [System.Serializable]
 public class ConditionalSchedule
@@ -115,8 +115,12 @@ public class NPCManager : MonoBehaviour
         GameObject ImageFadeGO = GameObject.FindGameObjectWithTag("FadeImage");
         fadeAnimator = ImageFadeGO.GetComponent<Animator>();
 
+        if (LoadingManager.Instance != null) LoadingManager.Instance.RegisterSystemBusy("NPCs");
+
         // Spawn initial NPCs
         SpawnInitialNPCs();
+
+        if (LoadingManager.Instance != null) LoadingManager.Instance.ReportSystemReady("NPCs");
 
         // Set up flag monitoring for schedule updates
         SetupFlagMonitoring();
@@ -160,9 +164,9 @@ public class NPCManager : MonoBehaviour
                 {
                     fadeAnimator.Play("fade");
                 }
-                
+
                 Invoke("movePlayer", 0.8f);
-                
+
             }
             catch (Exception e)
             {

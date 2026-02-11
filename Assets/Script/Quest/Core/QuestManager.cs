@@ -50,6 +50,8 @@ public class QuestManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         InitializeQuestSystem();
+
+        if (LoadingManager.Instance != null) LoadingManager.Instance.RegisterSystemBusy("Quests");
     }
 
     private void Start()
@@ -69,6 +71,8 @@ public class QuestManager : MonoBehaviour
         {
 
         });
+
+        if (LoadingManager.Instance != null) LoadingManager.Instance.ReportSystemReady("Quests");
     }
 
     private void InitializeQuestSystem()

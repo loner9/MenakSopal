@@ -158,6 +158,8 @@ public class DayNightCycle : MonoBehaviour
         // Calculate transition times based on day/night durations
         CalculateTransitionTimes();
 
+        if (LoadingManager.Instance != null) LoadingManager.Instance.RegisterSystemBusy("DayNight");
+
         // Initialize time
         currentTime = timeSettings.startTime;
 
@@ -176,6 +178,8 @@ public class DayNightCycle : MonoBehaviour
     {
         // Start the time cycle
         timeProgressionCoroutine = StartCoroutine(TimeProgressionCoroutine());
+
+        if (LoadingManager.Instance != null) LoadingManager.Instance.ReportSystemReady("DayNight");
     }
 
     private void Update()
