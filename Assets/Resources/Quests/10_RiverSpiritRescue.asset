@@ -25,6 +25,9 @@ MonoBehaviour:
   - rescued_by_crocodile
   - spirit_protection_granted
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: attempt_river_crossing
     description: Try to cross the dangerous river

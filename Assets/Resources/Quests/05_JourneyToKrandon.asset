@@ -25,6 +25,9 @@ MonoBehaviour:
   flagsOnComplete:
   - arrived_desa_krandon
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: looking_for_way
     description: Cari tahu untuk ke desa Krandon

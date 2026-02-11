@@ -26,6 +26,9 @@ MonoBehaviour:
   - dam_construction_complete
   - village_water_restored
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: check_village_well
     description: Pastikan air di sumur telah diisi oleh warga

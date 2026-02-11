@@ -25,6 +25,9 @@ MonoBehaviour:
   flagsOnComplete:
   - village_rice_harvest_complete
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: talk_to_pak_tani
     description: Speak with Pak Tani about helping with harvest

@@ -93,6 +93,19 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
+  - speakerName: Karto
+    dialogueText: Ayolah, kami juga memerlukan air ini!!!
+    availableTimesOfDay: 0000000002000000
+    isRepeatable: 0
+    requiredFlags:
+    - kegaduhan
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
   greetings:
   - speakerName: Karto
     dialogueText: Pagi Menak Sopal!

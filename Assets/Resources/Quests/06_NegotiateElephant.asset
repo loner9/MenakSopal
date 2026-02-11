@@ -25,6 +25,9 @@ MonoBehaviour:
   - white_elephant_borrowed
   - mbok_randa_trusts_player
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: meet_mbok_randa
     description: Cari keberadaan mbok Randa, dan jelaskan dirimu

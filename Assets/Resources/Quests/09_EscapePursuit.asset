@@ -24,6 +24,9 @@ MonoBehaviour:
   flagsOnComplete:
   - reached_river_escape
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: evade_pursuers
     description: Avoid capture by the angry villagers

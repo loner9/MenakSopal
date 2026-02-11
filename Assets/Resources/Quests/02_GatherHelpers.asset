@@ -27,6 +27,9 @@ MonoBehaviour:
   - construction_team_assembled
   - helpers_recruited
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: recruit_andi
     description: Minta Andi untuk membantu dalam pembangunan.

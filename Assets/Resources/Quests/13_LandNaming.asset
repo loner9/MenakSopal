@@ -25,6 +25,9 @@ MonoBehaviour:
   - teranging_galih_named
   - land_naming_complete
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: attend_ceremony
     description: Participate in the land naming ceremony

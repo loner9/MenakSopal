@@ -28,6 +28,9 @@ MonoBehaviour:
   - dam_construction_started
   - initial_dam_built
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: collect_materials
     description: Kumpulkan bebatuan dan kayu

@@ -26,6 +26,9 @@ MonoBehaviour:
   - reconciliation_complete
   - mutual_understanding_achieved
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: demonstrate_remorse
     description: Show continued commitment to making amends

@@ -25,6 +25,9 @@ MonoBehaviour:
   - complete_story_told
   - remorse_expressed
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: explain_water_crisis
     description: Describe the village's desperate situation

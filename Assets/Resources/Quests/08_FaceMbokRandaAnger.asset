@@ -25,6 +25,9 @@ MonoBehaviour:
   - mbok_randa_angry
   - truth_exposed
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: return_to_krandon
     description: Kembalilah ke padepokan

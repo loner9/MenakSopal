@@ -26,6 +26,9 @@ MonoBehaviour:
   - seeking_white_elephant
   - ready_for_journey
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: gather_information
     description: Pelajari dimana keberadaan gajah putih

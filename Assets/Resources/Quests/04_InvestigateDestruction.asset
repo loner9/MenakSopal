@@ -26,6 +26,9 @@ MonoBehaviour:
   - dam_repeatedly_destroyed
   - spiritual_interference_confirmed
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: examine_destruction
     description: Selidiki lokasi bendungan yang hancur

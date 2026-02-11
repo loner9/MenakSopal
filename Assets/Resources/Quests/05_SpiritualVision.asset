@@ -26,6 +26,9 @@ MonoBehaviour:
   - river_spirit_encountered
   - tribute_demand_received
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: perform_ritual
     description: Bersemedilah di sekitar dam

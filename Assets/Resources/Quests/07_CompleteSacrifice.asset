@@ -26,6 +26,9 @@ MonoBehaviour:
   - spirit_pact_complete
   - white_elephant_taken
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: bring_elephant_to_river
     description: Tuntun gajah putih ke sekitar dam

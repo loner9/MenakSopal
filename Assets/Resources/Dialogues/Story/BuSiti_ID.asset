@@ -28,6 +28,19 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
+  - speakerName: Bu Siti
+    dialogueText: Tolong, berikanlah air ini kepada kami...
+    availableTimesOfDay: 0000000002000000
+    isRepeatable: 0
+    requiredFlags:
+    - kegaduhan
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
   greetings:
   - speakerName: Bu Siti
     dialogueText: Krisis air ini benar benar mengganggu kami, nak

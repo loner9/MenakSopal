@@ -90,6 +90,19 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 1
     pauseAfterDialogue: 0
+  - speakerName: Pak Darmo
+    dialogueText: Iya nak, kasihanilah orang tua renta seperti kami ini...
+    availableTimesOfDay: 0000000002000000
+    isRepeatable: 0
+    requiredFlags:
+    - kegaduhan
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
   greetings: []
   farewells: []
   defaultConversationBubble: {fileID: 0}

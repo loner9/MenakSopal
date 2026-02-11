@@ -26,19 +26,22 @@ MonoBehaviour:
   flagsOnComplete:
   - water_crisis_discovered
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
-  - objectiveID: reach_village_well
-    description: Pergi ke sumur desa
-    type: 2
+  - objectiveID: witness_crisis
+    description: Pergi ke sumur desa, dan pahami konflik yang terjadi
+    type: 6
     isCompleted: 1
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
-    targetNPC: 
+    targetNPC: Anak Gembala
     targetItem: 
     targetAmount: 1
     currentAmount: 0
-    targetLocation: VillageWell
+    targetLocation: 
     timeDelay: 0
     showProgress: 1
   - objectiveID: talk_to_villagers
@@ -48,21 +51,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
-    targetNPC: warga_haus_1
-    targetItem: 
-    targetAmount: 1
-    currentAmount: 0
-    targetLocation: 
-    timeDelay: 0
-    showProgress: 1
-  - objectiveID: witness_crisis
-    description: Pahami sejauh mana krisis air yang terjadi.
-    type: 0
-    isCompleted: 1
-    isOptional: 0
-    requiredFlags: []
-    flagToSetOnComplete: 
-    targetNPC: bu_siti
+    targetNPC: Pak Darmo
     targetItem: 
     targetAmount: 1
     currentAmount: 0

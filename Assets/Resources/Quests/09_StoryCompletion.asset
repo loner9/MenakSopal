@@ -26,6 +26,9 @@ MonoBehaviour:
   - story_completed
   - wisdom_gained
   flagsOnFail: []
+  prerequisiteQuestIDs: []
+  unlocksQuestIDs: []
+  isChainQuest: 0
   objectives:
   - objectiveID: final_guru_wisdom
     description: Receive final wisdom from Ki Ageng Sinawang
