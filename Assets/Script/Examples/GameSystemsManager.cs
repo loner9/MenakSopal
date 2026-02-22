@@ -1,4 +1,5 @@
 using System.Collections;
+using MenakSopal.Audio;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -870,10 +871,9 @@ public class GameSystemsManager : MonoBehaviour
 
     void PlayMusic(AudioClip clip)
     {
-        if (musicSource != null && clip != null)
+        if (AudioSystem.Instance != null && clip != null)
         {
-            musicSource.clip = clip;
-            musicSource.Play();
+            AudioSystem.Instance.PlayMusic(clip);
             LogReaction($"Playing music: {clip.name}");
         }
     }

@@ -103,7 +103,8 @@ public class MovePlayerTo : MonoBehaviour
 
         // Move player to destination
         MovePlayerDestination();
-
+        NPCManager.Instance.UpdateNPCSchedules();
+        NPCManager.Instance.SyncNPCsToCurrentTime();
         // Wait for player movement to resume
         yield return new WaitForSeconds(0.2f);
 
@@ -125,7 +126,9 @@ public class MovePlayerTo : MonoBehaviour
             return;
         }
 
-        DayNightCycle.Instance.SetTime(desiredTime);
+        DayNightCycle.Instance.SetTime(5);
+        NPCManager.Instance.UpdateNPCSchedules();
+        NPCManager.Instance.SyncNPCsToCurrentTime();
         DayNightCycle.Instance.ResumeTime();
 
         try
@@ -227,11 +230,13 @@ public class MovePlayerTo : MonoBehaviour
                     break;
                 }
             }
-        } else {
+        }
+        else
+        {
             try
             {
                 GameObject targets = GameObject.FindGameObjectWithTag("SpawnMC");
-                target = targets.transform;    
+                target = targets.transform;
             }
             catch (Exception e)
             {

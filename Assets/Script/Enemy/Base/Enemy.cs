@@ -41,6 +41,7 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
     // [SerializeField] Animator animator { get; set; }
     public float RandomMovementRange = 5f;
     public float RandomMovementSpeed = 2f;
+    public Vector3 SpawnPosition { get; private set; }
 
     void Awake()
     {
@@ -71,6 +72,7 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         CurrentHealth = MaxHealth;
+        SpawnPosition = transform.position;
         StateMachine.Initialize(IdleState);
 
         // Initialize or add KnockbackHandler component
@@ -269,7 +271,7 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
 
     void OnDrawGizmos()
     {
-        Gizmos.DrawWireSphere(transform.position, RandomMovementRange);
+        Gizmos.DrawWireSphere(Application.isPlaying ? SpawnPosition : transform.position, RandomMovementRange);
     }
 
     #region IKnockbackable Implementation

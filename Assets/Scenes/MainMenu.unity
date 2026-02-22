@@ -310,6 +310,7 @@ GameObject:
   - component: {fileID: 23676050}
   - component: {fileID: 23676051}
   - component: {fileID: 23676052}
+  - component: {fileID: 23676053}
   m_Layer: 0
   m_Name: GameSystemManager
   m_TagString: Untagged
@@ -639,6 +640,22 @@ MonoBehaviour:
   fadeDuration: 0.5
   minLoadingTime: 1
   postLoadDelay: 0.5
+--- !u!114 &23676053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 23676039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5af2d72f829907449a88323f7a49b8ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  library: {fileID: 11400000, guid: c4a3e12793df8f04d8b84d06fde10537, type: 2}
+  musicSource: {fileID: 8406750134817007938, guid: 9d972165cdd4369409ef500e7c35bac5, type: 3}
+  sfxSourcePrefab: {fileID: 4573271551410715725, guid: 6ab1f3e1a39a77e4491f4f5e75fd9756, type: 3}
+  initialSfxPoolSize: 10
 --- !u!1 &25692996
 GameObject:
   m_ObjectHideFlags: 0
@@ -3851,6 +3868,7 @@ MonoBehaviour:
   backToMenuButton: {fileID: 0}
   firstGameScene: SceneAwal
   startPosition: {x: -18.04, y: -14.36, z: 0}
+  menuMusic: {fileID: 8300000, guid: d996915af5032af4087f4e3c84a85e0a, type: 3}
   enableDebugLogs: 1
 --- !u!4 &534735325
 Transform:

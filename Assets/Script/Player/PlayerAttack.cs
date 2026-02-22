@@ -8,11 +8,13 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private float attackCooldown = 0.5f;
     [SerializeField] private float maxAttackDuration = 1.0f; // Fallback auto-reset
     [SerializeField] private GameObject attackBox;
-    
+
+
     [Header("Attack Box Positioning")]
     [SerializeField] private float attackBoxDistance = 1.5f;
     [SerializeField] private Vector2 attackBoxOffset = Vector2.zero;
-    
+
+
     private PlayerActions playerActions;
     private PlayerAnimation playerAnimation;
     private Player player;
@@ -45,7 +47,8 @@ public class PlayerAttack : MonoBehaviour
         HandleAttackInput();
         UpdateCooldownTimer();
     }
-    
+
+
     private bool CanAttack()
     {
         string currentScene = SceneManager.GetActiveScene().name;
@@ -55,11 +58,12 @@ public class PlayerAttack : MonoBehaviour
     private void HandleAttackInput()
     {
         if (player.Stats.health <= 0) return;
-        if (!CanAttack()) return;
+        // if (!CanAttack()) return;
+        if (!FlagManager.HasGameFlag("can_attack")) return;
         if (playerActions.Movement.Attack.WasPressedThisFrame() && !isAttacking && cooldownTimer <= 0f)
-            {
-                PerformAttack();
-            }
+        {
+            PerformAttack();
+        }
     }
 
     private void UpdateCooldownTimer()
@@ -144,8 +148,9 @@ public class PlayerAttack : MonoBehaviour
     {
         attackBox = new GameObject("PlayerAttackBox");
         attackBox.transform.SetParent(transform);
-        
+
         // Set initial position based on facing direction
+
         UpdateAttackBoxPosition();
 
         // Add collider for attack detection

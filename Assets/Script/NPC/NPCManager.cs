@@ -442,7 +442,8 @@ public class NPCManager : MonoBehaviour
                             targetPosition = newPosition,
                             behavior = NPCBehavior.Idle,
                             shouldIdleWhenReached = true,
-                            canInteract = true
+                            canInteract = true,
+                            sourceEventHour = -1 // Forced update from schedule change, always run
                         };
 
                         npc.ReceiveScheduleCommand(moveCommand);
@@ -559,6 +560,7 @@ public class NPCManager : MonoBehaviour
         }
 
         // Track the NPC
+        npc.currentScheduleEventHour = currentEvent != null ? currentEvent.hour : -1;
         spawnedNPCs.Add(npc);
 
         // Notify systems
@@ -741,9 +743,16 @@ public class NPCManager : MonoBehaviour
             // Check if there's a schedule event for this hour
             var scheduleEvent = spawnData.scheduleData.GetScheduleEventForHour(hour);
 
-            if (scheduleEvent != null && scheduleEvent.hour == hour)
+            if (scheduleEvent != null)
             {
-                Debug.Log($"[NPC MANAGER DEBUG] ✅ Found schedule event for {spawnData.npcID} at hour {hour}");
+                // Safety Check: Only send command if this NPC hasn't already processed this specific event
+                if (existingNPC.currentScheduleEventHour == scheduleEvent.hour)
+                {
+                    Debug.Log($"[NPC MANAGER DEBUG] ⏭️ Skipping schedule update for {spawnData.npcID} - already following event from hour {scheduleEvent.hour}");
+                    return;
+                }
+
+                Debug.Log($"[NPC MANAGER DEBUG] ✅ Found new schedule event for {spawnData.npcID} (Event Hour: {scheduleEvent.hour}, Current Hour: {hour})");
                 Debug.Log($"[NPC MANAGER DEBUG] Event details - Tag: '{scheduleEvent.targetObjectTag}', Name: '{scheduleEvent.targetObjectName}', Behavior: {scheduleEvent.behavior}");
 
                 // This hour has a specific event - execute it
@@ -759,7 +768,8 @@ public class NPCManager : MonoBehaviour
                     targetPosition = targetPos,
                     behavior = scheduleEvent.behavior,
                     shouldIdleWhenReached = scheduleEvent.shouldIdleWhenReached,
-                    canInteract = true // Always allow interaction unless specified otherwise
+                    canInteract = true, // Always allow interaction unless specified otherwise
+                    sourceEventHour = scheduleEvent.hour
                 };
 
                 pendingCommands[existingNPC] = scheduleCommand;
@@ -768,7 +778,7 @@ public class NPCManager : MonoBehaviour
             }
             else
             {
-                Debug.Log($"[NPC MANAGER DEBUG] ⚠️ No schedule event found for {spawnData.npcID} at hour {hour}");
+                Debug.Log($"[NPC MANAGER DEBUG] ⚠️ No schedule event found for {spawnData.npcID} at or before hour {hour}");
             }
             // If no specific event for this hour, NPC continues current behavior
         }
@@ -992,6 +1002,40 @@ public class NPCManager : MonoBehaviour
 
     #endregion
 
+    /// <summary>
+    /// Forces all currently spawned NPCs to evaluate the current time and immediately 
+    /// travel to wherever they are supposed to be based on their schedule.
+    /// </summary>
+    public void SyncNPCsToCurrentTime()
+    {
+        if (dayNightCycle == null) return;
+
+        float currentTime = dayNightCycle.CurrentTime;
+        Debug.Log($"[NPCManager] Syncing all NPCs to time: {currentTime}");
+        foreach (var npc in spawnedNPCs)
+        {
+            if (npc == null || npc.scheduleData == null) continue;
+            // Find where they are supposed to be right now
+            Vector2 correctPosition = npc.scheduleData.GetPositionForTime(currentTime);
+            // Command them to move there
+            var moveCommand = new ScheduleCommand
+            {
+                commandType = ScheduleCommandType.Move,
+                targetPosition = correctPosition,
+                behavior = NPCBehavior.Idle,
+                shouldIdleWhenReached = true,
+                canInteract = true,
+                sourceEventHour = -1 // Forced sync, always run
+            };
+            npc.ReceiveScheduleCommand(moveCommand);
+            npc.ProcessScheduleCommand();
+        }
+
+        // Also run the normal hour update to catch any spawns/despawns meant for this exact hour
+        int currentHour = Mathf.FloorToInt(currentTime);
+        ProcessHourlyScheduleUpdate(currentHour);
+    }
+
     #region Debug and Gizmos
 
     private void OnDrawGizmosSelected()
@@ -1033,6 +1077,7 @@ public struct ScheduleCommand
     public NPCBehavior behavior;
     public bool shouldIdleWhenReached;
     public bool canInteract;
+    public int sourceEventHour; // Tracks which schedule event this command came from
 }
 
 public enum ScheduleCommandType

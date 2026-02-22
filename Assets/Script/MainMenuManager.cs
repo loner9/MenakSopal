@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using MenakSopal.Audio;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -40,6 +41,7 @@ public class MainMenuManager : MonoBehaviour
     [Header("Game Start Settings")]
     public string firstGameScene = "SceneAwal";
     public Vector3 startPosition = Vector3.zero;
+    public AudioClip menuMusic;
 
 
     [Header("Debug")]
@@ -56,6 +58,11 @@ public class MainMenuManager : MonoBehaviour
         SetupButtons();
         CheckForExistingSaves();
         SetupStoryCompletionHandler();
+
+        if (AudioSystem.Instance != null && menuMusic != null)
+        {
+            AudioSystem.Instance.PlayMusic(menuMusic);
+        }
     }
 
 

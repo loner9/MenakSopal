@@ -121,6 +121,10 @@ public class DayNightCycle : MonoBehaviour
     [Header("Debug")]
     public bool showDebugInfo = true;
 
+    [Header("Time Flow Control")]
+    [Tooltip("Master toggle for time progression. If false, time will not progress even if ResumeTime is called.")]
+    public bool shouldTimeRun = true;
+
     [Header("Current Time Info (Read Only)")]
     [SerializeField, ReadOnly] private float displayCurrentTime;
     [SerializeField, ReadOnly] private string displayTimeFormatted;
@@ -176,8 +180,11 @@ public class DayNightCycle : MonoBehaviour
 
     private void Start()
     {
-        // Start the time cycle
-        timeProgressionCoroutine = StartCoroutine(TimeProgressionCoroutine());
+        // Start the time cycle if allowed
+        if (shouldTimeRun)
+        {
+            timeProgressionCoroutine = StartCoroutine(TimeProgressionCoroutine());
+        }
 
         if (LoadingManager.Instance != null) LoadingManager.Instance.ReportSystemReady("DayNight");
     }
@@ -557,9 +564,24 @@ public class DayNightCycle : MonoBehaviour
 
     public void ResumeTime()
     {
+        if (!shouldTimeRun) return;
+
         if (timeProgressionCoroutine == null && !GameSystemsManager.Instance.unDisturbedTime)
         {
             timeProgressionCoroutine = StartCoroutine(TimeProgressionCoroutine());
+        }
+    }
+
+    public void SetShouldTimeRun(bool runTime)
+    {
+        shouldTimeRun = runTime;
+        if (shouldTimeRun)
+        {
+            ResumeTime();
+        }
+        else
+        {
+            PauseTime();
         }
     }
 

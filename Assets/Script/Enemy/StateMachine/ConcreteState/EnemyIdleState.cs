@@ -69,8 +69,9 @@ public class EnemyIdleState : EnemyState
         base.AnimationTriggerEvent(triggerType);
     }
 
-    private Vector3 GetRandomPointInCircle(){
-        return enemy.transform.position + (Vector3)UnityEngine.Random.insideUnitCircle * enemy.RandomMovementRange;
+    private Vector3 GetRandomPointInCircle()
+    {
+        return enemy.SpawnPosition + (Vector3)UnityEngine.Random.insideUnitCircle * enemy.RandomMovementRange;
     }
 }
 

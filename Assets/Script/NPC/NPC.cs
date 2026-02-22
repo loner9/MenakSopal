@@ -94,6 +94,9 @@ public class NPC : MonoBehaviour
     private bool shouldDespawnOnReachingDestination = false;
     private bool isCutsceneControlled = false;
 
+    // Tracking for schedule logic
+    [HideInInspector] public int currentScheduleEventHour = -1; // Tracking last processed schedule event hour
+
     // Interaction system
     public System.Action<NPC> OnInteractionStart;
     public System.Action<NPC> OnInteractionEnd;
@@ -509,7 +512,10 @@ public class NPC : MonoBehaviour
         var command = pendingScheduleCommand.Value;
         pendingScheduleCommand = null;
 
-        Debug.Log($"[NPC DEBUG] {npcName}: Processing schedule command {command.commandType} to position {command.targetPosition}");
+        // Track the source event hour to avoid redundant commands
+        currentScheduleEventHour = command.sourceEventHour;
+
+        Debug.Log($"[NPC DEBUG] {npcName}: Processing schedule command {command.commandType} from event hour {command.sourceEventHour} to position {command.targetPosition}");
 
         switch (command.commandType)
         {

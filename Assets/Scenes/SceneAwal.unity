@@ -80754,7 +80754,7 @@ GameObject:
   - component: {fileID: 832412085}
   - component: {fileID: 832412084}
   - component: {fileID: 832412086}
-  m_Layer: 7
+  m_Layer: 14
   m_Name: ========cutsceneTrigger01===========
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98142,8 +98142,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeSettings:
-    totalCycleDuration: 240
-    startTime: 5
+    totalCycleDuration: 300
+    startTime: 7
     dayStartHour: 6.3
     dayEndHour: 17
     transitionRatio: 0.059
@@ -98178,6 +98178,7 @@ MonoBehaviour:
   globalLight2D: {fileID: 459282726}
   skyRenderer: {fileID: 0}
   showDebugInfo: 1
+  shouldTimeRun: 1
   displayCurrentTime: 0
   displayTimeFormatted: 
   displayCurrentPeriod: 
@@ -120784,7 +120785,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1279450789
 Transform:
   m_ObjectHideFlags: 0

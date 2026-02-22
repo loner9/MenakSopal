@@ -1,9 +1,9 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
 
 public class MonologueSystem : MonoBehaviour
 {
@@ -17,21 +17,25 @@ public class MonologueSystem : MonoBehaviour
     public Button continueButton;
     public Button endButton;
     public Transform choiceContainer; // Hide this during monologue
-    
+
+
     [Header("Audio")]
     public AudioSource audioSource;
     public AudioClip defaultMonologueStartSound;
     public AudioClip defaultTypewriterSound;
-    
+
+
     [Header("Animation Settings")]
     public float typewriterSpeed = 0.05f;
     public bool enableTypewriterEffect = true;
-    
+
+
     [Header("Input")]
     public KeyCode continueKey = KeyCode.Space;
     public KeyCode skipKey = KeyCode.Escape;
-    
+
     // Private variables
+
     private bool isInMonologue = false;
     private bool isTyping = false;
     private MonologueEntry currentMonologue;
@@ -39,26 +43,31 @@ public class MonologueSystem : MonoBehaviour
     private HashSet<string> queuedFlagsToAdd = new HashSet<string>();
     private HashSet<string> queuedFlagsToRemove = new HashSet<string>();
     private List<QuestObjectiveAction> queuedObjectiveActions = new List<QuestObjectiveAction>();
-    
+
     // References
+
     private NPCInteractionSystem npcInteractionSystem;
     private QuestManager questManager;
     private DayNightCycle dayNightCycle;
     private PlayerMovements playerMovements;
-    
+
     // Singleton
+
     public static MonologueSystem Instance { get; private set; }
-    
+
     // Events
+
     public System.Action<MonologueEntry> OnMonologueStarted;
     public System.Action<MonologueEntry> OnMonologueEnded;
-    
+
+
     private struct QuestObjectiveAction
     {
         public string questID;
         public string objectiveID;
     }
-    
+
+
     void Awake()
     {
         if (Instance == null)
@@ -71,13 +80,15 @@ public class MonologueSystem : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    
+
+
     void Start()
     {
         InitializeMonologueSystem();
         SetupEventListeners();
     }
-    
+
+
     void Update()
     {
         if (isInMonologue)
@@ -93,28 +104,32 @@ public class MonologueSystem : MonoBehaviour
                     EndMonologue();
                 }
             }
-            
+
+
             if (Input.GetKeyDown(skipKey))
             {
                 EndMonologue();
             }
         }
     }
-    
+
+
     void InitializeMonologueSystem()
     {
         // Find references
         npcInteractionSystem = FindObjectOfType<NPCInteractionSystem>();
         questManager = QuestManager.Instance;
         dayNightCycle = DayNightCycle.Instance;
-        
+
+
         GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
         if (playerGO != null)
         {
             playerMovements = playerGO.GetComponent<PlayerMovements>();
         }
-        
+
         // Auto-find UI components from NPCInteractionSystem if not assigned
+
         if (npcInteractionSystem != null)
         {
             if (monologuePanel == null)
@@ -132,30 +147,35 @@ public class MonologueSystem : MonoBehaviour
             if (choiceContainer == null)
                 choiceContainer = npcInteractionSystem.choiceContainer;
         }
-        
+
         // Validate UI components
+
         if (monologuePanel == null)
         {
             Debug.LogError("[MonologueSystem] monologuePanel is required!");
         }
-        
+
+
         if (monologueText == null)
         {
             Debug.LogError("[MonologueSystem] monologueText is required!");
         }
-        
+
         // Hide monologue UI initially
+
         if (monologueCanvas != null)
             monologueCanvas.SetActive(false);
         if (monologuePanel != null)
             monologuePanel.SetActive(false);
     }
-    
+
+
     void SetupEventListeners()
     {
         if (continueButton != null)
         {
-            continueButton.onClick.AddListener(() => {
+            continueButton.onClick.AddListener(() =>
+            {
                 if (isTyping)
                 {
                     SkipTypewriter();
@@ -166,15 +186,18 @@ public class MonologueSystem : MonoBehaviour
                 }
             });
         }
-        
+
+
         if (endButton != null)
         {
-            endButton.onClick.AddListener(() => {
+            endButton.onClick.AddListener(() =>
+            {
                 EndMonologue();
             });
         }
     }
-    
+
+
     /// <summary>
     /// Show a monologue entry. Can be called from other systems like FlagMonitorSystem.
     /// </summary>
@@ -185,16 +208,19 @@ public class MonologueSystem : MonoBehaviour
             Debug.LogWarning("[MonologueSystem] Attempted to show null monologue");
             return;
         }
-        
+
+
         if (isInMonologue)
         {
             Debug.LogWarning("[MonologueSystem] Already in monologue, ignoring new request");
             return;
         }
-        
+
+
         StartCoroutine(ShowMonologueCoroutine(monologue));
     }
-    
+
+
     /// <summary>
     /// Show a monologue by ID from a MonologueData asset
     /// </summary>
@@ -207,25 +233,30 @@ public class MonologueSystem : MonoBehaviour
             Debug.LogWarning($"[MonologueSystem] MonologueData not found: {monologueDataID}");
             return;
         }
-        
+
         // Get current game flags
+
         List<string> gameFlags = GetGameFlags();
-        
+
         // Get available monologues
+
         MonologueEntry[] availableMonologues = data.GetAvailableMonologues(gameFlags);
         if (availableMonologues.Length == 0)
         {
             Debug.LogWarning($"[MonologueSystem] No available monologues for: {monologueDataID}");
             return;
         }
-        
+
         // Sort by priority (higher first)
+
         var sortedMonologues = availableMonologues.OrderByDescending(m => m.priority).ToArray();
-        
+
         // Show the highest priority monologue
+
         ShowMonologue(sortedMonologues[0]);
     }
-    
+
+
     /// <summary>
     /// Quick way to show a simple text monologue (useful for FlagMonitorSystem callbacks)
     /// Uses the NPCInteractionSystem to display monologue like a dialogue
@@ -311,7 +342,8 @@ public class MonologueSystem : MonoBehaviour
         // Start the dialogue (which will display like a monologue)
         npcInteractionSystem.StartDialogue(tempNPC);
     }
-    
+
+
     private IEnumerator ShowMonologueCoroutine(MonologueEntry monologue)
     {
         Debug.Log("[MonologueSystem] Starting ShowMonologueCoroutine...");
@@ -382,7 +414,8 @@ public class MonologueSystem : MonoBehaviour
         Debug.Log("[MonologueSystem] Monologue display complete");
         OnMonologueStarted?.Invoke(monologue);
     }
-    
+
+
     private void SetupMonologueUI(MonologueEntry monologue)
     {
         Debug.Log("[MonologueSystem] Setting up monologue UI...");
@@ -465,7 +498,8 @@ public class MonologueSystem : MonoBehaviour
         // Hide continue button during typing, show end button
         UpdateMonologueButtons(true); // isTyping = true initially
     }
-    
+
+
     private void UpdateMonologueButtons(bool isTyping)
     {
         if (continueButton != null)
@@ -473,14 +507,16 @@ public class MonologueSystem : MonoBehaviour
             // Show continue button only when not typing (to skip or continue)
             continueButton.gameObject.SetActive(!isTyping);
         }
-        
+
+
         if (endButton != null)
         {
             // Always show end button during monologue
             endButton.gameObject.SetActive(true);
         }
     }
-    
+
+
     private IEnumerator TypewriterEffect(string text)
     {
         isTyping = true;
@@ -511,55 +547,66 @@ public class MonologueSystem : MonoBehaviour
         Debug.Log($"[MonologueSystem] Typewriter complete. Final text: '{monologueText.text}'");
         UpdateMonologueButtons(false); // Update buttons when typing is finished
     }
-    
+
+
     private void SkipTypewriter()
     {
         if (typewriterCoroutine != null)
         {
             StopCoroutine(typewriterCoroutine);
         }
-        
+
+
         isTyping = false;
         monologueText.text = currentMonologue.monologueText;
         UpdateMonologueButtons(false); // Update buttons when typewriter is skipped
     }
-    
+
+
     public void EndMonologue()
     {
         if (!isInMonologue) return;
-        
+
         // Process queued consequences
+
         ProcessQueuedConsequences();
-        
+
         // Hide UI and restore button states
+
         if (monologuePanel != null)
             monologuePanel.SetActive(false);
         if (monologueCanvas != null)
             monologueCanvas.SetActive(false);
-        
+
         // Hide monologue buttons (they'll be restored when dialogue system is used next)
+
         if (continueButton != null)
             continueButton.gameObject.SetActive(false);
         if (endButton != null)
             endButton.gameObject.SetActive(false);
-        
+
         // Resume game time and enable player movement
+
         if (dayNightCycle != null)
         {
             dayNightCycle.ResumeTime();
         }
-        
+
+
         if (playerMovements != null)
         {
             playerMovements.enabled = true;
         }
-        
+
+
         OnMonologueEnded?.Invoke(currentMonologue);
-        
+
+
         isInMonologue = false;
         currentMonologue = null;
     }
-    
+
+
     private void QueueMonologueConsequences(MonologueEntry monologue)
     {
         // Queue flags to add
@@ -570,8 +617,9 @@ public class MonologueSystem : MonoBehaviour
                 queuedFlagsToAdd.Add(flag);
             }
         }
-        
+
         // Queue flags to remove
+
         if (monologue.flagsToRemove != null)
         {
             foreach (string flag in monologue.flagsToRemove)
@@ -579,8 +627,9 @@ public class MonologueSystem : MonoBehaviour
                 queuedFlagsToRemove.Add(flag);
             }
         }
-        
+
         // Queue objective completion
+
         if (!string.IsNullOrEmpty(monologue.objectiveToComplete) && !string.IsNullOrEmpty(monologue.questForObjective))
         {
             queuedObjectiveActions.Add(new QuestObjectiveAction
@@ -590,7 +639,8 @@ public class MonologueSystem : MonoBehaviour
             });
         }
     }
-    
+
+
     private void ProcessQueuedConsequences()
     {
         // Add queued flags
@@ -602,8 +652,9 @@ public class MonologueSystem : MonoBehaviour
                 Debug.Log($"[MonologueSystem] Added flag: {flag}");
             }
         }
-        
+
         // Remove queued flags
+
         foreach (string flag in queuedFlagsToRemove)
         {
             if (npcInteractionSystem != null)
@@ -612,8 +663,9 @@ public class MonologueSystem : MonoBehaviour
                 Debug.Log($"[MonologueSystem] Removed flag: {flag}");
             }
         }
-        
+
         // Complete queued objectives
+
         foreach (var objectiveAction in queuedObjectiveActions)
         {
             if (questManager != null)
@@ -622,13 +674,15 @@ public class MonologueSystem : MonoBehaviour
                 Debug.Log($"[MonologueSystem] Completed objective {objectiveAction.objectiveID} in quest {objectiveAction.questID}: {completed}");
             }
         }
-        
+
         // Clear queues
+
         queuedFlagsToAdd.Clear();
         queuedFlagsToRemove.Clear();
         queuedObjectiveActions.Clear();
     }
-    
+
+
     private List<string> GetGameFlags()
     {
         if (npcInteractionSystem != null)
@@ -637,7 +691,8 @@ public class MonologueSystem : MonoBehaviour
         }
         return new List<string>();
     }
-    
+
+
     private void PlayAudioClip(AudioClip clip)
     {
         if (audioSource != null && clip != null)
@@ -645,7 +700,8 @@ public class MonologueSystem : MonoBehaviour
             audioSource.PlayOneShot(clip);
         }
     }
-    
+
+
     public bool IsInMonologue()
     {
         return isInMonologue;

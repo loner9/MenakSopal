@@ -1,0 +1,204 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Audio;
+
+namespace MenakSopal.Audio
+{
+    public class AudioSystem : MonoBehaviour
+    {
+        public static AudioSystem Instance { get; private set; }
+
+        [Header("References")]
+        [SerializeField] private SoundLibrary library;
+
+        [Header("Channels")]
+        [SerializeField] private AudioSource musicSource;
+        [SerializeField] private AudioSource sfxSourcePrefab;
+        [SerializeField] private int initialSfxPoolSize = 10;
+
+        private List<AudioSource> sfxPool = new List<AudioSource>();
+        private Coroutine musicFadeCoroutine;
+
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+
+            InitializePool();
+        }
+
+        private void InitializePool()
+        {
+            // Auto-create or instantiate music source if it's a prefab
+            if (musicSource == null)
+            {
+                GameObject musicGO = new GameObject("MusicSource");
+                musicGO.transform.SetParent(transform);
+                musicSource = musicGO.AddComponent<AudioSource>();
+                musicSource.loop = true;
+                musicSource.playOnAwake = false;
+            }
+            else if (!musicSource.gameObject.scene.IsValid())
+            {
+                // If it's a prefab, we must instantiate it to use it in the scene
+                AudioSource instance = Instantiate(musicSource, transform);
+                instance.name = "MusicSource_Instance";
+                musicSource = instance;
+            }
+
+            musicSource.gameObject.SetActive(true);
+            musicSource.enabled = true;
+
+            // Safety check: Don't pool the music source or the system itself
+            if (sfxSourcePrefab != null && (sfxSourcePrefab == musicSource || sfxSourcePrefab.gameObject == gameObject))
+            {
+                Debug.LogError("[AudioSystem] SfxSourcePrefab cannot be the same as MusicSource or the AudioSystem itself! Resetting to default.");
+                sfxSourcePrefab = null;
+            }
+
+            // Ensure we have a prefab to pool
+            if (sfxSourcePrefab == null)
+            {
+                GameObject prefabGO = new GameObject("DefaultSFXSource");
+                prefabGO.transform.SetParent(transform);
+                sfxSourcePrefab = prefabGO.AddComponent<AudioSource>();
+                sfxSourcePrefab.playOnAwake = false;
+                prefabGO.SetActive(false);
+            }
+
+            for (int i = 0; i < initialSfxPoolSize; i++)
+            {
+                CreateNewPoolSource();
+            }
+        }
+
+        private AudioSource CreateNewPoolSource()
+        {
+            AudioSource newSource = Instantiate(sfxSourcePrefab, transform);
+            newSource.gameObject.SetActive(false);
+            sfxPool.Add(newSource);
+            return newSource;
+        }
+
+        private AudioSource GetAvailableSfxSource()
+        {
+            foreach (var source in sfxPool)
+            {
+                if (source != null && !source.gameObject.activeInHierarchy)
+                {
+                    source.gameObject.SetActive(true);
+                    source.enabled = true; // Ensure component is enabled
+                    return source;
+                }
+            }
+
+            // Expand pool if needed
+            var newSource = CreateNewPoolSource();
+            newSource.gameObject.SetActive(true);
+            newSource.enabled = true;
+            return newSource;
+        }
+
+        // SFX Playback
+        public void PlaySFX(string soundName)
+        {
+            if (library == null) return;
+            var group = library.GetSoundGroup(soundName);
+            if (group == null)
+            {
+                Debug.LogWarning($"[AudioSystem] Sound '{soundName}' not found in library.");
+                return;
+            }
+
+            AudioClip clip = group.GetRandomClip();
+            if (clip == null) return;
+
+            AudioSource source = GetAvailableSfxSource();
+
+            // Apply variance
+            source.clip = clip;
+            source.volume = group.volume + Random.Range(-group.volumeVariance, group.volumeVariance);
+            source.pitch = group.pitch + Random.Range(-group.pitchVariance, group.pitchVariance);
+
+            source.Play();
+            StartCoroutine(ReturnToPool(source, clip.length));
+        }
+
+        private IEnumerator ReturnToPool(AudioSource source, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            source.Stop();
+            source.gameObject.SetActive(false);
+        }
+
+        // Music Playback
+        public void PlayMusic(string soundName, float fadeDuration = 1.0f)
+        {
+            if (library == null) return;
+            var group = library.GetSoundGroup(soundName);
+            if (group == null)
+            {
+                Debug.LogWarning($"[AudioSystem] Music '{soundName}' not found in library.");
+                return;
+            }
+
+            AudioClip clip = group.GetRandomClip();
+            if (clip != null)
+            {
+                PlayMusic(clip, fadeDuration);
+            }
+        }
+
+        public void PlayMusic(AudioClip clip, float fadeDuration = 1.0f)
+        {
+            if (musicSource == null || clip == null) return;
+
+            // Defensive: Always ensure musicSource is enabled and active before checking isPlaying
+            musicSource.gameObject.SetActive(true);
+            musicSource.enabled = true;
+
+            if (musicSource.clip == clip && musicSource.isPlaying) return;
+
+            if (musicFadeCoroutine != null) StopCoroutine(musicFadeCoroutine);
+            musicFadeCoroutine = StartCoroutine(CrossFadeMusic(clip, fadeDuration));
+        }
+
+        private IEnumerator CrossFadeMusic(AudioClip newClip, float duration)
+        {
+            float startVolume = musicSource.volume;
+
+            // Fade Out
+            if (musicSource.isPlaying)
+            {
+                for (float t = 0; t < duration; t += Time.deltaTime)
+                {
+                    musicSource.volume = Mathf.Lerp(startVolume, 0, t / duration);
+                    yield return null;
+                }
+            }
+
+            musicSource.Stop();
+            musicSource.clip = newClip;
+
+            // CRITICAL: Ensure it is active AND enabled before Play()
+            musicSource.gameObject.SetActive(true);
+            musicSource.enabled = true;
+
+            musicSource.Play();
+
+            // Fade In
+            for (float t = 0; t < duration; t += Time.deltaTime)
+            {
+                musicSource.volume = Mathf.Lerp(0, startVolume, t / duration);
+                yield return null;
+            }
+            musicSource.volume = startVolume;
+        }
+    }
+}
