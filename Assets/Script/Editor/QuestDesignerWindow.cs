@@ -495,11 +495,29 @@ public class QuestDesignerWindow : EditorWindow
         if (allNPCNames != null && allNPCNames.Length > 0)
         {
             int currentIndex = System.Array.IndexOf(allNPCNames, npcName);
-            if (currentIndex < 0) currentIndex = 0;
-            int newIndex = EditorGUILayout.Popup(currentIndex, allNPCNames);
-            if (newIndex >= 0 && newIndex < allNPCNames.Length)
+
+            if (currentIndex < 0)
             {
-                npcName = allNPCNames[newIndex];
+                // Current value not in list!
+                // Don't overwrite it immediately unless the user selects something else.
+                List<string> options = new List<string> { string.IsNullOrEmpty(npcName) ? "- Select NPC -" : "!! MISSING: " + npcName + " !!" };
+                options.AddRange(allNPCNames);
+
+                int newIndex = EditorGUILayout.Popup(0, options.ToArray());
+                if (newIndex > 0) // Selected a valid NPC from the actual list
+                {
+                    npcName = allNPCNames[newIndex - 1];
+                    isDirty = true;
+                }
+            }
+            else
+            {
+                int newIndex = EditorGUILayout.Popup(currentIndex, allNPCNames);
+                if (newIndex != currentIndex && newIndex >= 0)
+                {
+                    npcName = allNPCNames[newIndex];
+                    isDirty = true;
+                }
             }
         }
         else
@@ -601,9 +619,51 @@ public class QuestDesignerWindow : EditorWindow
 
     private void RefreshCachedData()
     {
-        // Get all NPC names from dialogue data
-        var dialogues = Resources.LoadAll<DialogueData>("Dialogues");
-        allNPCNames = dialogues.Select(d => d.npcName).Distinct().OrderBy(n => n).ToArray();
+        // Get all NPC names from NPCManager
+        List<string> npcIDs = new List<string>();
+
+        // Try to find NPCManager in scene
+        NPCManager manager = Object.FindFirstObjectByType<NPCManager>();
+        string source = "Scene";
+
+        // If not in scene, try to find prefab
+        if (manager == null)
+        {
+            string[] guids = AssetDatabase.FindAssets("NPCManager t:Prefab");
+            if (guids.Length > 0)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                if (prefab != null)
+                {
+                    manager = prefab.GetComponent<NPCManager>();
+                    source = "Prefab (" + path + ")";
+                }
+            }
+        }
+
+        if (manager != null)
+        {
+            npcIDs = manager.npcSpawnList
+                .Select(s => s.npcID)
+                .Where(id => !string.IsNullOrEmpty(id))
+                .Distinct()
+                .OrderBy(id => id)
+                .ToList();
+
+            Debug.Log($"Quest Designer: Cached {npcIDs.Count} NPC IDs from {source}");
+        }
+
+        if (npcIDs.Count > 0)
+        {
+            allNPCNames = npcIDs.ToArray();
+        }
+        else
+        {
+            // Fallback to legacy behavior if manager not found or empty
+            var dialogues = Resources.LoadAll<DialogueData>("Dialogues");
+            allNPCNames = dialogues.Select(d => d.npcName).Distinct().OrderBy(n => n).ToArray();
+        }
 
         // Get all flags from various sources
         var allFlags = new HashSet<string>();
