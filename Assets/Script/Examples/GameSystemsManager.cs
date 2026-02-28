@@ -400,36 +400,36 @@ public class GameSystemsManager : MonoBehaviour
             //todo: pindah ke scene spiritual plane
 
             // StartCoroutine(HandleSpiritualVisianEncounter());
-            EnterSubArea("SpiritualPlane");
+            // EnterSubArea("SpiritualPlane");
 
         });
 
-        FlagMonitorSystem.WatchFlagAdded("mc_done_talking", () =>
-        {
-            ShowMessage("Kalahkan rintangan yang ada!");
-            //todo : enable enemies container
-            GameObject enemiesContainer = GameObject.FindGameObjectWithTag("EnemiesContainer");
-            if (enemiesContainer != null)
-            {
-                enemiesContainer.SetActive(true);
-            }
-            else
-            {
-                Debug.Log("Engga ada");
-            }
-        });
+        // FlagMonitorSystem.WatchFlagAdded("mc_done_talking", () =>
+        // {
+        //     ShowMessage("Kalahkan rintangan yang ada!");
+        //     //todo : enable enemies container
+        //     GameObject enemiesContainer = GameObject.FindGameObjectWithTag("EnemiesContainer");
+        //     if (enemiesContainer != null)
+        //     {
+        //         enemiesContainer.SetActive(true);
+        //     }
+        //     else
+        //     {
+        //         Debug.Log("Engga ada");
+        //     }
+        // });
 
-        FlagMonitorSystem.WatchFlagAdded("monsters_defeated", () =>
-        {
-            // ShowMessage("Selamat! Anda berhasil mengalahkan semua rintangan!");
-            CameraShake.Instance.ShakeMedium(() =>
-            {
-                // spawn buaya putih
+        // FlagMonitorSystem.WatchFlagAdded("monsters_defeated", () =>
+        // {
+        //     // ShowMessage("Selamat! Anda berhasil mengalahkan semua rintangan!");
+        //     CameraShake.Instance.ShakeMedium(() =>
+        //     {
+        //         // spawn buaya putih
 
-                // NPCManager.Instance.DespawnNPC("buaya_putih_spirit");
-                NPCManager.Instance.SpawnNPCAtCurrentScheduledLocation("buaya_putih_spirit");
-            });
-        });
+        //         // NPCManager.Instance.DespawnNPC("buaya_putih_spirit");
+        //         NPCManager.Instance.SpawnNPCAtCurrentScheduledLocation("buaya_putih_spirit");
+        //     });
+        // });
 
         FlagMonitorSystem.WatchFlagAdded("accepted_spirit_demand", () =>
         {

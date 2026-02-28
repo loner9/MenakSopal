@@ -15,12 +15,18 @@ public class cutsceneTrigger : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        CutsceneController.Instance.PlayCutscene("sumurCutscene");
-        Destroy(this);
+        if (collision.CompareTag("Player"))
+        {
+            if (DayNightCycle.Instance.CurrentTime >= 7f && DayNightCycle.Instance.CurrentTime <= 19f)
+            {
+                CutsceneController.Instance.PlayCutscene("sumurCutscene");
+                Destroy(this);
+            }
+        }
     }
 }

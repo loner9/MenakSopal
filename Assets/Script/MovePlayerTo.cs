@@ -126,7 +126,7 @@ public class MovePlayerTo : MonoBehaviour
             return;
         }
 
-        DayNightCycle.Instance.SetTime(5);
+        DayNightCycle.Instance.SetTime(7);
         NPCManager.Instance.UpdateNPCSchedules();
         NPCManager.Instance.SyncNPCsToCurrentTime();
         DayNightCycle.Instance.ResumeTime();
