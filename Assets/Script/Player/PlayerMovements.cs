@@ -16,10 +16,16 @@ public class PlayerMovements : MonoBehaviour, IKnockbackable
     private float lastX;
     private float lastY;
     private Vector2 lastCardinalDirection = Vector2.down; // Store the actual cardinal direction
-    private float StaminaRegenTimer = 0.0f;
-    private const float StaminaDecreasePerFrame = 55.0f;
-    private const float StaminaIncreasePerFrame = 25.0f;
-    private float StaminaTimeToRegen = 3.0f;
+    [Header("Stamina Settings")]
+    [SerializeField] private float staminaDrainRate = 55f;
+    [SerializeField] private float regenRateStill = 40f;
+    [SerializeField] private float regenRateWalking = 20f;
+    [SerializeField] private float windedDuration = 1.5f;
+    [SerializeField] private float regenSmoothing = 4f;
+
+    private float currentRegenRate = 0f;
+    private bool isWinded = false;
+    private float windedTimer = 0f;
 
     [Header("Knockback Settings")]
     [SerializeField] private float knockbackResistance = 1f;
@@ -37,7 +43,7 @@ public class PlayerMovements : MonoBehaviour, IKnockbackable
         rb2d = GetComponent<Rigidbody2D>();
         playerAnimation = GetComponent<PlayerAnimation>();
         playerAttack = GetComponent<PlayerAttack>();
-        
+
         // Initialize or add KnockbackHandler component
         knockbackHandler = GetComponent<KnockbackHandler>();
         if (knockbackHandler == null)
@@ -70,56 +76,96 @@ public class PlayerMovements : MonoBehaviour, IKnockbackable
         {
             return;
         }
-        
+
         // If player is being knocked back, don't apply normal movement
         if (knockbackHandler != null && knockbackHandler.IsKnockedBack)
         {
             // KnockbackHandler will handle the movement
             return;
         }
-        
+
         rb2d.MovePosition(rb2d.position + moveDirection * (currentSpeed * Time.fixedDeltaTime));
     }
 
     private void ReadMovement()
     {
         // Don't read input if being knocked back or attacking
-        if ((knockbackHandler != null && knockbackHandler.IsKnockedBack) || 
+        if ((knockbackHandler != null && knockbackHandler.IsKnockedBack) ||
             (playerAttack != null && playerAttack.IsAttacking))
         {
             moveDirection = Vector2.zero;
             playerAnimation.setMovingAnimation(false);
             return;
         }
-        
+
         moveDirection = playerActions.Movement.Move.ReadValue<Vector2>().normalized;
 
         bool isRunning;
-        
-        if (player.Stats.stamina <= 0)
+
+        if (player.Stats.stamina <= 0 || isWinded)
         {
             isRunning = false;
-        }else
+        }
+        else
         {
             isRunning = playerActions.Movement.Run.IsPressed();
         }
 
         currentSpeed = isRunning ? runSpeed : walkSpeed;
 
+        // --- Action-Sensitive Stamina System ---
         if (isRunning && moveDirection != Vector2.zero)
         {
-            player.Stats.stamina = Mathf.Clamp(player.Stats.stamina - (StaminaDecreasePerFrame * Time.unscaledDeltaTime), 0.0f, player.Stats.maxStamina);
-            StaminaRegenTimer = 0.0f;
-        }
-        else if (player.Stats.stamina < player.Stats.maxStamina)
-        {
-            if (StaminaRegenTimer >= StaminaTimeToRegen)
+            // Draining: actively sprinting
+            player.Stats.stamina = Mathf.Clamp(
+                player.Stats.stamina - (staminaDrainRate * Time.deltaTime),
+                0f, player.Stats.maxStamina);
+
+            // Trigger winded state the moment stamina bottoms out
+            if (player.Stats.stamina <= 0f && !isWinded)
             {
-                player.Stats.stamina = Mathf.Clamp(player.Stats.stamina + (StaminaIncreasePerFrame * Time.unscaledDeltaTime), 0.0f, player.Stats.maxStamina);
+                isWinded = true;
+                windedTimer = 0f;
+            }
+
+            currentRegenRate = 0f; // No regen while draining
+        }
+        else
+        {
+            // Recovering: determine target regen rate by player state
+            float targetRegenRate;
+
+            if (isWinded)
+            {
+                // Count through the winded lockout before recovering
+                windedTimer += Time.deltaTime;
+                if (windedTimer >= windedDuration)
+                {
+                    isWinded = false;
+                }
+                targetRegenRate = 0f;
+            }
+            else if (playerAttack != null && playerAttack.IsAttacking)
+            {
+                targetRegenRate = 0f; // No regen while attacking
+            }
+            else if (moveDirection != Vector2.zero)
+            {
+                targetRegenRate = regenRateWalking; // Slow regen while walking
             }
             else
             {
-                StaminaRegenTimer += Time.deltaTime;
+                targetRegenRate = regenRateStill; // Full regen while idle
+            }
+
+            // Smooth the regen rate transition
+            currentRegenRate = Mathf.Lerp(currentRegenRate, targetRegenRate, regenSmoothing * Time.deltaTime);
+
+            if (player.Stats.stamina < player.Stats.maxStamina)
+            {
+                player.Stats.stamina = Mathf.Clamp(
+                    player.Stats.stamina + (currentRegenRate * Time.deltaTime),
+                    0f, player.Stats.maxStamina);
             }
         }
 
@@ -181,7 +227,7 @@ public class PlayerMovements : MonoBehaviour, IKnockbackable
     #region IKnockbackable Implementation
 
     public bool IsKnockedBack => knockbackHandler != null && knockbackHandler.IsKnockedBack;
-    
+
     public float KnockbackResistance => knockbackResistance;
 
     public void ApplyKnockback(Vector2 knockbackDirection, float knockbackForce, float duration)
@@ -190,7 +236,7 @@ public class PlayerMovements : MonoBehaviour, IKnockbackable
 
         // Apply knockback through handler
         knockbackHandler.ApplyKnockback(knockbackDirection, knockbackForce, duration);
-        
+
         // Update player animation to show knockback direction
         if (knockbackDirection.sqrMagnitude > 0.1f)
         {
@@ -203,17 +249,17 @@ public class PlayerMovements : MonoBehaviour, IKnockbackable
     private Vector2 GetCardinalDirection(Vector2 direction)
     {
         if (direction == Vector2.zero) return Vector2.down; // Default fallback
-        
+
         // Get absolute values to determine which axis is stronger
         float absX = Mathf.Abs(direction.x);
         float absY = Mathf.Abs(direction.y);
-        
+
         // Special case: prioritize horizontal when moving down diagonally
         if (direction.y < 0 && absX > 0)
         {
             return direction.x > 0 ? Vector2.right : Vector2.left;
         }
-        
+
         // Normal prioritization for other directions
         if (absX > absY)
         {
