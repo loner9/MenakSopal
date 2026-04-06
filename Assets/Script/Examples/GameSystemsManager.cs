@@ -366,25 +366,25 @@ public class GameSystemsManager : MonoBehaviour
         //ada animasi fade yang nunjukin bangunan selesai. MC ngobrol sama murid2 padepokan, sehabis itu selesai, animasi fade
         //pindah tempat, dan cerita berikutnya dimulai, enggak lama dari fade ini akan ada suara ledakan
         //mc bergegas ke dam.
-        FlagMonitorSystem.WatchFlagAdded("initial_dam_built", () =>
-        {
-            // Wait for any ongoing dialogue to finish before executing
-            StartCoroutine(WaitForDialogueEndThenTriggerDamBuiltSequence());
-        });
+        // FlagMonitorSystem.WatchFlagAdded("initial_dam_built", () =>
+        // {
+        //     // Wait for any ongoing dialogue to finish before executing
+        //     StartCoroutine(WaitForDialogueEndThenTriggerDamBuiltSequence());
+        // });
 
-        FlagMonitorSystem.WatchFlagAdded("dam_broken", () =>
-        {
-            //trigger screen shake dan suara ledakan atau bangunan rubuh disini
-            //disable movement player selama durasi ledakan
-            //munculin monologue setelah ledakan
-            MovePlayerTo.Instance.stopPlayerMovement();
-            CameraShake.Instance.ShakeExplosion(() =>
-            {
-                MovePlayerTo.Instance.resumePlayerMovement();
-                MonologueSystem.Instance.ShowSimpleMonologue("Astaga!, dentuman kali ini keras sekali. Sebaiknya aku memastikan tidak ada yang terluka disana!", new string[] { "", "" });
-            });
-            questManager.StartQuest("investigate_dam_destruction");
-        });
+        // FlagMonitorSystem.WatchFlagAdded("dam_broken", () =>
+        // {
+        //     //trigger screen shake dan suara ledakan atau bangunan rubuh disini
+        //     //disable movement player selama durasi ledakan
+        //     //munculin monologue setelah ledakan
+        //     MovePlayerTo.Instance.stopPlayerMovement();
+        //     CameraShake.Instance.ShakeExplosion(() =>
+        //     {
+        //         MovePlayerTo.Instance.resumePlayerMovement();
+        //         MonologueSystem.Instance.ShowSimpleMonologue("Astaga!, dentuman kali ini keras sekali. Sebaiknya aku memastikan tidak ada yang terluka disana!", new string[] { "", "" });
+        //     });
+        //     questManager.StartQuest("investigate_dam_destruction");
+        // });
 
         // Chapter 4: Mystical Encounters
         FlagMonitorSystem.WatchFlagAdded("spiritual_interference_confirmed", () =>

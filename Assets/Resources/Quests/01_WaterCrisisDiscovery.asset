@@ -51,7 +51,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
-    targetNPC: Pak Darmo
+    targetNPC: warga_haus_1
     targetItem: 
     targetAmount: 1
     currentAmount: 0

@@ -59,6 +59,20 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
+  - speakerName: Budi (Murid Padepokan)
+    dialogueText: Kalau tentang jurus, aku pasti akan memberitahumu nak. Tapi Gajah
+      Putih?, aku bahkan pertama kali ini mendegarnya
+    availableTimesOfDay: 00000000
+    isRepeatable: 1
+    requiredFlags:
+    - keberadaan_gajah_putih
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
   greetings:
   - speakerName: Budi (Murid Padepokan)
     dialogueText: Pagi saudara seperguruanku!

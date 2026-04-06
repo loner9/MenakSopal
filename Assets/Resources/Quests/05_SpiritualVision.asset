@@ -44,7 +44,7 @@ MonoBehaviour:
     targetLocation: DamSite
     timeDelay: 0
     showProgress: 1
-  - objectiveID: defeat_monter
+  - objectiveID: defeat_monster
     description: Kalahkan Rintangan!
     type: 3
     isCompleted: 0
@@ -66,8 +66,8 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags:
     - monsters_defeated
-    flagToSetOnComplete: 
-    targetNPC: buaya_putih_spirit
+    flagToSetOnComplete: keberadaan_gajah
+    targetNPC: buaya_putih
     targetItem: 
     targetAmount: 1
     currentAmount: 0

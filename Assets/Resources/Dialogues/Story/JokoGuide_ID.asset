@@ -16,14 +16,15 @@ MonoBehaviour:
   dialogueDescription: Pemandu perjalanan ke Desa Krandon
   dialogueEntries:
   - speakerName: Joko
-    dialogueText: Aku tahu jalan ke Desa Krandon, pal. Aku bisa memberitahumu arah
-      untuk mencapai desa itu!
+    dialogueText: Gajah putih?, hanya mbok Randa dari desa Krandon yang memilikinya.
+      Aku bisa menemanimu untuk kesana!
     availableTimesOfDay: 0000000002000000
     isRepeatable: 0
     requiredFlags:
     - seeking_white_elephant
     flagsToAdd: []
-    flagsToRemove: []
+    flagsToRemove:
+    - keberadaan_gajah_putih
     hasChoices: 1
     choices: []
     conversationBubbleSprite: {fileID: 0}

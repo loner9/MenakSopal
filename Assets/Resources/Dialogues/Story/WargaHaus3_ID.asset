@@ -24,7 +24,7 @@ MonoBehaviour:
     - committed_to_help
     flagsToAdd: []
     flagsToRemove: []
-    hasChoices: 0
+    hasChoices: 1
     choices:
     - choiceText: Meminta bantuan
       requiredFlags: []
@@ -81,7 +81,7 @@ MonoBehaviour:
     isImportantDialogue: 0
     pauseAfterDialogue: 0
   - speakerName: Karto
-    dialogueText: Aku siap membantu membangun dam ini Menak Sopal!
+    dialogueText: Aku siap membantu membangun dam ini nak!
     availableTimesOfDay: 
     isRepeatable: 0
     requiredFlags:
@@ -99,6 +99,19 @@ MonoBehaviour:
     isRepeatable: 0
     requiredFlags:
     - kegaduhan
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Karto
+    dialogueText: Gajah putih?, sayang sekali aku tidak tahu nak...
+    availableTimesOfDay: 00000000
+    isRepeatable: 1
+    requiredFlags:
+    - keberadaan_gajah_putih
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0

@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4e008a97b6efab4cb7858ea098cf959, type: 3}
-  m_Name: sumurCutscene
+  m_Name: transisiKali2
   m_EditorClassIdentifier: 
-  cutsceneID: sumurCutscene
+  cutsceneID: transisiKali2
   description: 
-  triggerFlag: 
+  triggerFlag: tribute_demand_received
   requiredFlags: []
   steps:
   - type: 3
@@ -22,36 +22,6 @@ MonoBehaviour:
     targetID: 
     secondaryTargetID: 
     textContent: 
-    duration: 0
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 15
-    stepName: 
-    targetID: kegaduhan
-    secondaryTargetID: 
-    textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 0
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 13
-    stepName: 
-    targetID: warga_haus_3
-    secondaryTargetID: 
-    textContent: 
     duration: 1
     delayBefore: 0
     flagsToSet: []
@@ -62,82 +32,7 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 12
-    stepName: 
-    targetID: 
-    secondaryTargetID: 
-    textContent: 
-    duration: 0.2
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 0
-    timeOfDay: 0
-    shakeIntensity: 3
-    dialogueOverride: {fileID: 0}
-  - type: 0
-    stepName: 
-    targetID: warga_haus_3
-    secondaryTargetID: 
-    textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 13
-    stepName: 
-    targetID: bu_siti
-    secondaryTargetID: 
-    textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 0
-    stepName: 
-    targetID: bu_siti
-    secondaryTargetID: 
-    textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 13
-    stepName: 
-    targetID: warga_haus_1
-    secondaryTargetID: 
-    textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 14
+  - type: 30
     stepName: 
     targetID: 
     secondaryTargetID: 
@@ -152,9 +47,70 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 7
+  - type: 28
     stepName: 
-    targetID: MCPlaceAfter01
+    targetID: 
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 20
+    stepName: 
+    targetID: 
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 5
+    stepName: 
+    targetID: DamSite
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 29
+    stepName: 
+    targetID: 
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove:
+    - can_attack
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 30
+    stepName: 
+    targetID: 
     secondaryTargetID: 
     textContent: 
     duration: 1
@@ -171,21 +127,6 @@ MonoBehaviour:
     stepName: 
     targetID: 
     secondaryTargetID: 
-    textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 19
-    stepName: 
-    targetID: water_crisis_discovery
-    secondaryTargetID: witness_crisis
     textContent: 
     duration: 1
     delayBefore: 0

@@ -16,8 +16,8 @@ MonoBehaviour:
   dialogueDescription: Murid padepokan yang bersemangat membantu
   dialogueEntries:
   - speakerName: Andi (Murid Padepokan)
-    dialogueText: Menak Sopal! Aku dengar tentang proyek bendunganmu. Bisakah kami
-      membantu? Kami kuat dan bersemangat melayani masyarakat!
+    dialogueText: Menak Sopal! Aku dengar tentang rencana pembangungan bendungan.
+      Bisakah aku ikut membantumu?
     availableTimesOfDay: 0100000000000000
     isRepeatable: 0
     requiredFlags:
@@ -121,6 +121,19 @@ MonoBehaviour:
       questForObjective: 
       isImportantChoice: 0
       choiceColor: {r: 1, g: 1, b: 1, a: 1}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Andi (Murid Padepokan)
+    dialogueText: hmm, aku kurang tahu tentang Gajah Putih ini pal...
+    availableTimesOfDay: 00000000
+    isRepeatable: 1
+    requiredFlags:
+    - keberadaan_gajah_putih
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
