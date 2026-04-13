@@ -566,10 +566,11 @@ namespace MenakSopal.Cutscenes
             // Wait for it to finish if requested
             if (step.waitForCompletion)
             {
-                // Wait a frame to ensure IsInMonologue has updated to true
-                yield return null;
+                // Wait a small amount of time to ensure either IsInMonologue or IsInDialogue has updated to true
+                yield return new WaitForSeconds(0.1f);
 
-                while (monologueSystem != null && monologueSystem.IsInMonologue)
+                while ((monologueSystem != null && monologueSystem.IsInMonologue) || 
+                       (interactionSystem != null && interactionSystem.IsInDialogue()))
                 {
                     yield return null;
                 }

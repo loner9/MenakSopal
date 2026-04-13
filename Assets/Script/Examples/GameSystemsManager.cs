@@ -320,6 +320,7 @@ public class GameSystemsManager : MonoBehaviour
 
         FlagMonitorSystem.WatchFlagAdded("npc_to_river", () =>
         {
+            Debug.Log("npc_to_river flag added");
             // MovePlayerTo.Instance.movePlayerWithDestinationFade("BantaranKali");
             GameObject materialHolder = GameObject.FindGameObjectWithTag("MaterialsDam");
 

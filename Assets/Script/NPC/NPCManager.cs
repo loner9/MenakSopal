@@ -696,18 +696,21 @@ public class NPCManager : MonoBehaviour
 
     private void ProcessNPCScheduleForHour(NPCSpawnData spawnData, int hour)
     {
-        if (spawnData.scheduleData == null)
+        // Get the applicable schedule (including conditional ones based on flags)
+        NPCScheduleData currentSchedule = GetApplicableSchedule(spawnData);
+
+        if (currentSchedule == null)
         {
-            Debug.Log($"[NPC MANAGER DEBUG] No schedule data for {spawnData.npcID}");
+            Debug.Log($"[NPC MANAGER DEBUG] No applicable schedule data for {spawnData.npcID}");
             return;
         }
 
-        Debug.Log($"[NPC MANAGER DEBUG] Processing schedule for {spawnData.npcID} at hour {hour}");
+        Debug.Log($"[NPC MANAGER DEBUG] Processing schedule for {spawnData.npcID} using '{currentSchedule.name}' at hour {hour}");
 
         NPC existingNPC = GetNPCByID(spawnData.npcID);
-        bool shouldBeActive = ShouldNPCBeActiveAtHour(spawnData.scheduleData, hour);
+        bool shouldBeActive = ShouldNPCBeActiveAtHour(currentSchedule, hour);
 
-        Debug.Log($"[NPC MANAGER DEBUG] {spawnData.npcID} - spawnHour: {spawnData.scheduleData.spawnHour}, currentHour: {hour}, shouldBeActive: {shouldBeActive}, existingNPC: {(existingNPC != null ? "EXISTS" : "NULL")}");
+        Debug.Log($"[NPC MANAGER DEBUG] {spawnData.npcID} - spawnHour: {currentSchedule.spawnHour}, currentHour: {hour}, shouldBeActive: {shouldBeActive}, existingNPC: {(existingNPC != null ? "EXISTS" : "NULL")}");
 
         if (shouldBeActive && existingNPC == null)
         {
@@ -726,7 +729,7 @@ public class NPCManager : MonoBehaviour
         {
             Debug.Log($"[NPC MANAGER DEBUG] Sending {spawnData.npcID} home and despawning");
             // Send NPC home and despawn
-            Vector2 homePos = spawnData.scheduleData.GetHomePosition();
+            Vector2 homePos = currentSchedule.GetHomePosition();
             Debug.Log($"[NPC MANAGER DEBUG] Home position for {spawnData.npcID}: {homePos}");
 
             var homeCommand = new ScheduleCommand
@@ -739,16 +742,16 @@ public class NPCManager : MonoBehaviour
         }
         else if (shouldBeActive && existingNPC != null)
         {
-            Debug.Log($"[NPC MANAGER DEBUG] Checking for schedule event for {spawnData.npcID} at hour {hour}");
-            // Check if there's a schedule event for this hour
-            var scheduleEvent = spawnData.scheduleData.GetScheduleEventForHour(hour);
+            Debug.Log($"[NPC MANAGER DEBUG] Checking for schedule event for {spawnData.npcID} at hour {hour} using {currentSchedule.name}");
+            // Check if there's a schedule event for this hour in the CURRENT scale
+            var scheduleEvent = currentSchedule.GetScheduleEventForHour(hour);
 
             if (scheduleEvent != null)
             {
                 // Safety Check: Only send command if this NPC hasn't already processed this specific event
-                if (existingNPC.currentScheduleEventHour == scheduleEvent.hour)
+                if (existingNPC.currentScheduleEventHour == scheduleEvent.hour && existingNPC.scheduleData == currentSchedule)
                 {
-                    Debug.Log($"[NPC MANAGER DEBUG] ⏭️ Skipping schedule update for {spawnData.npcID} - already following event from hour {scheduleEvent.hour}");
+                    Debug.Log($"[NPC MANAGER DEBUG] ⏭️ Skipping schedule update for {spawnData.npcID} - already following event from hour {scheduleEvent.hour} on current schedule");
                     return;
                 }
 
@@ -772,13 +775,20 @@ public class NPCManager : MonoBehaviour
                     sourceEventHour = scheduleEvent.hour
                 };
 
+                // Update NPC's schedule reference if it changed
+                if (existingNPC.scheduleData != currentSchedule)
+                {
+                    Debug.Log($"[NPC MANAGER DEBUG] Updating NPC internal schedule reference to {currentSchedule.name}");
+                    existingNPC.scheduleData = currentSchedule;
+                }
+
                 pendingCommands[existingNPC] = scheduleCommand;
                 Debug.Log($"[NPC MANAGER DEBUG] ✅ Created {commandType} command for {spawnData.npcID} to position {targetPos}" +
                          (scheduleEvent.shouldDespawn ? " (will despawn on arrival)" : ""));
             }
             else
             {
-                Debug.Log($"[NPC MANAGER DEBUG] ⚠️ No schedule event found for {spawnData.npcID} at or before hour {hour}");
+                Debug.Log($"[NPC MANAGER DEBUG] ⚠️ No schedule event found for {spawnData.npcID} at or before hour {hour} in {currentSchedule.name}");
             }
             // If no specific event for this hour, NPC continues current behavior
         }
