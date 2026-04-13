@@ -60,6 +60,8 @@ public class MonologueSystem : MonoBehaviour
     public System.Action<MonologueEntry> OnMonologueStarted;
     public System.Action<MonologueEntry> OnMonologueEnded;
 
+    public bool IsInMonologue => isInMonologue;
+
 
     private struct QuestObjectiveAction
     {
@@ -267,6 +269,18 @@ public class MonologueSystem : MonoBehaviour
         {
             Debug.LogError("[MonologueSystem] NPCInteractionSystem not found! Cannot show monologue.");
             return;
+        }
+
+        // Force-close any lingering dialogue so NPCInteractionSystem can accept the new one.
+        // NOTE: Do NOT set isInMonologue=true here. ShowSimpleMonologue works entirely through
+        // NPCInteractionSystem (isInDialogue), not through the dedicated monologue coroutine.
+        // Setting isInMonologue=true would cause MonologueSystem.Update() to intercept Space/Return
+        // and call EndMonologue() which never calls npcInteractionSystem.EndDialogue(), leaving
+        // isInDialogue=true forever and causing the cutscene coroutine to hang.
+        if (npcInteractionSystem.IsInDialogue())
+        {
+            Debug.LogWarning("[MonologueSystem] Dialogue was still active when ShowSimpleMonologue was called. Force-closing it.");
+            npcInteractionSystem.EndDialogue();
         }
 
         // Create a temporary dialogue data for the monologue
@@ -702,8 +716,8 @@ public class MonologueSystem : MonoBehaviour
     }
 
 
-    public bool IsInMonologue()
-    {
-        return isInMonologue;
-    }
+    // public bool IsInMonologue()
+    // {
+    //     return isInMonologue;
+    // }
 }

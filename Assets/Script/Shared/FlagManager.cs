@@ -60,6 +60,7 @@ public class FlagManager : MonoBehaviour
                 Debug.Log($"[FlagManager] Flag added: {flag}");
             }
             OnFlagAdded?.Invoke(flag);
+            FlagEvents.RaiseFlagAdded(flag);
             return true;
         }
         return false;
@@ -95,6 +96,7 @@ public class FlagManager : MonoBehaviour
                 Debug.Log($"[FlagManager] Flag removed: {flag}");
             }
             OnFlagRemoved?.Invoke(flag);
+            FlagEvents.RaiseFlagRemoved(flag);
             return true;
         }
         return false;
@@ -192,6 +194,7 @@ public class FlagManager : MonoBehaviour
             Debug.Log("[FlagManager] All flags cleared");
         }
         OnFlagsCleared?.Invoke();
+        FlagEvents.RaiseFlagsCleared();
     }
 
     /// <summary>
@@ -257,6 +260,7 @@ public class FlagManager : MonoBehaviour
         }
 
         OnFlagsLoaded?.Invoke(new List<string>(flags));
+        FlagEvents.RaiseFlagsLoaded(new List<string>(flags));
     }
 
     /// <summary>

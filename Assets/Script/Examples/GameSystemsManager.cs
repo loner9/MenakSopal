@@ -113,10 +113,27 @@ public class GameSystemsManager : MonoBehaviour
             yield return null; // Wait one frame and check again
         }
 
+        // If a cutscene is already playing (e.g. transisiKali), it handles the full
+        // post-recruitment sequence (monologue → to_river → teleport) itself.
+        // Don't interfere — bail out early.
+        var cutsceneController = FindObjectOfType<MenakSopal.Cutscenes.CutsceneController>();
+        if (cutsceneController != null && cutsceneController.IsPlaying)
+        {
+            Debug.Log("[GameSystemsManager] Cutscene is active — skipping post-recruitment monologue (cutscene handles it).");
+            yield break;
+        }
+
         Debug.Log("[GameSystemsManager] Dialogue ended, waiting 0.5-1 second before showing monologue");
 
         // Add delay between dialogue end and monologue start (0.5-1 second)
         yield return new WaitForSeconds(2.35f);
+
+        // Check again after delay — cutscene may have started during the wait
+        if (cutsceneController != null && cutsceneController.IsPlaying)
+        {
+            Debug.Log("[GameSystemsManager] Cutscene started during wait — skipping post-recruitment monologue.");
+            yield break;
+        }
 
         Debug.Log("[GameSystemsManager] Showing monologue after recruitment");
 
@@ -146,7 +163,7 @@ public class GameSystemsManager : MonoBehaviour
         DayNightCycle.Instance.PauseTime();
 
         // Show monologue with clean UI state
-        MonologueSystem.Instance.ShowSimpleMonologue("Hmm, aku telah selesai meminta izin dan mengumpulkan bala bantuan untuk membangun dam ini. Saatnya untuk menuju ke sungai!", new string[] { "to_river", "npc_to_river" });
+        MonologueSystem.Instance.ShowSimpleMonologue("aku telah selesai meminta izin dan mengumpulkan bala bantuan untuk membangun dam ini. Saatnya untuk menuju ke sungai!", new string[] { "to_river", "npc_to_river" });
     }
 
     void OnMonologueCompletedAfterRecruitment()
@@ -293,26 +310,13 @@ public class GameSystemsManager : MonoBehaviour
 
         // Chapter 3: Helper Recruitment
         // setelah ini harus e ada sequence pindah dari map biasa ke map bangun bendungan
-        FlagMonitorSystem.WatchFlagAdded("helpers_recruited", () =>
-        {
-            LogReaction("Students recruited - Construction can begin");
-            ShowMessage("Bala bantuan telah terkumpul, saatnya membangun dam!");
 
-            if (questManager != null)
-            {
-                // Start the proper sequence:
-                // 1. Wait for dialogue to end
-                // 2. Wait 0.5-1 second
-                // 3. Show monologue + pause time
-                // 4. When monologue ends → move to river (via flag) + set time to day + start quest
-                StartCoroutine(WaitForDialogueEndThenShowMonologue());
-            }
-        });
 
         // FlagMonitorSystem.WatchFlagAdded("to_river", () =>
         // {
         //     MovePlayerTo.Instance.movePlayerWithDestinationFade("BantaranKali");
         // });
+
 
         FlagMonitorSystem.WatchFlagAdded("npc_to_river", () =>
         {

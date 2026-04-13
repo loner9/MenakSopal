@@ -207,6 +207,7 @@ public class FlagMonitorSystem : MonoBehaviour
         // Trigger global events
         OnFlagAdded?.Invoke(flagName);
         OnFlagChanged?.Invoke(flagName, true);
+        FlagEvents.RaiseFlagAdded(flagName);
         
         if (Instance.enableDebugLogs)
         {
@@ -241,6 +242,7 @@ public class FlagMonitorSystem : MonoBehaviour
         // Trigger global events
         OnFlagRemoved?.Invoke(flagName);
         OnFlagChanged?.Invoke(flagName, false);
+        FlagEvents.RaiseFlagRemoved(flagName);
         
         if (Instance.enableDebugLogs)
         {

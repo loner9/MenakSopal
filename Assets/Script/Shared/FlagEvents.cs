@@ -29,11 +29,11 @@ public static class FlagEvents
     /// </summary>
     public static event Action OnFlagsCleared;
 
-    // Internal invocation methods (called by FlagManager)
-    internal static void RaiseFlagAdded(string flag) => OnFlagAdded?.Invoke(flag);
-    internal static void RaiseFlagRemoved(string flag) => OnFlagRemoved?.Invoke(flag);
-    internal static void RaiseFlagsLoaded(System.Collections.Generic.List<string> flags) => OnFlagsLoaded?.Invoke(flags);
-    internal static void RaiseFlagsCleared() => OnFlagsCleared?.Invoke();
+    // Public invocation methods
+    public static void RaiseFlagAdded(string flag) => OnFlagAdded?.Invoke(flag);
+    public static void RaiseFlagRemoved(string flag) => OnFlagRemoved?.Invoke(flag);
+    public static void RaiseFlagsLoaded(System.Collections.Generic.List<string> flags) => OnFlagsLoaded?.Invoke(flags);
+    public static void RaiseFlagsCleared() => OnFlagsCleared?.Invoke();
 
     /// <summary>
     /// Clear all event subscribers. Call when reloading scenes or resetting the game.

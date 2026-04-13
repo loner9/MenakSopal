@@ -107,14 +107,25 @@ namespace MenakSopal.Cutscenes
 
         private void HandleFlagAdded(string flagName)
         {
+            if (isPlaying) return;
+
             // Search for cutscenes that trigger on this flag in Resources/Cutscenes
             CutsceneData[] allCutscenes = Resources.LoadAll<CutsceneData>("Cutscenes");
+            
+            // Get current flags for requirement checking
+            List<string> currentFlags = interactionSystem != null ? interactionSystem.GetGameFlags() : new List<string>();
+
             foreach (var cs in allCutscenes)
             {
                 if (cs.triggerFlag == flagName)
                 {
-                    PlayCutscene(cs);
-                    break;
+                    // Check if other requirements are met
+                    if (cs.CanTrigger(currentFlags))
+                    {
+                        if (showDebugLogs) Debug.Log($"[CutsceneController] Triggering cutscene '{cs.cutsceneID}' via flag '{flagName}'");
+                        PlayCutscene(cs);
+                        break;
+                    }
                 }
             }
         }
@@ -246,6 +257,16 @@ namespace MenakSopal.Cutscenes
             isPlaying = true;
 
             Log($"Starting cutscene: {cutscene.cutsceneID}");
+
+            // Force-close any lingering dialogue (e.g. the one that may have triggered this cutscene via a flag).
+            // Without this, any ShowMonologue step would deadlock because NPCInteractionSystem
+            // would see isInDialogue=true and refuse to start the monologue's dialogue, causing an infinite wait.
+            if (interactionSystem != null && interactionSystem.IsInDialogue())
+            {
+                Log("Forcing end of active dialogue before starting cutscene");
+                interactionSystem.EndDialogue();
+                yield return null; // Wait one frame for dialogue teardown to complete
+            }
 
             // Show cinematic bars and hide HUD
             if (cinematicUI != null)
@@ -535,13 +556,20 @@ namespace MenakSopal.Cutscenes
 
         IEnumerator StepShowMonologue(CutsceneStep step)
         {
-            if (monologueSystem != null && !string.IsNullOrEmpty(step.textContent))
-            {
-                monologueSystem.ShowSimpleMonologue(step.textContent, step.flagsToSet);
+            if (monologueSystem == null) yield break;
 
-                // Wait for monologue to complete
-                yield return new WaitForSeconds(0.5f); // Give time for monologue to start
-                while (monologueSystem.IsInMonologue())
+            if (showDebugLogs) Debug.Log($"[CutsceneController] Step: Show Monologue - \"{step.textContent}\"");
+
+            // Use the standard monologue system
+            monologueSystem.ShowSimpleMonologue(step.textContent, step.flagsToSet);
+
+            // Wait for it to finish if requested
+            if (step.waitForCompletion)
+            {
+                // Wait a frame to ensure IsInMonologue has updated to true
+                yield return null;
+
+                while (monologueSystem != null && monologueSystem.IsInMonologue)
                 {
                     yield return null;
                 }
