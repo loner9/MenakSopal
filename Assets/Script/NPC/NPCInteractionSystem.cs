@@ -82,6 +82,7 @@ public class NPCInteractionSystem : MonoBehaviour
     private List<string> gameFlags = new List<string>(); // Simple flag system
     private Sprite originalNPCBubble; // Store original bubble to restore later
     private Coroutine typingCoroutine;
+    private Coroutine bookAnimationCoroutine; // Track opening/closing animation
     private DayNightCycle dayNightCycle;
 
     // Track used non-repeatable dialogue entries per NPC
@@ -424,7 +425,7 @@ public class NPCInteractionSystem : MonoBehaviour
 
         if (enableBookAnimations)
         {
-            StartCoroutine(OpenBookAnimation());
+            bookAnimationCoroutine = StartCoroutine(OpenBookAnimation());
         }
         else
         {
@@ -507,11 +508,27 @@ public class NPCInteractionSystem : MonoBehaviour
 
         // Display first dialogue
         yield return new WaitForSeconds(0.2f);
-        DisplayFirstDialogue();
+        
+        if (isInDialogue && currentDialogue != null)
+        {
+            DisplayFirstDialogue();
+        }
+        else
+        {
+            Debug.Log("[NPCInteraction] Dialogue ended before book finished opening.");
+        }
+        
+        bookAnimationCoroutine = null;
     }
 
     private void DisplayFirstDialogue()
     {
+        if (!isInDialogue || currentDialogue == null)
+        {
+            Debug.LogWarning("[NPCInteraction] DisplayFirstDialogue called but no active dialogue found.");
+            return;
+        }
+
         TimeOfDay currentTime = dayNightCycle != null ? dayNightCycle.CurrentTimeOfDay : TimeOfDay.Day;
         HashSet<int> usedEntries = GetUsedDialogueEntries(currentDialogue.npcName);
 
@@ -734,6 +751,13 @@ public class NPCInteractionSystem : MonoBehaviour
             isTyping = false;
         }
 
+        // Stop any ongoing book animation (opening or closing)
+        if (bookAnimationCoroutine != null)
+        {
+            StopCoroutine(bookAnimationCoroutine);
+            bookAnimationCoroutine = null;
+        }
+
         // Clear choice system state
         ClearChoiceButtons();
         isShowingChoices = false;
@@ -746,7 +770,7 @@ public class NPCInteractionSystem : MonoBehaviour
         // Adventure book closing animation
         if (enableBookAnimations)
         {
-            StartCoroutine(CloseBookAnimation());
+            bookAnimationCoroutine = StartCoroutine(CloseBookAnimation());
         }
         else
         {
@@ -781,6 +805,8 @@ public class NPCInteractionSystem : MonoBehaviour
                 yield return null;
             }
         }
+
+        bookAnimationCoroutine = null;
 
         // Hide UI
         if (dialoguePanel != null)
