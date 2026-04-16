@@ -22,6 +22,7 @@ TagManager:
   - SceneRoot
   - EnemiesContainer
   - LightSpiritiual
+  - Fog
   layers:
   - Default
   - TransparentFX

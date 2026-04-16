@@ -91,18 +91,18 @@ public class GameSystemsManager : MonoBehaviour
         }
     }
 
-    void LateUpdate()
-    {
-        string sceneName = SceneManager.GetActiveScene().name;
-        if (sceneName != "SceneAwal") return;
-        if (DayNightCycle.Instance.CurrentTime >= 22f && DayNightCycle.Instance.CurrentTime <= 22.4f)
-        {
-            DayNightCycle.Instance.SetTime(22.5f);
-            DayNightCycle.Instance.PauseTime();
-            MovePlayerTo.Instance.stopPlayerMovement();
-            ttsCanvas.SetActive(true);
-        }
-    }
+    // void LateUpdate()
+    // {
+    //     string sceneName = SceneManager.GetActiveScene().name;
+    //     if (sceneName != "SceneAwal") return;
+    //     if (DayNightCycle.Instance.CurrentTime >= 22f && DayNightCycle.Instance.CurrentTime <= 22.4f)
+    //     {
+    //         DayNightCycle.Instance.SetTime(22.5f);
+    //         DayNightCycle.Instance.PauseTime();
+    //         MovePlayerTo.Instance.stopPlayerMovement();
+    //         ttsCanvas.SetActive(true);
+    //     }
+    // }
 
     IEnumerator WaitForDialogueEndThenShowMonologue()
     {
@@ -400,13 +400,26 @@ public class GameSystemsManager : MonoBehaviour
         //spiritual_vision_active <- iki active, pindah scene dimana
         //ada sequence gelut, dan kalau udah selesai gelut, buaya muncul
 
-        FlagMonitorSystem.WatchFlagAdded("spiritual_vision_active", () =>
+        FlagMonitorSystem.WatchFlagAdded("fog_active", () =>
         {
-            //todo: pindah ke scene spiritual plane
+            //todo: pindah ke scene spiritual plane -> done
+            GameObject fogLayer = GameObject.FindGameObjectWithTag("Fog");
+            if (fogLayer != null)
+            {
+                SpriteRenderer spriteRenderer = fogLayer.GetComponent<SpriteRenderer>();
+                spriteRenderer.enabled = true;
+            }
+        });
 
-            // StartCoroutine(HandleSpiritualVisianEncounter());
-            // EnterSubArea("SpiritualPlane");
-
+        FlagMonitorSystem.WatchFlagRemoved("fog_active", () =>
+        {
+            //todo: pindah ke scene spiritual plane -> done
+            GameObject fogLayer = GameObject.FindGameObjectWithTag("Fog");
+            if (fogLayer != null)
+            {
+                SpriteRenderer spriteRenderer = fogLayer.GetComponent<SpriteRenderer>();
+                spriteRenderer.enabled = false;
+            }
         });
 
         // FlagMonitorSystem.WatchFlagAdded("mc_done_talking", () =>
