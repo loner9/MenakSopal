@@ -10,52 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4e008a97b6efab4cb7858ea098cf959, type: 3}
-  m_Name: kemunculanBuaya
+  m_Name: ForestSequence
   m_EditorClassIdentifier: 
-  cutsceneID: kemunculanBuaya
+  cutsceneID: ForestSequence
   description: 
-  triggerFlag: monsters_defeated
+  triggerFlag: in_forest
   requiredFlags: []
   steps:
-  - type: 3
+  - type: 30
     stepName: 
     targetID: 
     secondaryTargetID: 
     textContent: 
-    duration: 1
+    duration: 0.4
     delayBefore: 0
-    flagsToSet: []
-    flagsToRemove:
+    flagsToSet:
     - can_attack
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 12
-    stepName: 
-    targetID: 
-    secondaryTargetID: 
-    textContent: 
-    duration: 1.5
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 2
-    dialogueOverride: {fileID: 0}
-  - type: 28
-    stepName: 
-    targetID: 
-    secondaryTargetID: 
-    textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet: []
     flagsToRemove: []
     requiredFlags: []
     audioClip: {fileID: 0}
@@ -63,9 +33,9 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 8
+  - type: 5
     stepName: 
-    targetID: buaya_putih
+    targetID: mc_in_forest
     secondaryTargetID: 
     textContent: 
     duration: 1
@@ -93,11 +63,11 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 13
+  - type: 1
     stepName: 
-    targetID: buaya_putih
+    targetID: 
     secondaryTargetID: 
-    textContent: 
+    textContent: Huft, huft...
     duration: 1
     delayBefore: 0
     flagsToSet: []
@@ -113,6 +83,21 @@ MonoBehaviour:
     targetID: 
     secondaryTargetID: 
     textContent: 
+    duration: 0.2
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 1
+    stepName: 
+    targetID: 
+    secondaryTargetID: 
+    textContent: Sial, monster monster dihutan ini sangat merepotkan
     duration: 1
     delayBefore: 0
     flagsToSet: []
@@ -123,11 +108,56 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 14
+  - type: 30
     stepName: 
     targetID: 
     secondaryTargetID: 
     textContent: 
+    duration: 0.2
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 1
+    stepName: 
+    targetID: 
+    secondaryTargetID: 
+    textContent: Aku jadi terpisah dengan paman Joko...
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 30
+    stepName: 
+    targetID: 
+    secondaryTargetID: 
+    textContent: 
+    duration: 0.5
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 2
+    stepName: 
+    targetID: 
+    secondaryTargetID: 
+    textContent: Lewati hutan dengan aman!
     duration: 1
     delayBefore: 0
     flagsToSet: []

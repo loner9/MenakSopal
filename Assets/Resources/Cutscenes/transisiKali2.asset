@@ -25,7 +25,8 @@ MonoBehaviour:
     duration: 1
     delayBefore: 0
     flagsToSet: []
-    flagsToRemove: []
+    flagsToRemove:
+    - can_attack
     requiredFlags: []
     audioClip: {fileID: 0}
     waitForCompletion: 1
@@ -40,7 +41,8 @@ MonoBehaviour:
     duration: 1
     delayBefore: 0
     flagsToSet: []
-    flagsToRemove: []
+    flagsToRemove:
+    - fog_active
     requiredFlags: []
     audioClip: {fileID: 0}
     waitForCompletion: 1

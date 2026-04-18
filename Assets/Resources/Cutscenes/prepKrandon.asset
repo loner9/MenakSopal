@@ -10,44 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4e008a97b6efab4cb7858ea098cf959, type: 3}
-  m_Name: kemunculanBuaya
+  m_Name: prepKrandon
   m_EditorClassIdentifier: 
-  cutsceneID: kemunculanBuaya
+  cutsceneID: prepKrandon
   description: 
-  triggerFlag: monsters_defeated
+  triggerFlag: path_obtained
   requiredFlags: []
   steps:
-  - type: 3
-    stepName: 
-    targetID: 
-    secondaryTargetID: 
-    textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove:
-    - can_attack
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 12
-    stepName: 
-    targetID: 
-    secondaryTargetID: 
-    textContent: 
-    duration: 1.5
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 2
-    dialogueOverride: {fileID: 0}
   - type: 28
     stepName: 
     targetID: 
@@ -63,9 +32,54 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
+  - type: 5
+    stepName: 
+    targetID: mc_prep_krandon
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 3
+    stepName: 
+    targetID: 
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 9
+    stepName: 
+    targetID: pemandu_jalan
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
   - type: 8
     stepName: 
-    targetID: buaya_putih
+    targetID: pemaandu_jalan
     secondaryTargetID: 
     textContent: 
     duration: 1
@@ -93,9 +107,24 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
+  - type: 30
+    stepName: 
+    targetID: 
+    secondaryTargetID: 
+    textContent: 
+    duration: 0.4
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
   - type: 13
     stepName: 
-    targetID: buaya_putih
+    targetID: pemandu_jalan
     secondaryTargetID: 
     textContent: 
     duration: 1
@@ -108,10 +137,10 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 30
+  - type: 10
     stepName: 
-    targetID: 
-    secondaryTargetID: 
+    targetID: pemandu_jalan
+    secondaryTargetID: Jono_goes_krandon
     textContent: 
     duration: 1
     delayBefore: 0
@@ -119,7 +148,7 @@ MonoBehaviour:
     flagsToRemove: []
     requiredFlags: []
     audioClip: {fileID: 0}
-    waitForCompletion: 1
+    waitForCompletion: 0
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
@@ -129,7 +158,7 @@ MonoBehaviour:
     secondaryTargetID: 
     textContent: 
     duration: 1
-    delayBefore: 0
+    delayBefore: 0.3
     flagsToSet: []
     flagsToRemove: []
     requiredFlags: []
@@ -138,14 +167,31 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 4
+  - type: 7
+    stepName: 
+    targetID: mc_goes_krandon
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 0
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 28
     stepName: 
     targetID: 
     secondaryTargetID: 
     textContent: 
     duration: 1
     delayBefore: 0
-    flagsToSet: []
+    flagsToSet:
+    - in_forest
+    - can_attack
     flagsToRemove: []
     requiredFlags: []
     audioClip: {fileID: 0}

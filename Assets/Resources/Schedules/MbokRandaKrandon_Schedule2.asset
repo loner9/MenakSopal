@@ -10,32 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1bf30c825a1d3944a1b6264cdf20cff, type: 3}
-  m_Name: MbokRandaKrandon_Schedule
+  m_Name: MbokRandaKrandon_Schedule2
   m_EditorClassIdentifier: 
   scheduleName: Mbok Randa Krandon Schedule
   scheduleDescription: White elephant owner in Desa Krandon
   spawnHour: 6
-  homeObjectTag: House
-  homeObjectName: mbrSpawn
+  homeObjectTag: NPCTarget
+  homeObjectName: mbokRandaStand
   homePosition: {x: 10, y: 5}
   scheduleEvents:
   - hour: 9
     targetObjectTag: NPCTarget
-    targetObjectName: mbrIdle
+    targetObjectName: mbokRandaStand
     targetPosition: {x: 8, y: 3}
     behavior: 2
     shouldIdleWhenReached: 1
     shouldDespawn: 0
     customDialogue:
     - Gajah putihku adalah harta paling berharga. Dia seperti putri bagiku.
-  - hour: 21
-    targetObjectTag: House
-    targetObjectName: mbrSpawn
-    targetPosition: {x: 10, y: 5}
-    behavior: 3
-    shouldIdleWhenReached: 1
-    shouldDespawn: 1
-    customDialogue: []
   moveAroundWhenIdle: 0
   idleMovementRange: 2
   walkSpeed: 1

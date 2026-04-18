@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4e008a97b6efab4cb7858ea098cf959, type: 3}
-  m_Name: kemunculanBuaya
+  m_Name: ArriveKrandon
   m_EditorClassIdentifier: 
-  cutsceneID: kemunculanBuaya
+  cutsceneID: ArriveKrandon
   description: 
-  triggerFlag: monsters_defeated
+  triggerFlag: finish_forest
   requiredFlags: []
   steps:
-  - type: 3
+  - type: 28
     stepName: 
     targetID: 
     secondaryTargetID: 
@@ -33,12 +33,12 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 12
+  - type: 9
     stepName: 
-    targetID: 
+    targetID: pemandu_jalan
     secondaryTargetID: 
     textContent: 
-    duration: 1.5
+    duration: 1
     delayBefore: 0
     flagsToSet: []
     flagsToRemove: []
@@ -46,11 +46,11 @@ MonoBehaviour:
     audioClip: {fileID: 0}
     waitForCompletion: 1
     timeOfDay: 0
-    shakeIntensity: 2
+    shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 28
+  - type: 5
     stepName: 
-    targetID: 
+    targetID: mc_in_krandon
     secondaryTargetID: 
     textContent: 
     duration: 1
@@ -65,7 +65,7 @@ MonoBehaviour:
     dialogueOverride: {fileID: 0}
   - type: 8
     stepName: 
-    targetID: buaya_putih
+    targetID: pemandu_jalan
     secondaryTargetID: 
     textContent: 
     duration: 1
@@ -93,54 +93,9 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 13
+  - type: 0
     stepName: 
-    targetID: buaya_putih
-    secondaryTargetID: 
-    textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 30
-    stepName: 
-    targetID: 
-    secondaryTargetID: 
-    textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 14
-    stepName: 
-    targetID: 
-    secondaryTargetID: 
-    textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 4
-    stepName: 
-    targetID: 
+    targetID: pemandu_jalan
     secondaryTargetID: 
     textContent: 
     duration: 1

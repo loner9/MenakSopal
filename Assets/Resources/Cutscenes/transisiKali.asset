@@ -93,9 +93,39 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
+  - type: 5
+    stepName: 
+    targetID: BantaranKali
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
   - type: 15
     stepName: 
     targetID: to_river
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 2
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 17
+    stepName: 
+    targetID: dam_construction_project
     secondaryTargetID: 
     textContent: 
     duration: 1
@@ -138,9 +168,9 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 5
+  - type: 30
     stepName: 
-    targetID: BantaranKali
+    targetID: 
     secondaryTargetID: 
     textContent: 
     duration: 1
@@ -149,7 +179,7 @@ MonoBehaviour:
     flagsToRemove: []
     requiredFlags: []
     audioClip: {fileID: 0}
-    waitForCompletion: 0
+    waitForCompletion: 1
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}

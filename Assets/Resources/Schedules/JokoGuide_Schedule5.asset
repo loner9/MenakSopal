@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1bf30c825a1d3944a1b6264cdf20cff, type: 3}
+  m_Name: JokoGuide_Schedule5
+  m_EditorClassIdentifier: 
+  scheduleName: Joko schedule in krandon 2
+  scheduleDescription: Joko pas deket rumah e mbok randa
+  spawnHour: 6
+  homeObjectTag: NPCTarget
+  homeObjectName: KrandonTransition2
+  homePosition: {x: 0, y: 0}
+  scheduleEvents: []
+  moveAroundWhenIdle: 0
+  idleMovementRange: 2
+  walkSpeed: 1.5
+  pauseAtDestination: 2
+  dialogues: []
+  workStation: {fileID: 0}
+  workDuration: 5

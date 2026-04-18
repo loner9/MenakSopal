@@ -20,7 +20,7 @@ MonoBehaviour:
   questLevel: 5
   questIcon: {fileID: 0}
   requiredFlags:
-  - ready_for_journey
+  - tribute_demand_received
   flagsOnStart: []
   flagsOnComplete:
   - arrived_desa_krandon
@@ -50,7 +50,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags:
     - path_obtained
-    flagToSetOnComplete: 
+    flagToSetOnComplete: finish_forest
     targetNPC: 
     targetItem: 
     targetAmount: 1
@@ -74,7 +74,7 @@ MonoBehaviour:
     showProgress: 1
   rewards: []
   isRepeatable: 0
-  canAbandon: 1
+  canAbandon: 0
   autoComplete: 1
   timeLimit: 0
   showInJournal: 1

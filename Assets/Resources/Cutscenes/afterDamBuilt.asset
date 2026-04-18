@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cutsceneID: afterDamBuilt
   description: 
-  triggerFlag: initial_dam_built
+  triggerFlag: dam_dialog_built
   requiredFlags: []
   steps:
   - type: 31
