@@ -1521,6 +1521,45 @@ public class NPCInteractionSystem : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Removes all flags that were added after the specified target flag.
+    /// This is used to reset the story state to a specific checkpoint.
+    /// </summary>
+    /// <param name="targetFlag">The flag to roll back to. This flag and all before it will be kept.</param>
+    public void RollbackFlags(string targetFlag)
+    {
+        if (!gameFlags.Contains(targetFlag))
+        {
+            Debug.LogWarning($"[NPCInteractionSystem] Cannot rollback to flag '{targetFlag}' because it doesn't exist!");
+            return;
+        }
+
+        int targetIndex = gameFlags.IndexOf(targetFlag);
+        int flagsToRemoveCount = gameFlags.Count - (targetIndex + 1);
+
+        if (flagsToRemoveCount > 0)
+        {
+            Debug.Log($"[NPCInteractionSystem] Rolling back flags to '{targetFlag}'. Removing {flagsToRemoveCount} flags.");
+            
+            // Remove flags from the end backwards
+            for (int i = gameFlags.Count - 1; i > targetIndex; i--)
+            {
+                string flagToRemove = gameFlags[i];
+                
+                // Sync with centralized FlagManager if available
+                if (FlagManager.Instance != null)
+                {
+                    FlagManager.Instance.RemoveFlag(flagToRemove);
+                }
+                
+                // Notify flag monitor system
+                FlagMonitorSystem.NotifyFlagRemoved(flagToRemove);
+                
+                gameFlags.RemoveAt(i);
+            }
+        }
+    }
+
     public void RemoveGameFlag(string flag)
     {
         if (gameFlags.Remove(flag))

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -8,6 +9,10 @@ public class PlayerHealth : MonoBehaviour
     public PlayerStats Stats => stats;
     
     private bool isDead = false;
+
+    [Header("Events")]
+    public UnityEvent OnDeath;
+    public UnityEvent OnRevive;
 
     private void Awake(){
         playerAnimation = GetComponent<PlayerAnimation>();
@@ -46,6 +51,9 @@ public class PlayerHealth : MonoBehaviour
         isDead = true;
         playerAnimation.showDeadAnimation();
         
+        // Notify other systems
+        OnDeath?.Invoke();
+        
         // Optional: Disable further interactions
         // GetComponent<Collider2D>().enabled = false;
     }
@@ -59,5 +67,6 @@ public class PlayerHealth : MonoBehaviour
     {
         isDead = false;
         stats.health = stats.maxHealth; // Assuming you have maxHealth in PlayerStats
+        OnRevive?.Invoke();
     }
 }

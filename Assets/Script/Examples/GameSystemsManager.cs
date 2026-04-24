@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using MenakSopal.Audio;
 using TMPro;
 using UnityEngine;
@@ -13,6 +14,19 @@ using UnityEngine.UI;
 /// </summary>
 public class GameSystemsManager : MonoBehaviour
 {
+    [System.Serializable]
+    public class RespawnCheckpoint
+    {
+        public string flagName;
+        public string spawnPointName;
+        [Tooltip("Optional: message to show when respawning")]
+        public string respawnMessage;
+    }
+
+    [Header("Checkpoint System")]
+    public List<RespawnCheckpoint> respawnCheckpoints = new List<RespawnCheckpoint>();
+    public float respawnDelay = 2.0f;
+
     [Header("Quest Integration")]
     public QuestManager questManager;
 
@@ -70,6 +84,7 @@ public class GameSystemsManager : MonoBehaviour
 
         SetupFlagReactions();
         SetupSubAreaEventHandlers();
+        SetupDeathDetection();
 
         // Check if story_started flag exists and trigger water crisis discovery
         var interactionSystem = FindObjectOfType<NPCInteractionSystem>();
@@ -365,6 +380,32 @@ public class GameSystemsManager : MonoBehaviour
             NPCManager.Instance.UpdateNPCSchedules();
         });
 
+        FlagMonitorSystem.WatchFlagRemoved("materials_collected_del", () =>
+        {
+            NPCManager.Instance.UpdateNPCSchedules();
+            Debug.Log("materials_collected_del flag removed");
+
+            // Despawn NPCs from their current locations, then respawn them at the river
+            // This makes them instantly appear at the river based on their conditional schedules
+            string[] npcIDsToMove = new string[]
+            {
+                "murid_padepokan_1",
+                "murid_padepokan_2",
+                "murid_padepokan_3",
+                "young_farmer",
+                "warga_haus_3"
+            };
+
+            foreach (string npcID in npcIDsToMove)
+            {
+                // Despawn if already spawned
+                NPCManager.Instance.DespawnNPC(npcID);
+
+                // Respawn at their current scheduled location (will use conditional schedule with npc_to_river flag)
+                NPCManager.Instance.SpawnNPCAtCurrentScheduledLocation(npcID);
+            }
+        });
+
         //harus bikin gameobjek yang bisa dibuat muncul sesuai kondisi adanya flag atau engga
 
         //trigger event dam rusak. setelah objective kelar dan "initial_dam_built" flag ini muncul
@@ -576,7 +617,91 @@ public class GameSystemsManager : MonoBehaviour
         });
     }
 
+    #region Death and Respawn System
 
+    private void SetupDeathDetection()
+    {
+        // Find player and subscribe to death event
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+        {
+            PlayerHealth playerHealth = playerObj.GetComponent<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                playerHealth.OnDeath.AddListener(HandlePlayerDeath);
+                Debug.Log("[GameSystems] Subscribed to PlayerHealth.OnDeath");
+            }
+        }
+    }
+
+    private void HandlePlayerDeath()
+    {
+        Debug.Log("[GameSystems] Player death detected. Initiating respawn sequence...");
+        StartCoroutine(RespawnSequence());
+    }
+
+    private IEnumerator RespawnSequence()
+    {
+        // Wait for potential death animation to play
+        yield return new WaitForSeconds(respawnDelay);
+
+        // Find the latest checkpoint flag
+        var interactionSystem = NPCInteractionSystem.Instance;
+        if (interactionSystem == null) yield break;
+
+        var currentFlags = interactionSystem.GetGameFlags();
+        RespawnCheckpoint latestCheckpoint = null;
+        int latestFlagIndex = -1;
+
+        // Iterate through registered checkpoints to find which one matches the latest acquired flag
+        foreach (var checkpoint in respawnCheckpoints)
+        {
+            int index = currentFlags.IndexOf(checkpoint.flagName);
+            if (index != -1 && index > latestFlagIndex)
+            {
+                latestFlagIndex = index;
+                latestCheckpoint = checkpoint;
+            }
+        }
+
+        if (latestCheckpoint != null)
+        {
+            Debug.Log($"[GameSystems] Respawning at checkpoint: {latestCheckpoint.flagName} -> {latestCheckpoint.spawnPointName}");
+
+            // 1. Rollback flags to the checkpoint
+            interactionSystem.RollbackFlags(latestCheckpoint.flagName);
+
+            // 2. Hide UI/Fade and Move player
+            if (MovePlayerTo.Instance != null)
+            {
+                MovePlayerTo.Instance.movePlayerWithDestinationFade(latestCheckpoint.spawnPointName, () =>
+                {
+                    // 3. Revive player once teleport is done
+                    GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+                    if (playerObj != null)
+                    {
+                        PlayerHealth playerHealth = playerObj.GetComponent<PlayerHealth>();
+                        if (playerHealth != null)
+                        {
+                            playerHealth.Revive();
+
+                            if (!string.IsNullOrEmpty(latestCheckpoint.respawnMessage))
+                            {
+                                ShowMessage(latestCheckpoint.respawnMessage);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[GameSystems] No checkpoint flag found! Player cannot be respawned automatically.");
+            // Optional: Fallback to a default location or reload scene
+        }
+    }
+
+    #endregion
 
     #region Sub-Area Event Handlers
 
