@@ -33,6 +33,8 @@ namespace MenakSopal.Cutscenes
         private bool isPlaying;
         private bool isWaitingForInput;
         private Coroutine playbackCoroutine;
+        private Coroutine fadeCoroutine;   // tracked so cleanup can kill orphaned fades
+        private Queue<CutsceneData> cutsceneQueue = new Queue<CutsceneData>();
 
         // Cached references
         private NPCInteractionSystem interactionSystem;
@@ -47,6 +49,8 @@ namespace MenakSopal.Cutscenes
         public bool IsPlaying => isPlaying;
         public CutsceneData CurrentCutscene => currentCutscene;
         public int CurrentStepIndex => currentStepIndex;
+        /// <summary>Current alpha of the fade canvas (0=transparent, 1=black).</summary>
+        public float FadeCanvasAlpha => fadeCanvasGroup != null ? fadeCanvasGroup.alpha : 0f;
 
         void Awake()
         {
@@ -69,8 +73,25 @@ namespace MenakSopal.Cutscenes
             }
         }
 
+        private float _lastKnownAlpha = -1f;
+        private bool _isFading = false;  // suppress monitor during our own fades
+
         void Update()
         {
+            // ── Alpha change monitor ────────────────────────────────────────
+            if (fadeCanvasGroup != null && !_isFading)
+            {
+                float cur = fadeCanvasGroup.alpha;
+                if (_lastKnownAlpha >= 0 && Mathf.Abs(cur - _lastKnownAlpha) > 0.01f)
+                {
+                    Debug.LogWarning($"[Cutscene:AlphaMonitor] FadeCanvas alpha changed externally: " +
+                                     $"{_lastKnownAlpha:F2} → {cur:F2} | isPlaying={isPlaying} | " +
+                                     $"currentCutscene={currentCutscene?.cutsceneID ?? "none"}");
+                }
+                _lastKnownAlpha = cur;
+            }
+            // ───────────────────────────────────────────────────────────────
+
             // Handle skip input
             if (isPlaying && currentCutscene != null && currentCutscene.canSkip)
             {
@@ -107,7 +128,9 @@ namespace MenakSopal.Cutscenes
 
         private void HandleFlagAdded(string flagName)
         {
-            if (isPlaying) return;
+            // We still allow triggering if playing, because they will be queued now.
+            // But we should probably prevent the EXACT same cutscene from being queued multiple times.
+
 
             // Search for cutscenes that trigger on this flag in Resources/Cutscenes
             CutsceneData[] allCutscenes = Resources.LoadAll<CutsceneData>("Cutscenes");
@@ -153,6 +176,44 @@ namespace MenakSopal.Cutscenes
                 gameSystemsManager = Object.FindFirstObjectByType<GameSystemsManager>();
 
             cinematicUI = Object.FindFirstObjectByType<CinematicUI>();
+
+            // Re-acquire fadeCanvasGroup if the serialized reference was lost
+            TryAcquireFadeCanvasGroup();
+        }
+
+        /// <summary>
+        /// Attempts to find and assign the fadeCanvasGroup if it's null.
+        /// Logs clearly whether it succeeded or failed so you can diagnose in the Unity console.
+        /// </summary>
+        private void TryAcquireFadeCanvasGroup()
+        {
+            if (fadeCanvasGroup != null)
+            {
+                Debug.Log($"[Cutscene:Fade] fadeCanvasGroup already assigned → '{fadeCanvasGroup.gameObject.name}' (alpha={fadeCanvasGroup.alpha:F2})");
+                return;
+            }
+
+            // Try to find by tag (same tag used by MovePlayerTo and NPCManager)
+            GameObject fadeObj = GameObject.FindGameObjectWithTag("FadeImage");
+            if (fadeObj != null)
+            {
+                fadeCanvasGroup = fadeObj.GetComponent<CanvasGroup>();
+                if (fadeCanvasGroup == null)
+                {
+                    Debug.Log($"[Cutscene:Fade] FadeImage-tagged object '{fadeObj.name}' has no CanvasGroup — adding one automatically.");
+                    fadeCanvasGroup = fadeObj.AddComponent<CanvasGroup>();
+                }
+
+                fadeImage = fadeObj.GetComponent<Image>();
+                Animator anim = fadeObj.GetComponent<Animator>();
+                Debug.Log($"[Cutscene:Fade] Re-acquired fadeCanvasGroup from '{fadeObj.name}'. " +
+                          $"Has Image={fadeImage != null} | Has Animator={anim != null} (enabled={anim?.enabled})");
+            }
+            else
+            {
+                Debug.LogError("[Cutscene:Fade] No GameObject with tag 'FadeImage' found in scene! " +
+                               "Assign the Fade Canvas Group directly on the CutsceneController in the Inspector.");
+            }
         }
 
         #region Public API
@@ -172,7 +233,8 @@ namespace MenakSopal.Cutscenes
         }
 
         /// <summary>
-        /// Play a cutscene from a CutsceneData asset
+        /// Play a cutscene from a CutsceneData asset. 
+        /// If a dialogue is active, it will be queued until the dialogue ends.
         /// </summary>
         public void PlayCutscene(CutsceneData cutscene)
         {
@@ -184,15 +246,10 @@ namespace MenakSopal.Cutscenes
             // Safety check: ensure we have current scene references
             CacheReferences();
 
-            if (isPlaying)
+            // Check if cutscene is already in queue or playing to avoid duplicates
+            if (currentCutscene == cutscene || cutsceneQueue.Contains(cutscene))
             {
-                Debug.LogError("[Cutscene] Cannot play null cutscene!");
-                return;
-            }
-
-            if (isPlaying)
-            {
-                Debug.LogWarning($"[Cutscene] Already playing '{currentCutscene.cutsceneID}', cannot start '{cutscene.cutsceneID}'");
+                if (showDebugLogs) Debug.Log($"[Cutscene] Cutscene '{cutscene.cutsceneID}' is already playing or queued.");
                 return;
             }
 
@@ -204,7 +261,15 @@ namespace MenakSopal.Cutscenes
                 return;
             }
 
-            playbackCoroutine = StartCoroutine(PlayCutsceneSequence(cutscene));
+            // Add to queue
+            cutsceneQueue.Enqueue(cutscene);
+            Log($"Queued cutscene: {cutscene.cutsceneID} (Queue size: {cutsceneQueue.Count})");
+
+            // Start processing if not already playing
+            if (!isPlaying)
+            {
+                playbackCoroutine = StartCoroutine(ProcessCutsceneQueue());
+            }
         }
 
         /// <summary>
@@ -250,27 +315,56 @@ namespace MenakSopal.Cutscenes
 
         #region Cutscene Playback
 
+        IEnumerator ProcessCutsceneQueue()
+        {
+            isPlaying = true;
+            Debug.Log($"[Cutscene:Queue] Processing started. Queue has {cutsceneQueue.Count} cutscene(s).");
+
+            while (cutsceneQueue.Count > 0)
+            {
+                CutsceneData nextCutscene = cutsceneQueue.Dequeue();
+                Debug.Log($"[Cutscene:Queue] Dequeued '{nextCutscene.cutsceneID}'. Remaining in queue: {cutsceneQueue.Count}");
+                yield return StartCoroutine(PlayCutsceneSequence(nextCutscene));
+                Debug.Log($"[Cutscene:Queue] Finished '{nextCutscene.cutsceneID}'. Remaining in queue: {cutsceneQueue.Count}");
+            }
+
+            isPlaying = false;
+            playbackCoroutine = null;
+            Debug.Log("[Cutscene:Queue] All cutscenes finished. isPlaying = false.");
+        }
+
         IEnumerator PlayCutsceneSequence(CutsceneData cutscene)
         {
             currentCutscene = cutscene;
             currentStepIndex = 0;
-            isPlaying = true;
 
-            Log($"Starting cutscene: {cutscene.cutsceneID}");
+            Log($"Preparing cutscene: {cutscene.cutsceneID}");
 
-            // Force-close any lingering dialogue (e.g. the one that may have triggered this cutscene via a flag).
-            // Without this, any ShowMonologue step would deadlock because NPCInteractionSystem
-            // would see isInDialogue=true and refuse to start the monologue's dialogue, causing an infinite wait.
-            if (interactionSystem != null && interactionSystem.IsInDialogue())
+            // Wait for any active dialogue/monologue to end instead of force-closing
+            if (IsDialogueActive())
             {
-                Log("Forcing end of active dialogue before starting cutscene");
-                interactionSystem.EndDialogue();
-                yield return null; // Wait one frame for dialogue teardown to complete
+                Debug.Log($"[Cutscene:Wait] Dialogue active — waiting. Alpha={fadeCanvasGroup?.alpha:F2}");
+                Log("Waiting for active dialogue/monologue to finish before starting cutscene...");
+
+                yield return new WaitForSeconds(0.2f);
+
+                while (IsDialogueActive())
+                {
+                    yield return null;
+                }
+
+                Debug.Log($"[Cutscene:Wait] Dialogue ENDED. Alpha={fadeCanvasGroup?.alpha:F2}  — waiting 0.5s grace...");
+                yield return new WaitForSeconds(0.5f);
+                Debug.Log($"[Cutscene:Wait] Grace period over. Alpha={fadeCanvasGroup?.alpha:F2}");
             }
+
+            Debug.Log($"[Cutscene:Wait] Starting step execution. Alpha={fadeCanvasGroup?.alpha:F2}");
+            Log($"Starting cutscene sequence: {cutscene.cutsceneID}");
 
             // Show cinematic bars and hide HUD
             if (cinematicUI != null)
                 cinematicUI.ShowCinematicMode(true, cutscene.canSkip);
+            Debug.Log($"[Cutscene:Wait] After ShowCinematicMode. Alpha={fadeCanvasGroup?.alpha:F2}");
 
             // Apply start settings
             if (cutscene.pauseGameTime && dayNightCycle != null)
@@ -285,7 +379,11 @@ namespace MenakSopal.Cutscenes
                 foreach (string flag in cutscene.flagsOnStart)
                 {
                     if (!string.IsNullOrEmpty(flag))
+                    {
+                        Debug.Log($"[Cutscene:Wait] Setting start flag '{flag}'. Alpha before={fadeCanvasGroup?.alpha:F2}");
                         AddFlag(flag);
+                        Debug.Log($"[Cutscene:Wait] After flag '{flag}'. Alpha={fadeCanvasGroup?.alpha:F2}");
+                    }
                 }
             }
 
@@ -308,6 +406,7 @@ namespace MenakSopal.Cutscenes
                 if (step.delayBefore > 0)
                     yield return new WaitForSeconds(step.delayBefore);
 
+                Debug.Log($"[Cutscene:Step] Step {i} ({step.type}) | Alpha={fadeCanvasGroup?.alpha:F2}");
                 Log($"Executing step {i}: {step.type}" +
                     (string.IsNullOrEmpty(step.stepName) ? "" : $" ({step.stepName})"));
 
@@ -338,7 +437,26 @@ namespace MenakSopal.Cutscenes
             CutsceneEvents.InvokeCutsceneCompleted(cutscene);
 
             currentCutscene = null;
-            isPlaying = false;
+        }
+
+        /// <summary>
+        /// Checks if any dialogue system is currently active (NPC dialogue, Ink story, or Monologue)
+        /// </summary>
+        public bool IsDialogueActive()
+        {
+            // Check NPC Interaction System
+            if (interactionSystem != null && interactionSystem.IsInDialogue())
+                return true;
+
+            // Check Ink Story Manager
+            if (InkStoryManager.Instance != null && InkStoryManager.Instance.IsDialogueActive)
+                return true;
+
+            // Check Monologue System
+            if (monologueSystem != null && monologueSystem.IsInMonologue)
+                return true;
+
+            return false;
         }
 
         IEnumerator ExecuteStep(CutsceneStep step)
@@ -480,11 +598,14 @@ namespace MenakSopal.Cutscenes
                     break;
 
                 case CutsceneStep.StepType.FadeToBlack:
-                    yield return StartCoroutine(FadeScreen(true, step.duration));
+                    // Use tracked fade so cleanup can stop it if waitForCompletion=false
+                    yield return StartTrackedFade(true, step.duration);
+                    fadeCoroutine = null;
                     break;
 
                 case CutsceneStep.StepType.FadeFromBlack:
-                    yield return StartCoroutine(FadeScreen(false, step.duration));
+                    yield return StartTrackedFade(false, step.duration);
+                    fadeCoroutine = null;
                     break;
 
                 // ===== FLOW CONTROL =====
@@ -582,9 +703,10 @@ namespace MenakSopal.Cutscenes
             if (movePlayer != null && !string.IsNullOrEmpty(step.targetID))
             {
                 bool teleportComplete = false;
-                movePlayer.movePlayerWithDestinationFade(step.targetID, () => teleportComplete = true);
+                // Use the cutscene-specific move: no internal fade.
+                // Fading is controlled by explicit FadeToBlack / FadeFromBlack steps.
+                movePlayer.MovePlayerForCutscene(step.targetID, () => teleportComplete = true);
 
-                // Wait for teleport (including fade duration defined in MovePlayerTo)
                 while (!teleportComplete)
                     yield return null;
             }
@@ -791,19 +913,57 @@ namespace MenakSopal.Cutscenes
             }
         }
 
-        IEnumerator FadeScreen(bool toBlack, float duration)
+        public IEnumerator FadeScreen(bool toBlack, float duration)
         {
+            string direction = toBlack ? "TO BLACK" : "FROM BLACK";
+
+            // Re-acquire reference if lost (e.g. after scene reload)
             if (fadeCanvasGroup == null)
             {
+                Debug.LogWarning($"[Cutscene:Fade] fadeCanvasGroup is NULL before {direction} — trying to re-acquire...");
+                TryAcquireFadeCanvasGroup();
+            }
+
+            if (fadeCanvasGroup == null)
+            {
+                Debug.LogError($"[Cutscene:Fade] fadeCanvasGroup still NULL after re-acquire attempt! {direction} fade SKIPPED. " +
+                               "Make sure a CanvasGroup is assigned to 'Fade Canvas Group' on the CutsceneController, " +
+                               "or that a GameObject tagged 'FadeImage' exists in the scene.");
                 yield return new WaitForSeconds(duration);
                 yield break;
             }
 
-            float startAlpha = toBlack ? 0f : 1f;
-            float endAlpha = toBlack ? 1f : 0f;
-            float elapsed = 0f;
+            // Disable any Animator on the same GameObject to prevent it from
+            // overriding the alpha we set via the CanvasGroup
+            Animator fadeAnim = fadeCanvasGroup.GetComponent<Animator>();
+            bool animWasEnabled = fadeAnim != null && fadeAnim.enabled;
+            if (animWasEnabled)
+            {
+                Debug.Log($"[Cutscene:Fade] Disabling Animator on '{fadeCanvasGroup.gameObject.name}' to prevent alpha override.");
+                fadeAnim.enabled = false;
+            }
+
+            float endAlpha   = toBlack ? 1f : 0f;
+            float startAlpha = fadeCanvasGroup.alpha;
+            float elapsed    = 0f;
+
+            Debug.Log($"[Cutscene:Fade] {direction} | duration={duration}s | " +
+                      $"startAlpha={startAlpha:F2} → endAlpha={endAlpha:F2} | " +
+                      $"GameObject='{fadeCanvasGroup.gameObject.name}' | " +
+                      $"active={fadeCanvasGroup.gameObject.activeInHierarchy} | " +
+                      $"Animator present={fadeAnim != null} (was enabled={animWasEnabled})");
 
             fadeCanvasGroup.blocksRaycasts = toBlack;
+            fadeCanvasGroup.gameObject.SetActive(true);
+
+            if (duration <= 0f)
+            {
+                fadeCanvasGroup.alpha = endAlpha;
+                _isFading = false;
+                _lastKnownAlpha = endAlpha;
+                Debug.Log($"[Cutscene:Fade] {direction} instant (duration=0). Final alpha={endAlpha:F2}");
+                yield break;
+            }
 
             while (elapsed < duration)
             {
@@ -813,6 +973,30 @@ namespace MenakSopal.Cutscenes
             }
 
             fadeCanvasGroup.alpha = endAlpha;
+            _isFading = false;
+            _lastKnownAlpha = endAlpha;
+            Debug.Log($"[Cutscene:Fade] {direction} COMPLETE. Final alpha={fadeCanvasGroup.alpha:F2}");
+        }
+
+        /// <summary>
+        /// Starts a tracked fade coroutine, cancelling any previous one first.
+        /// Use this instead of StartCoroutine(FadeScreen(...)) to prevent
+        /// orphaned fire-and-forget fades from writing stale alpha values.
+        /// </summary>
+        /// <summary>
+        /// Public tracked fade — use this from external scripts (e.g. MovePlayerTo)
+        /// so the coroutine is registered and can be killed by CleanupAfterCutscene.
+        /// </summary>
+        public Coroutine StartTrackedFade(bool toBlack, float duration)
+        {
+            if (fadeCoroutine != null)
+            {
+                StopCoroutine(fadeCoroutine);
+                Debug.Log($"[Cutscene:Fade] Killed previous fade coroutine before starting {(toBlack ? "TO BLACK" : "FROM BLACK")}.");
+            }
+            _isFading = true;
+            fadeCoroutine = StartCoroutine(FadeScreen(toBlack, duration));
+            return fadeCoroutine;
         }
 
         #endregion
@@ -868,6 +1052,10 @@ namespace MenakSopal.Cutscenes
 
         void CleanupAfterCutscene()
         {
+            Debug.Log($"[Cutscene:Cleanup] Running cleanup for '{currentCutscene?.cutsceneID}'. " +
+                      $"fadeCanvasGroup null={fadeCanvasGroup == null} | " +
+                      $"current alpha={(fadeCanvasGroup != null ? fadeCanvasGroup.alpha.ToString("F2") : "N/A")}");
+
             // Hide cinematic bars and restore HUD
             if (cinematicUI != null)
                 cinematicUI.ShowCinematicMode(false);
@@ -884,9 +1072,26 @@ namespace MenakSopal.Cutscenes
                 movePlayer.resumePlayerMovement();
             }
 
+            // Kill any orphaned fire-and-forget fade coroutine BEFORE resetting alpha.
+            // Without this, a fade started with waitForCompletion=false will finish
+            // AFTER cleanup and silently set alpha back to 1, breaking all future fades.
+            if (fadeCoroutine != null)
+            {
+                Debug.Log("[Cutscene:Cleanup] Stopping orphaned fade coroutine to prevent stale alpha write.");
+                StopCoroutine(fadeCoroutine);
+                fadeCoroutine = null;
+            }
+
             // Ensure fade is cleared
             if (fadeCanvasGroup != null)
             {
+                // Disable any Animator that might override our alpha reset
+                Animator fadeAnim = fadeCanvasGroup.GetComponent<Animator>();
+                if (fadeAnim != null && fadeAnim.enabled)
+                {
+                    fadeAnim.enabled = false;
+                }
+
                 fadeCanvasGroup.alpha = 0;
                 fadeCanvasGroup.blocksRaycasts = false;
             }

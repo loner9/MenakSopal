@@ -84,33 +84,66 @@ public class MovePlayerTo : MonoBehaviour
     public void movePlayerWithDestinationFade(string destination, System.Action onComplete = null)
     {
         desiredTime = 5;
-        if (fadeAnimator != null)
-        {
-            fadeAnimator.Play("fade", 0, 0f);
-        }
-        else
-        {
-            Debug.Log("Error gess");
-        }
         desiredTarget = destination;
         StartCoroutine(MovePlayerWithFadeSequence(onComplete));
     }
 
+    /// <summary>
+    /// Moves the player to a destination with a fade-to-black, teleport, fade-from-black sequence.
+    /// Used for non-cutscene transitions (e.g. sleeping, area changes outside of cutscenes).
+    /// </summary>
     private System.Collections.IEnumerator MovePlayerWithFadeSequence(System.Action onComplete)
     {
-        // Wait for fade animation
-        yield return new WaitForSeconds(1.8f);
+        var cc = MenakSopal.Cutscenes.CutsceneController.Instance;
 
-        // Move player to destination
+        if (cc != null)
+        {
+            yield return cc.StartTrackedFade(true, 0.5f);
+        }
+        else if (fadeAnimator != null)
+        {
+            fadeAnimator.Play("fade", 0, 0f);
+            yield return new WaitForSeconds(0.8f);
+        }
+        else
+        {
+            yield return new WaitForSeconds(0.8f);
+        }
+
         MovePlayerDestination();
         NPCManager.Instance.UpdateNPCSchedules();
         NPCManager.Instance.SyncNPCsToCurrentTime();
-        // Wait for player movement to resume
+
         yield return new WaitForSeconds(0.2f);
 
-        // Call completion callback
+        if (cc != null)
+            yield return cc.StartTrackedFade(false, 0.5f);
+
         onComplete?.Invoke();
     }
+
+    /// <summary>
+    /// Moves the player to a destination instantly with no fade.
+    /// Intended for use inside cutscenes where FadeToBlack / FadeFromBlack
+    /// steps in the cutscene data control the fade independently.
+    /// </summary>
+    public void MovePlayerForCutscene(string destination, System.Action onComplete = null)
+    {
+        desiredTarget = destination;
+        StartCoroutine(MovePlayerCutsceneSequence(onComplete));
+    }
+
+    private System.Collections.IEnumerator MovePlayerCutsceneSequence(System.Action onComplete)
+    {
+        MovePlayerDestination();
+        NPCManager.Instance.UpdateNPCSchedules();
+        NPCManager.Instance.SyncNPCsToCurrentTime();
+
+        yield return new WaitForSeconds(0.2f);
+
+        onComplete?.Invoke();
+    }
+
 
     public void MovePlayer()
     {

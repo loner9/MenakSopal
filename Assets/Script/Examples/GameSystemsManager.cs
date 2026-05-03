@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using MenakSopal.Cutscenes;
 
 /// <summary>
 /// Example implementation showing how different game systems can react to flag changes.
@@ -668,30 +669,46 @@ public class GameSystemsManager : MonoBehaviour
         {
             Debug.Log($"[GameSystems] Respawning at checkpoint: {latestCheckpoint.flagName} -> {latestCheckpoint.spawnPointName}");
 
-            // 1. Rollback flags to the checkpoint
+            // 1. Fade to black
+            if (CutsceneController.Instance != null)
+            {
+                yield return StartCoroutine(CutsceneController.Instance.FadeScreen(true, 1.0f));
+            }
+
+            // 2. Rollback flags to the checkpoint
             interactionSystem.RollbackFlags(latestCheckpoint.flagName);
 
-            // 2. Hide UI/Fade and Move player
+            // 3. Move player and Revive
             if (MovePlayerTo.Instance != null)
             {
-                MovePlayerTo.Instance.movePlayerWithDestinationFade(latestCheckpoint.spawnPointName, () =>
-                {
-                    // 3. Revive player once teleport is done
-                    GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-                    if (playerObj != null)
-                    {
-                        PlayerHealth playerHealth = playerObj.GetComponent<PlayerHealth>();
-                        if (playerHealth != null)
-                        {
-                            playerHealth.Revive();
+                bool moveComplete = false;
+                MovePlayerTo.Instance.movePlayerWithDestinationFade(latestCheckpoint.spawnPointName, () => moveComplete = true);
+                
+                // Wait for teleport (including internal delays in movePlayerWithDestinationFade)
+                while (!moveComplete) yield return null;
 
-                            if (!string.IsNullOrEmpty(latestCheckpoint.respawnMessage))
-                            {
-                                ShowMessage(latestCheckpoint.respawnMessage);
-                            }
-                        }
+                // Revive player
+                GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+                if (playerObj != null)
+                {
+                    PlayerHealth playerHealth = playerObj.GetComponent<PlayerHealth>();
+                    if (playerHealth != null)
+                    {
+                        playerHealth.Revive();
                     }
-                });
+                }
+            }
+
+            // 4. Fade from black
+            if (CutsceneController.Instance != null)
+            {
+                yield return StartCoroutine(CutsceneController.Instance.FadeScreen(false, 1.0f));
+            }
+
+            // 5. Show respawn message
+            if (!string.IsNullOrEmpty(latestCheckpoint.respawnMessage))
+            {
+                ShowMessage(latestCheckpoint.respawnMessage);
             }
         }
         else

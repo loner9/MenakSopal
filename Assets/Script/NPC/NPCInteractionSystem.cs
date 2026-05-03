@@ -225,7 +225,8 @@ public class NPCInteractionSystem : MonoBehaviour
 
     private void Update()
     {
-        if (!isInDialogue)
+        // Don't check for nearby NPCs if we are in dialogue OR currently playing the book animation (opening or closing)
+        if (!isInDialogue && bookAnimationCoroutine == null)
         {
             CheckForNearbyNPCs();
 
@@ -822,11 +823,15 @@ public class NPCInteractionSystem : MonoBehaviour
         // Process all queued flags now that dialogue has ended
         ProcessQueuedFlags();
 
+        // Capture the NPC we were just talking to to ensure we restore THE CORRECT NPC's bubble
+        // even if Update() somehow managed to change currentNPC (though we added guards now)
+        NPC npcToRestore = currentNPC;
+
         // Resume game time after dialogue
         if (dayNightCycle != null)
         {
             dayNightCycle.ResumeTime();
-            if (player != null)
+            if (playerGO != null)
             {
                 PlayerMovements playerMovements = playerGO.GetComponent<PlayerMovements>();
                 if (playerMovements != null)
@@ -837,17 +842,25 @@ public class NPCInteractionSystem : MonoBehaviour
         }
 
         // Restore original NPC bubble
-        RestoreOriginalNPCBubble();
+        if (npcToRestore != null)
+        {
+            npcToRestore.UpdateBubbleForCurrentState();
+        }
 
         // Show interaction prompt again if still near NPC
         UpdateInteractionPrompt();
 
         // Notify systems
-        OnDialogueEnd?.Invoke(currentNPC);
+        OnDialogueEnd?.Invoke(npcToRestore);
 
-        Debug.Log($"Ended dialogue with {(currentNPC != null ? currentNPC.npcName : "unknown NPC")}");
+        Debug.Log($"Ended dialogue with {(npcToRestore != null ? npcToRestore.npcName : "unknown NPC")}");
 
-        currentNPC = null;
+        // Only clear currentNPC if it's still the one we were talking to
+        if (currentNPC == npcToRestore)
+        {
+            currentNPC = null;
+        }
+
         currentDialogue = null;
     }
 
@@ -1073,13 +1086,6 @@ public class NPCInteractionSystem : MonoBehaviour
         return bubbleImage?.sprite;
     }
 
-    private void RestoreOriginalNPCBubble()
-    {
-        if (currentNPC == null) return;
-
-        // Restore to the state-appropriate bubble
-        currentNPC.UpdateBubbleForCurrentState();
-    }
 
     private void PlayAudioClip(AudioClip clip)
     {

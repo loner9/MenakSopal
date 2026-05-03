@@ -130,20 +130,25 @@ public class NPC : MonoBehaviour
         InteractionState = new NPCInteractionState(this, StateMachine);
 
         previousPosition = transform.position;
+
+        // Components
+        rb = GetComponent<Rigidbody2D>();
+        if (animator == null) animator = GetComponent<Animator>();
+        if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // Initialize pathfinder
+        pathfinder = new Pathfinder<Vector2>(GetDistance, GetNeighbourNodes, 1000);
+
         LoadSpriteSheet();
         InitializeBubbleSystem();
+
+        // Initialize state machine
+        currentIdlePosition = transform.position;
+        StateMachine.Initialize(IdleState);
     }
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-
-        if (animator == null)
-            animator = GetComponent<Animator>();
-
-        if (spriteRenderer == null)
-            spriteRenderer = GetComponent<SpriteRenderer>();
-
         // Initialize animation
         if (animator != null)
         {
@@ -163,13 +168,6 @@ public class NPC : MonoBehaviour
             dayNightCycle.OnTimeOfDayChanged += OnTimeOfDayChanged;
             currentTimeOfDay = dayNightCycle.CurrentTimeOfDay;
         }
-
-        // Initialize pathfinder
-        pathfinder = new Pathfinder<Vector2>(GetDistance, GetNeighbourNodes, 1000);
-
-        // Initialize with idle state - NPCManager will send commands as needed
-        currentIdlePosition = transform.position;
-        StateMachine.Initialize(IdleState);
 
         // Fire spawn event
         NPCEvents.RaiseNPCSpawned(this);
@@ -322,7 +320,7 @@ public class NPC : MonoBehaviour
 
     private void UpdateBubblePosition()
     {
-        if (currentBubble == null || bubbleParent == null) return;
+        if (currentBubble == null || bubbleParent == null || Camera.main == null) return;
 
         // Convert world position to screen position
         Vector3 worldPos = transform.position + bubbleOffset;
@@ -738,6 +736,12 @@ public class NPC : MonoBehaviour
     // Make UpdateBubbleForCurrentState public for interaction system access
     public void UpdateBubbleForCurrentState()
     {
+        if (StateMachine == null)
+        {
+            // If state machine isn't initialized yet, we can't determine the correct bubble
+            return;
+        }
+
         if (StateMachine.CurrentNPCState == IdleState)
             ShowStatusBubble(NPCBehavior.Idle);
         else if (StateMachine.CurrentNPCState == MoveState)
@@ -750,7 +754,7 @@ public class NPC : MonoBehaviour
     #region Animation Events
     public void AnimationTriggerEvent(AnimationTriggerType triggerType)
     {
-        StateMachine.CurrentNPCState?.AnimationTriggerEvent(triggerType);
+        StateMachine?.CurrentNPCState?.AnimationTriggerEvent(triggerType);
     }
 
     public void SetAnimationState(string stateName)
