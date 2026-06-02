@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using MenakSopal.Audio;
+using MenakSopal.Cutscenes;
 using TMPro;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using MenakSopal.Cutscenes;
 
 /// <summary>
 /// Example implementation showing how different game systems can react to flag changes.
@@ -497,9 +498,9 @@ public class GameSystemsManager : MonoBehaviour
 
         });
 
-        FlagMonitorSystem.WatchFlagAdded("river_spirit_encountered", () =>
+        FlagMonitorSystem.WatchFlagAdded("tribute_demand_received", () =>
         {
-            PlayMusic(mysticalMusic);
+            // PlayMusic(mysticalMusic);
 
             if (questManager != null)
             {
@@ -616,6 +617,18 @@ public class GameSystemsManager : MonoBehaviour
             LogReaction("Land named Teranging Galih - Legacy established");
             ShowMessage("Tanah ini kelak akan dinamakan Teranging Galih (Trenggalek)!");
         });
+
+        FlagMonitorSystem.WatchFlagAdded("in_forest", () =>
+        {
+            LogReaction("Player entered forest area");
+            UpdateCameraBound(setCameraConfiner("HutanConfiner"));
+        });
+
+        FlagMonitorSystem.WatchFlagAdded("finish_forest", () =>
+        {
+            LogReaction("Player exited forest area");
+            UpdateCameraBound(setCameraConfiner("KrandonConfiner"));
+        });
     }
 
     #region Death and Respawn System
@@ -683,7 +696,7 @@ public class GameSystemsManager : MonoBehaviour
             {
                 bool moveComplete = false;
                 MovePlayerTo.Instance.movePlayerWithDestinationFade(latestCheckpoint.spawnPointName, () => moveComplete = true);
-                
+
                 // Wait for teleport (including internal delays in movePlayerWithDestinationFade)
                 while (!moveComplete) yield return null;
 
@@ -1116,5 +1129,92 @@ public class GameSystemsManager : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
 
         LogReaction("Story completion sequence finished - returned to main menu");
+    }
+
+    private Collider2D setCameraConfiner(string confinerName)
+    {
+        GameObject[] cameraConfiner = GameObject.FindGameObjectsWithTag("Confiner");
+        Collider2D confiner = null;
+        foreach (GameObject camCon in cameraConfiner)
+        {
+            Debug.Log("Confiner :"+camCon.name);
+            if (camCon.name == confinerName)
+            {
+                confiner = camCon.GetComponent<Collider2D>();
+            }
+        }
+
+        return confiner;
+    }
+
+    private void UpdateCameraBound(Collider2D confiner)
+    {
+        if (confiner == null)
+        {
+            Debug.LogWarning("[GameSystemsManager] Cannot update camera bounds: confiner collider is null");
+            return;
+        }
+
+        // Try to get the active virtual camera from CameraShake
+        CinemachineCamera activeVcam = null;
+        if (CameraShake.Instance != null)
+        {
+            activeVcam = CameraShake.Instance.virtualCamera;
+        }
+
+        CinemachineConfiner2D conf = null;
+        if (activeVcam != null)
+        {
+            conf = activeVcam.GetComponent<CinemachineConfiner2D>();
+        }
+
+        // Fallback search if not found through CameraShake
+        if (conf == null)
+        {
+            conf = FindObjectOfType<CinemachineConfiner2D>();
+            if (conf == null)
+            {
+                CinemachineCamera virtualCamera = FindObjectOfType<CinemachineCamera>();
+                if (virtualCamera != null)
+                {
+                    conf = virtualCamera.GetComponent<CinemachineConfiner2D>();
+                }
+            }
+        }
+
+        if (conf != null)
+        {
+            conf.BoundingShape2D = confiner;
+            conf.InvalidateBoundingShapeCache();
+
+            // Find the virtual camera to force position
+            CinemachineCamera vcam = conf.GetComponent<CinemachineCamera>();
+            if (vcam == null)
+            {
+                vcam = conf.GetComponentInParent<CinemachineCamera>();
+            }
+
+            // Snap the camera directly to the player's position to avoid getting stuck outside the new boundary
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null && vcam != null)
+            {
+                Vector3 targetPos = playerObj.transform.position;
+                targetPos.z = vcam.transform.position.z; // Keep camera Z depth
+                
+                // Set transform position directly
+                vcam.transform.position = targetPos;
+                
+                // Force Cinemachine to update its position instantly
+                vcam.ForceCameraPosition(targetPos, vcam.transform.rotation);
+                
+                Debug.Log($"[GameSystemsManager] Snapped virtual camera '{vcam.name}' to player position: {targetPos}");
+            }
+
+            Debug.Log($"[GameSystemsManager] Camera boundary successfully updated to: {confiner.name}");
+        }
+        else
+        {
+            Debug.LogError("[GameSystemsManager] CinemachineConfiner2D component not found in the scene! Bounding shape could not be updated.");
+        }
     }
 }

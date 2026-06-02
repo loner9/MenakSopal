@@ -62,6 +62,8 @@ public class EnemyStrikingDistanceCheck : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
+        if (playerTarget == null || _enemy == null) return;
+        
         if (collision.gameObject == playerTarget)
         {
             _enemy.setAttackRangeStatus(true);
@@ -70,6 +72,8 @@ public class EnemyStrikingDistanceCheck : MonoBehaviour
 
     void OnTriggerStay2D(Collider2D collision)
     {
+        if (playerTarget == null || parent == null || attackBox == null || _enemy == null) return;
+
         if (collision.gameObject == playerTarget)
         {
             // Fix: Calculate direction from parent to player (not attackBox to player)
@@ -159,6 +163,8 @@ public class EnemyStrikingDistanceCheck : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D collision)
     {
+        if (playerTarget == null || _enemy == null) return;
+
         if (collision.gameObject == playerTarget)
         {
             _enemy.setAttackRangeStatus(false);

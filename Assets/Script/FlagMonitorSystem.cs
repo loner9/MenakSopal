@@ -95,7 +95,7 @@ public class FlagMonitorSystem : MonoBehaviour
             }
             catch (Exception e)
             {
-                Debug.LogError($"[FlagMonitor] Error in immediate callback for '{flagName}': {e.Message}");
+                Debug.LogError($"[FlagMonitor] Error in immediate callback for '{flagName}': {e}");
             }
         }
         
@@ -199,7 +199,7 @@ public class FlagMonitorSystem : MonoBehaviour
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"[FlagMonitor] Error in flag watcher for '{flagName}': {e.Message}");
+                    Debug.LogError($"[FlagMonitor] Error in flag watcher for '{flagName}': {e}");
                 }
             }
         }
@@ -234,7 +234,7 @@ public class FlagMonitorSystem : MonoBehaviour
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"[FlagMonitor] Error in flag watcher for '{flagName}': {e.Message}");
+                    Debug.LogError($"[FlagMonitor] Error in flag watcher for '{flagName}': {e}");
                 }
             }
         }

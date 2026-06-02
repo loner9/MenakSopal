@@ -77,6 +77,7 @@ public class NPCInteractionSystem : MonoBehaviour
     private int currentDialogueIndex = 0;
     private bool isInDialogue = false;
     private bool isTyping = false;
+    private float typewriterProgress = 0f;
     private Transform player;
     private GameObject playerGO;
     private List<string> gameFlags = new List<string>(); // Simple flag system
@@ -354,6 +355,17 @@ public class NPCInteractionSystem : MonoBehaviour
     {
         Debug.Log($"[NPCInteraction] StartDialogue called for: {npc?.npcName ?? "NULL NPC"}");
 
+        // Force complete previous dialogue if it was still in the middle of closing
+        if (bookAnimationCoroutine != null)
+        {
+            StopCoroutine(bookAnimationCoroutine);
+            bookAnimationCoroutine = null;
+            if (!isInDialogue && currentDialogue != null)
+            {
+                FinishEndDialogue();
+            }
+        }
+
         if (npc == null || isInDialogue)
         {
             Debug.LogWarning($"[NPCInteraction] Cannot start dialogue - NPC: {npc?.npcName ?? "null"}, isInDialogue: {isInDialogue}");
@@ -626,6 +638,17 @@ public class NPCInteractionSystem : MonoBehaviour
     public void StartForcedDialogue(DialogueData dialogueData, int specificEntryIndex = -1)
     {
         Debug.Log($"[NPCInteraction] StartForcedDialogue called for: {dialogueData?.npcName ?? "NULL DialogueData"}");
+
+        // Force complete previous dialogue if it was still in the middle of closing
+        if (bookAnimationCoroutine != null)
+        {
+            StopCoroutine(bookAnimationCoroutine);
+            bookAnimationCoroutine = null;
+            if (!isInDialogue && currentDialogue != null)
+            {
+                FinishEndDialogue();
+            }
+        }
 
         if (dialogueData == null || isInDialogue)
         {
@@ -917,16 +940,27 @@ public class NPCInteractionSystem : MonoBehaviour
     private IEnumerator TypewriterEffect(string text, float pauseAfter = 0f)
     {
         isTyping = true;
+        typewriterProgress = 0f;
+        bool buttonsUpdated = false;
+
         dialogueText.text = "";
 
-        foreach (char letter in text)
+        for (int i = 0; i < text.Length; i++)
         {
-            dialogueText.text += letter;
+            dialogueText.text += text[i];
+            typewriterProgress = (float)(i + 1) / text.Length;
+
+            // Show buttons if we reached 40%
+            if (!buttonsUpdated && typewriterProgress >= 0.4f)
+            {
+                buttonsUpdated = true;
+                UpdateDialogueButtons();
+            }
 
             // Play typewriter sound for certain characters
             if (currentDialogue != null && currentDialogue.typewriterSound != null)
             {
-                if (letter != ' ' && Random.Range(0f, 1f) > 0.7f) // Random typing sounds
+                if (text[i] != ' ' && Random.Range(0f, 1f) > 0.7f) // Random typing sounds
                 {
                     PlayAudioClip(currentDialogue.typewriterSound);
                 }
@@ -936,6 +970,8 @@ public class NPCInteractionSystem : MonoBehaviour
         }
 
         isTyping = false;
+        typewriterProgress = 1f;
+        UpdateDialogueButtons();
 
         // Optional pause after dialogue
         if (pauseAfter > 0f)
@@ -957,6 +993,7 @@ public class NPCInteractionSystem : MonoBehaviour
         {
             StopCoroutine(typingCoroutine);
             isTyping = false;
+            typewriterProgress = 1f;
 
             // Show full text immediately
             if (currentDialogueEntry != null)
@@ -969,6 +1006,8 @@ public class NPCInteractionSystem : MonoBehaviour
                     ShowChoices(currentDialogueEntry);
                 }
             }
+
+            UpdateDialogueButtons();
         }
     }
 
@@ -988,17 +1027,20 @@ public class NPCInteractionSystem : MonoBehaviour
         bool shouldHideButtons = isShowingChoices || waitingForChoiceResponse ||
                                (currentDialogueEntry != null && currentDialogueEntry.hasChoices);
 
+        // NEW: Only show buttons when 40% of the content message is shown
+        bool isProgressEnough = !isTyping || typewriterProgress >= 0.4f;
+
         if (continueButton != null)
         {
             // Show continue button if there's more dialogue OR pending navigation
-            bool showContinue = (hasMoreDialogue || hasPendingContinuation) && !shouldHideButtons;
+            bool showContinue = (hasMoreDialogue || hasPendingContinuation) && !shouldHideButtons && isProgressEnough;
             continueButton.gameObject.SetActive(showContinue);
         }
 
         if (endButton != null)
         {
             // Show end button only if no more dialogue AND no pending navigation
-            bool showEnd = !hasMoreDialogue && !hasPendingContinuation && !shouldHideButtons;
+            bool showEnd = !hasMoreDialogue && !hasPendingContinuation && !shouldHideButtons && isProgressEnough;
             endButton.gameObject.SetActive(showEnd);
         }
     }
