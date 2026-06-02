@@ -36,7 +36,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
-    targetNPC: mbok_randa_krandon
+    targetNPC: mbok_randa
     targetItem: 
     targetAmount: 1
     currentAmount: 0

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cutsceneID: transisiKali2
   description: 
-  triggerFlag: tribute_demand_received
+  triggerFlag: accepted_spirit_demand
   requiredFlags: []
   steps:
   - type: 3
@@ -81,7 +81,7 @@ MonoBehaviour:
     dialogueOverride: {fileID: 0}
   - type: 5
     stepName: 
-    targetID: DamSite
+    targetID: BantaranKali
     secondaryTargetID: 
     textContent: 
     duration: 1

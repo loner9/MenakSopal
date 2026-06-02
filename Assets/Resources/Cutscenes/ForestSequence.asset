@@ -175,7 +175,8 @@ MonoBehaviour:
     textContent: 
     duration: 1
     delayBefore: 0
-    flagsToSet: []
+    flagsToSet:
+    - fight_forest
     flagsToRemove: []
     requiredFlags: []
     audioClip: {fileID: 0}

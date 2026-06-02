@@ -23,6 +23,8 @@ TagManager:
   - EnemiesContainer
   - LightSpiritiual
   - Fog
+  - Camera
+  - Confiner
   layers:
   - Default
   - TransparentFX

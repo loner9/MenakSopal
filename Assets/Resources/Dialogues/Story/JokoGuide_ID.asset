@@ -16,17 +16,37 @@ MonoBehaviour:
   dialogueDescription: Pemandu perjalanan ke Desa Krandon
   dialogueEntries:
   - speakerName: Joko
-    dialogueText: Gajah putih?, hanya mbok Randa dari desa Krandon yang memilikinya.
-      Aku bisa menemanimu untuk kesana!
+    dialogueText: Desa Krandon?, aku tahu tempat. Apa kamu perlu kesana nak?, aku
+      bisa menemanimu kesana kalau perlu.
     availableTimesOfDay: 0000000002000000
     isRepeatable: 0
     requiredFlags:
-    - seeking_white_elephant
+    - tribute_demand_received
     flagsToAdd: []
     flagsToRemove:
     - keberadaan_gajah_putih
     hasChoices: 1
-    choices: []
+    choices:
+    - choiceText: Meng-iyakan
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: 0
+      response:
+        speakerName: Menak Sopal
+        responseText: Iya paman, benar sekali. Tolong bantu aku
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 0
+        nextDialogueIndex: 0
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0

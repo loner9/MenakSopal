@@ -13,14 +13,15 @@ MonoBehaviour:
   m_Name: 08_FaceMbokRandaAnger
   m_EditorClassIdentifier: 
   questID: face_mbok_randa_anger
-  questTitle: The Price of Deception
-  questDescription: Hadapi kemarahan mbok randa atas apa yang menimpa gajahnya
+  questTitle: Kebenaran
+  questDescription: Kebenaran yang terungkap...
   questType: 0
   questLevel: 8
   questIcon: {fileID: 0}
   requiredFlags:
   - elephant_sacrifice_complete
-  flagsOnStart: []
+  flagsOnStart:
+  - penjaga_spawn
   flagsOnComplete:
   - mbok_randa_angry
   - truth_exposed

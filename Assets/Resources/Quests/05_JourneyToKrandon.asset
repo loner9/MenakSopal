@@ -58,20 +58,6 @@ MonoBehaviour:
     targetLocation: ForestPathFinal
     timeDelay: 0
     showProgress: 1
-  - objectiveID: arrive_krandon
-    description: Reach Desa Krandon safely
-    type: 2
-    isCompleted: 0
-    isOptional: 0
-    requiredFlags: []
-    flagToSetOnComplete: path_obtained
-    targetNPC: 
-    targetItem: 
-    targetAmount: 1
-    currentAmount: 0
-    targetLocation: DesaKrandon
-    timeDelay: 0
-    showProgress: 1
   rewards: []
   isRepeatable: 0
   canAbandon: 0

@@ -69,7 +69,7 @@ MonoBehaviour:
       flagsToRemove: []
       targetDialogueIndex: -1
       response:
-        speakerName: 
+        speakerName: Menak Sopal
         responseText: Baiklah, saya akan mencari gajah putih ini
         conversationBubbleSprite: {fileID: 0}
         pauseAfterResponse: 0

@@ -161,7 +161,8 @@ MonoBehaviour:
       berhati hati...
     duration: 1
     delayBefore: 0
-    flagsToSet: []
+    flagsToSet:
+    - fight_spiritual
     flagsToRemove: []
     requiredFlags: []
     audioClip: {fileID: 0}

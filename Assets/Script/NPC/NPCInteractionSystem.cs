@@ -253,7 +253,7 @@ public class NPCInteractionSystem : MonoBehaviour
                 Debug.Log($"[NPCInteraction] Current NPC: {currentNPC.npcName}, canInteract: {currentNPC.canInteract}, isInDialogue: {isInDialogue}");
             }
         }
-        else
+        else if (isInDialogue && bookAnimationCoroutine == null)
         {
             // Skip typing animation
             if (isTyping && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(interactKey)))
@@ -1433,6 +1433,12 @@ public class NPCInteractionSystem : MonoBehaviour
 
         if (dialogueText != null)
             dialogueText.text = "";
+
+        // Hide buttons initially during transition/animation
+        if (continueButton != null)
+            continueButton.gameObject.SetActive(false);
+        if (endButton != null)
+            endButton.gameObject.SetActive(false);
 
         // Clear any existing choices
         ClearChoiceButtons();

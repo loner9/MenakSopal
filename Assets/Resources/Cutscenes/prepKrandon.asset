@@ -25,7 +25,8 @@ MonoBehaviour:
     duration: 1
     delayBefore: 0
     flagsToSet: []
-    flagsToRemove: []
+    flagsToRemove:
+    - materials_collected_del
     requiredFlags: []
     audioClip: {fileID: 0}
     waitForCompletion: 1
@@ -79,7 +80,7 @@ MonoBehaviour:
     dialogueOverride: {fileID: 0}
   - type: 8
     stepName: 
-    targetID: pemaandu_jalan
+    targetID: pemandu_jalan
     secondaryTargetID: 
     textContent: 
     duration: 1
@@ -178,7 +179,7 @@ MonoBehaviour:
     flagsToRemove: []
     requiredFlags: []
     audioClip: {fileID: 0}
-    waitForCompletion: 0
+    waitForCompletion: 1
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}

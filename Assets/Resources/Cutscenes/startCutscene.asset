@@ -43,7 +43,7 @@ MonoBehaviour:
     flagsToRemove: []
     requiredFlags: []
     audioClip: {fileID: 0}
-    waitForCompletion: 0
+    waitForCompletion: 1
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}

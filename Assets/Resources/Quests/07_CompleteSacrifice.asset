@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 07_CompleteSacrifice
   m_EditorClassIdentifier: 
   questID: complete_spirit_sacrifice
-  questTitle: The Sacred Offering
+  questTitle: Persembahan Gajah Putih
   questDescription: Penuhi permintaan dari penjaga sungai
   questType: 0
   questLevel: 7

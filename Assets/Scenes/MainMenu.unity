@@ -699,6 +699,7 @@ MonoBehaviour:
   elementsToHide:
   - {fileID: 1648543261}
   - {fileID: 1128185258}
+  - {fileID: 353486045}
 --- !u!1 &25692996
 GameObject:
   m_ObjectHideFlags: 0

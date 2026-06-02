@@ -125,7 +125,8 @@ MonoBehaviour:
     isImportantDialogue: 0
     pauseAfterDialogue: 0
   - speakerName: Andi (Murid Padepokan)
-    dialogueText: hmm, aku kurang tahu tentang Gajah Putih ini pal...
+    dialogueText: hmm, Gajah Putih. Setahuku itu ada di desa Krandon, tapi aku tidak
+      tahu untuk kesana...
     availableTimesOfDay: 00000000
     isRepeatable: 1
     requiredFlags:

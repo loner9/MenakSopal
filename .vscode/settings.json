@@ -56,5 +56,9 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "MenakSopal.sln"
+    "dotnet.defaultSolution": "MenakSopal.slnx",
+    "dotrush.roslyn.projectOrSolutionFiles": [
+        "e:\\Garapan\\UnityProject\\MenakSopal\\MenakSopal.sln",
+        "e:\\Garapan\\UnityProject\\MenakSopal\\MenakSopal.slnx"
+    ]
 }
