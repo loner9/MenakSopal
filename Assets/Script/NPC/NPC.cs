@@ -93,6 +93,8 @@ public class NPC : MonoBehaviour
     private bool shouldMoveAroundWhenIdle = false;
     private bool shouldDespawnOnReachingDestination = false;
     private bool isCutsceneControlled = false;
+    public bool IsCutsceneControlled => isCutsceneControlled;
+
 
     // Tracking for schedule logic
     [HideInInspector] public int currentScheduleEventHour = -1; // Tracking last processed schedule event hour

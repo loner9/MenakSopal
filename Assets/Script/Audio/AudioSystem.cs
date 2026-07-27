@@ -17,8 +17,22 @@ namespace MenakSopal.Audio
         [SerializeField] private AudioSource sfxSourcePrefab;
         [SerializeField] private int initialSfxPoolSize = 10;
 
+        [Header("Volume Settings")]
+        [Tooltip("Default volume used when no saved preference exists (0.0 to 1.0)")]
+        [Range(0f, 1f)] public float defaultMasterVolume = 1f;
+        [Range(0f, 1f)] public float defaultMusicVolume = 1f;
+        [Range(0f, 1f)] public float defaultSFXVolume = 1f;
+
+        [HideInInspector] public float masterVolume = 1f;
+        [HideInInspector] public float musicVolume = 1f;
+        [HideInInspector] public float sfxVolume = 1f;
+
         private List<AudioSource> sfxPool = new List<AudioSource>();
         private Coroutine musicFadeCoroutine;
+
+        private const string MASTER_VOL_KEY = "Audio_MasterVolume";
+        private const string MUSIC_VOL_KEY = "Audio_MusicVolume";
+        private const string SFX_VOL_KEY = "Audio_SFXVolume";
 
         private void Awake()
         {
@@ -30,8 +44,68 @@ namespace MenakSopal.Audio
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
+            LoadVolumeSettings();
             InitializePool();
         }
+
+        private void LoadVolumeSettings()
+        {
+            float fallbackMaster = defaultMasterVolume > 0.001f ? defaultMasterVolume : 1f;
+            float fallbackMusic = defaultMusicVolume > 0.001f ? defaultMusicVolume : 0.5f;
+            float fallbackSFX = defaultSFXVolume > 0.001f ? defaultSFXVolume : 0.8f;
+
+            masterVolume = PlayerPrefs.GetFloat(MASTER_VOL_KEY, fallbackMaster);
+            musicVolume = PlayerPrefs.GetFloat(MUSIC_VOL_KEY, fallbackMusic);
+            sfxVolume = PlayerPrefs.GetFloat(SFX_VOL_KEY, fallbackSFX);
+        }
+
+        public void ResetToDefaultVolumes()
+        {
+            PlayerPrefs.DeleteKey(MASTER_VOL_KEY);
+            PlayerPrefs.DeleteKey(MUSIC_VOL_KEY);
+            PlayerPrefs.DeleteKey(SFX_VOL_KEY);
+
+            masterVolume = defaultMasterVolume > 0.001f ? defaultMasterVolume : 1f;
+            musicVolume = defaultMusicVolume > 0.001f ? defaultMusicVolume : 0.5f;
+            sfxVolume = defaultSFXVolume > 0.001f ? defaultSFXVolume : 0.8f;
+
+            UpdateMusicVolume();
+        }
+
+        public void SetMasterVolume(float volume)
+        {
+            masterVolume = Mathf.Clamp01(volume);
+            PlayerPrefs.SetFloat(MASTER_VOL_KEY, masterVolume);
+            PlayerPrefs.Save();
+            UpdateMusicVolume();
+        }
+
+        public void SetMusicVolume(float volume)
+        {
+            musicVolume = Mathf.Clamp01(volume);
+            PlayerPrefs.SetFloat(MUSIC_VOL_KEY, musicVolume);
+            PlayerPrefs.Save();
+            UpdateMusicVolume();
+        }
+
+        public void SetSFXVolume(float volume)
+        {
+            sfxVolume = Mathf.Clamp01(volume);
+            PlayerPrefs.SetFloat(SFX_VOL_KEY, sfxVolume);
+            PlayerPrefs.Save();
+        }
+
+        public float GetEffectiveMusicVolume() => musicVolume * masterVolume;
+        public float GetEffectiveSFXVolume() => sfxVolume * masterVolume;
+
+        private void UpdateMusicVolume()
+        {
+            if (musicSource != null)
+            {
+                musicSource.volume = GetEffectiveMusicVolume();
+            }
+        }
+
 
         private void InitializePool()
         {
@@ -121,9 +195,10 @@ namespace MenakSopal.Audio
 
             AudioSource source = GetAvailableSfxSource();
 
-            // Apply variance
+            // Apply variance & effective SFX volume
             source.clip = clip;
-            source.volume = group.volume + Random.Range(-group.volumeVariance, group.volumeVariance);
+            float baseVol = group.volume + Random.Range(-group.volumeVariance, group.volumeVariance);
+            source.volume = baseVol * GetEffectiveSFXVolume();
             source.pitch = group.pitch + Random.Range(-group.pitchVariance, group.pitchVariance);
 
             source.Play();
@@ -172,6 +247,7 @@ namespace MenakSopal.Audio
         private IEnumerator CrossFadeMusic(AudioClip newClip, float duration)
         {
             float startVolume = musicSource.volume;
+            float targetVolume = GetEffectiveMusicVolume();
 
             // Fade Out
             if (musicSource.isPlaying)
@@ -195,10 +271,10 @@ namespace MenakSopal.Audio
             // Fade In
             for (float t = 0; t < duration; t += Time.deltaTime)
             {
-                musicSource.volume = Mathf.Lerp(0, startVolume, t / duration);
+                musicSource.volume = Mathf.Lerp(0, targetVolume, t / duration);
                 yield return null;
             }
-            musicSource.volume = startVolume;
+            musicSource.volume = targetVolume;
         }
     }
 }

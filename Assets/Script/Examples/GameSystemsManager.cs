@@ -508,22 +508,23 @@ public class GameSystemsManager : MonoBehaviour
             }
         });
 
-        // FlagMonitorSystem.WatchFlagAdded("spirit_pact_complete", () =>
-        // {
-        //     ShowMessage("Penunggu sungai menerima pemberianmu!");
-
-        //     if (questManager != null)
-        //     {
-        //         questManager.CompleteQuest("spiritual_vision_encounter");
-        //         questManager.StartQuest("complete_spirit_sacrifice");
-        //     }
-        // });
 
         FlagMonitorSystem.WatchFlagAdded("arrived_desa_krandon", () =>
         {
             if (questManager != null)
             {
                 questManager.StartQuest("negotiate_elephant_loan");
+            }
+        });
+
+        FlagMonitorSystem.WatchFlagAdded("white_elephant_borrowed", () =>
+        {
+            // ShowMessage("Penunggu sungai menerima pemberianmu!");
+
+            if (questManager != null)
+            {
+                // questManager.CompleteQuest("spiritual_vision_encounter");
+                questManager.StartQuest("complete_spirit_sacrifice");
             }
         });
 
@@ -1137,7 +1138,7 @@ public class GameSystemsManager : MonoBehaviour
         Collider2D confiner = null;
         foreach (GameObject camCon in cameraConfiner)
         {
-            Debug.Log("Confiner :"+camCon.name);
+            Debug.Log("Confiner :" + camCon.name);
             if (camCon.name == confinerName)
             {
                 confiner = camCon.GetComponent<Collider2D>();
@@ -1200,13 +1201,13 @@ public class GameSystemsManager : MonoBehaviour
             {
                 Vector3 targetPos = playerObj.transform.position;
                 targetPos.z = vcam.transform.position.z; // Keep camera Z depth
-                
+
                 // Set transform position directly
                 vcam.transform.position = targetPos;
-                
+
                 // Force Cinemachine to update its position instantly
                 vcam.ForceCameraPosition(targetPos, vcam.transform.rotation);
-                
+
                 Debug.Log($"[GameSystemsManager] Snapped virtual camera '{vcam.name}' to player position: {targetPos}");
             }
 

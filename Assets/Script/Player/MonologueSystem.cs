@@ -327,6 +327,12 @@ public class MonologueSystem : MonoBehaviour
         System.Action<NPC> onDialogueEndHandler = null;
         onDialogueEndHandler = (npc) =>
         {
+            if (npc != tempNPC)
+            {
+                // Ignore dialogue end events for other NPCs (e.g. if a previous dialogue was force-finished)
+                return;
+            }
+
             // Process queued objectives
             foreach (var objectiveAction in queuedObjectiveActions)
             {

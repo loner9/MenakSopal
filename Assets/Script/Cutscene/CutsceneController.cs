@@ -373,6 +373,13 @@ namespace MenakSopal.Cutscenes
             if (cutscene.disablePlayerInput && movePlayer != null)
                 movePlayer.stopPlayerMovement();
 
+            // Ensure trigger flag is registered in game flags
+            if (!string.IsNullOrEmpty(cutscene.triggerFlag))
+            {
+                Debug.Log($"[CutsceneController] Ensuring trigger flag '{cutscene.triggerFlag}' is set in game flags.");
+                AddFlag(cutscene.triggerFlag);
+            }
+
             // Set start flags
             if (cutscene.flagsOnStart != null)
             {

@@ -342,7 +342,7 @@ public class NPCManager : MonoBehaviour
         {
             // Sort by priority (highest first)
             var sortedSchedules = spawnData.conditionalSchedules
-                .Where(cs => cs.scheduleData != null)
+                .Where(cs => cs != null && cs.scheduleData != null)
                 .OrderByDescending(cs => cs.priority)
                 .ToArray();
 
@@ -708,6 +708,12 @@ public class NPCManager : MonoBehaviour
         Debug.Log($"[NPC MANAGER DEBUG] Processing schedule for {spawnData.npcID} using '{currentSchedule.name}' at hour {hour}");
 
         NPC existingNPC = GetNPCByID(spawnData.npcID);
+        if (existingNPC != null && existingNPC.IsCutsceneControlled)
+        {
+            Debug.Log($"[NPC MANAGER DEBUG] Skipping hourly schedule update for {spawnData.npcID} - NPC is cutscene controlled");
+            return;
+        }
+
         bool shouldBeActive = ShouldNPCBeActiveAtHour(currentSchedule, hour);
 
         Debug.Log($"[NPC MANAGER DEBUG] {spawnData.npcID} - spawnHour: {currentSchedule.spawnHour}, currentHour: {hour}, shouldBeActive: {shouldBeActive}, existingNPC: {(existingNPC != null ? "EXISTS" : "NULL")}");
@@ -832,6 +838,12 @@ public class NPCManager : MonoBehaviour
 
     private bool ShouldNPCBeActiveAtHour(NPCScheduleData scheduleData, int hour)
     {
+        // Bypass schedule checks if a cutscene is playing
+        if (MenakSopal.Cutscenes.CutsceneController.Instance != null && MenakSopal.Cutscenes.CutsceneController.Instance.IsPlaying)
+        {
+            return true;
+        }
+
         // First check if it's past spawn hour
         if (hour < scheduleData.spawnHour)
         {

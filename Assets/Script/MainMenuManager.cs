@@ -38,6 +38,14 @@ public class MainMenuManager : MonoBehaviour
     public Button backToMenuButton;
 
 
+    [Header("Settings Panel")]
+    public GameObject settingsPanel;
+    public Button closeSettingsButton;
+    public Slider musicVolumeSlider;
+    public Slider sfxVolumeSlider;
+    public Slider masterVolumeSlider;
+
+
     [Header("Game Start Settings")]
     public string firstGameScene = "SceneAwal";
     public Vector3 startPosition = Vector3.zero;
@@ -72,6 +80,7 @@ public class MainMenuManager : MonoBehaviour
         if (continueInfoPanel) continueInfoPanel.SetActive(false);
         if (newGameConfirmPanel) newGameConfirmPanel.SetActive(false);
         if (storyCompletePanel) storyCompletePanel.SetActive(false);
+        if (settingsPanel) settingsPanel.SetActive(false);
 
 
         LogDebug("Main menu initialized");
@@ -113,6 +122,7 @@ public class MainMenuManager : MonoBehaviour
 
 
         if (settingsButton) settingsButton.onClick.AddListener(OnSettingsClicked);
+        if (closeSettingsButton) closeSettingsButton.onClick.AddListener(OnCloseSettingsClicked);
         if (exitGameButton) exitGameButton.onClick.AddListener(OnExitGameClicked);
 
         // New game confirmation
@@ -262,8 +272,14 @@ public class MainMenuManager : MonoBehaviour
 
     void OnSettingsClicked()
     {
-        // Implement settings menu
-        LogDebug("Settings clicked - implement settings menu");
+        LogDebug("Settings button clicked - toggling settings panel");
+        ToggleSettingsPanel();
+    }
+
+
+    void OnCloseSettingsClicked()
+    {
+        HideSettingsPanel();
     }
 
 
@@ -506,6 +522,74 @@ public class MainMenuManager : MonoBehaviour
             continueInfoPanel.SetActive(false);
         }
     }
+
+
+    public void ToggleSettingsPanel()
+    {
+        if (settingsPanel != null)
+        {
+            bool isActive = !settingsPanel.activeSelf;
+            settingsPanel.SetActive(isActive);
+            if (isActive)
+            {
+                SyncSettingsSliders();
+            }
+            LogDebug($"Settings panel toggled: {isActive}");
+        }
+        else
+        {
+            Debug.LogWarning("settingsPanel is NULL! Please assign it in the Unity Inspector.");
+        }
+    }
+
+
+    public void ShowSettingsPanel()
+    {
+        if (settingsPanel != null)
+        {
+            settingsPanel.SetActive(true);
+            SyncSettingsSliders();
+        }
+    }
+
+
+    public void HideSettingsPanel()
+    {
+        if (settingsPanel != null)
+        {
+            settingsPanel.SetActive(false);
+        }
+    }
+
+
+    private void SyncSettingsSliders()
+    {
+        if (AudioSystem.Instance == null) return;
+
+        BindSlider(masterVolumeSlider, AudioSystem.Instance.masterVolume, (val) => AudioSystem.Instance.SetMasterVolume(val));
+        BindSlider(musicVolumeSlider, AudioSystem.Instance.musicVolume, (val) => AudioSystem.Instance.SetMusicVolume(val));
+        BindSlider(sfxVolumeSlider, AudioSystem.Instance.sfxVolume, (val) => AudioSystem.Instance.SetSFXVolume(val));
+    }
+
+
+    private void BindSlider(Slider slider, float volume01, System.Action<float> onVolumeChanged)
+    {
+        if (slider == null) return;
+
+        slider.onValueChanged.RemoveAllListeners();
+
+        // Map 0..1 volume to slider's min..max range
+        float mappedValue = Mathf.Lerp(slider.minValue, slider.maxValue, Mathf.Clamp01(volume01));
+        slider.value = mappedValue;
+
+        slider.onValueChanged.AddListener((val) =>
+        {
+            float range = slider.maxValue - slider.minValue;
+            float normalizedVol = range > 0.0001f ? (val - slider.minValue) / range : val;
+            onVolumeChanged?.Invoke(normalizedVol);
+        });
+    }
+
 
     #endregion
 
