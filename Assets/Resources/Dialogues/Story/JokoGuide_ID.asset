@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
   m_Name: JokoGuide_ID
   m_EditorClassIdentifier: 
-  npcName: Joko (Penunjuk Jalan Desa)
+  npcName: Joko
   dialogueDescription: Pemandu perjalanan ke Desa Krandon
   dialogueEntries:
   - speakerName: Joko
@@ -110,6 +110,173 @@ MonoBehaviour:
     flagsToRemove: []
     hasChoices: 1
     choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Joko
+    dialogueText: Dari mana saja kau tadi nak?
+    availableTimesOfDay: 0000000002000000
+    isRepeatable: 0
+    requiredFlags:
+    - finish_forest
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 1
+    choices:
+    - choiceText: Tersesat
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 1
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: -1
+      response:
+        speakerName: Menak Sopal
+        responseText: Tadi aku sempat tersesat paman
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 5
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Joko
+    dialogueText: Baiklah, ayo kita langsung ke rumah mbok Randa kalau begitu
+    availableTimesOfDay: 0000000002000000
+    isRepeatable: 0
+    requiredFlags:
+    - 
+    flagsToAdd:
+    - mbr_terrace
+    flagsToRemove: []
+    hasChoices: 0
+    choices:
+    - choiceText: Tersesat
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 1
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: -1
+      response:
+        speakerName: Menak Sopal
+        responseText: Tadi aku sempat tersesat paman
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 5
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Joko
+    dialogueText: Nak, mengapa harus dirimu tadi berbohong?
+    availableTimesOfDay: 0000000002000000
+    isRepeatable: 0
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 1
+    choices:
+    - choiceText: Menjelaskan
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 1
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: 7
+      response:
+        speakerName: Menak Sopal
+        responseText: Akan sulit jika mengatakan aku akan menyembelih gajah ini paman.
+          Tenang, aku akan bertanggung jawab penuh.
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 7
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Joko
+    dialogueText: Baiklah kalau begitu, aku tidak ikut ikutan ya...
+    availableTimesOfDay: 0000000002000000
+    isRepeatable: 0
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices:
+    - choiceText: Menjelaskan
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 1
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: 7
+      response:
+        speakerName: Menak Sopal
+        responseText: Akan sulit jika mengatakan aku akan menyembelih gajah ini paman.
+          Tenang, aku akan bertanggung jawab penuh.
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 7
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Joko
+    dialogueText: Aku akan menunggu disini nak, sampaikan pesanmu ke mbok randa
+    availableTimesOfDay: 0000000002000000
+    isRepeatable: 1
+    requiredFlags:
+    - joko_in_mbr
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices:
+    - choiceText: Menjelaskan
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 1
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: 7
+      response:
+        speakerName: Menak Sopal
+        responseText: Akan sulit jika mengatakan aku akan menyembelih gajah ini paman.
+          Tenang, aku akan bertanggung jawab penuh.
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 7
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0

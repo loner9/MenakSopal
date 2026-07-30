@@ -14,7 +14,338 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   npcName: Mbok Randa Krandon
   dialogueDescription: Pemilik gajah putih, mewakili konflik dan pemahaman akhir
-  dialogueEntries: []
+  dialogueEntries:
+  - speakerName: Mbok Randa Krandon
+    dialogueText: Siang. Siapa kalian datang ke gubukku yang sederhana ini, wahai
+      anak muda?
+    availableTimesOfDay: 
+    isRepeatable: 0
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 1
+    choices:
+    - choiceText: Menjelaskan
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: 0
+      response:
+        speakerName: Menak Sopal
+        responseText: Kami dari Padepokan Sinawang mbok. Saya Menak Sopal, dan itu
+          rekan saya, paman Joko.
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 1
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Mbok Randa Krandon
+    dialogueText: Padepokan Sinawang, jauh juga. Ada maksud apa kalian kesini?
+    availableTimesOfDay: 
+    isRepeatable: 0
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 1
+    choices:
+    - choiceText: Meminjam Gajah
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: 0
+      response:
+        speakerName: Menak Sopal
+        responseText: Begini mbok, kami ingin meminjam Gajah Putih panjengengan.
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 2
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Mbok Randa Krandon
+    dialogueText: Untuk apa, biasanya Ki Ageng bersurat dulu kepadaku jika ada sesuatu
+    availableTimesOfDay: 
+    isRepeatable: 0
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 1
+    choices:
+    - choiceText: Berbohong
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: 0
+      response:
+        speakerName: Menak Sopal
+        responseText: Umm, anu mbok di, di dekat padepokan ada festival. Kami ingin
+          menggunakan Gajah Putih untuk pertunjukan. Hanya 3 hari saja...
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 3
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Mbok Randa Krandon
+    dialogueText: Baiklah, karena aku kenal baik dengan Ki Ageng, bawalah gajahku.
+    availableTimesOfDay: 
+    isRepeatable: 0
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices:
+    - choiceText: 
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: 4
+      response:
+        speakerName: 
+        responseText: 
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 0
+        nextDialogueIndex: 0
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Mbok Randa Krandon
+    dialogueText: Sebenarnya aku ingin ikut, tapi ada urusan lain yang mendesak.
+      Jaga Gajahku dengan baik ya!!!
+    availableTimesOfDay: 
+    isRepeatable: 0
+    requiredFlags: []
+    flagsToAdd:
+    - white_elephant_borrowed
+    flagsToRemove:
+    - joko_in_mbr
+    hasChoices: 0
+    choices:
+    - choiceText: 
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: 4
+      response:
+        speakerName: 
+        responseText: 
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 0
+        nextDialogueIndex: 0
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Mbok Randa Krandon
+    dialogueText: Sudah lebih dari satu bulan berlalu, dan Gajahku belum juga dikembalikan!!!
+    availableTimesOfDay: 
+    isRepeatable: 0
+    requiredFlags:
+    - mbok_randa_angry
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices:
+    - choiceText: 
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: 6
+      response:
+        speakerName: 
+        responseText: 
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 0
+        nextDialogueIndex: 0
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Mbok Randa Krandon
+    dialogueText: Dasar bocah B******n!!!
+    availableTimesOfDay: 
+    isRepeatable: 0
+    requiredFlags:
+    - mbok_randa_angry
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices:
+    - choiceText: 
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: 6
+      response:
+        speakerName: 
+        responseText: 
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 0
+        nextDialogueIndex: 0
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Mbok Randa Krandon
+    dialogueText: Ki Ageng!!, dimana murid badungmu itu berada!!!
+    availableTimesOfDay: 
+    isRepeatable: 0
+    requiredFlags:
+    - mbok_in_padepokan
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices:
+    - choiceText: 
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: 6
+      response:
+        speakerName: 
+        responseText: 
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 0
+        nextDialogueIndex: 0
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Mbok Randa Krandon
+    dialogueText: Aku ingin menghukum murid badungmu itu, Menak Sopal!!!
+    availableTimesOfDay: 
+    isRepeatable: 0
+    requiredFlags:
+    - mbok_in_padepokan_a
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices:
+    - choiceText: 
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: 6
+      response:
+        speakerName: 
+        responseText: 
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 0
+        nextDialogueIndex: 0
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Mbok Randa Krandon
+    dialogueText: Itu dia bocah badung itu, pengawal tangkap dia!!!
+    availableTimesOfDay: 
+    isRepeatable: 0
+    requiredFlags:
+    - menak_in_padepokan
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices:
+    - choiceText: 
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: 6
+      response:
+        speakerName: 
+        responseText: 
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 0
+        nextDialogueIndex: 0
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
   greetings: []
   farewells: []
   defaultConversationBubble: {fileID: 0}

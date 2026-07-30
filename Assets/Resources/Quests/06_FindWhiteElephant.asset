@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questID: find_white_elephant
   questTitle: Sacred Beast of Legend
-  questDescription: Locate the legendary white elephant required by the river spirit.
-    This sacred creature holds the key to appeasing the supernatural forces.
+  questDescription: Kumpulkan informasi untuk mencari keberadaan gajah putih.
   questType: 0
   questLevel: 5
   questIcon: {fileID: 0}

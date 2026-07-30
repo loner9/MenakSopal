@@ -10,26 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1bf30c825a1d3944a1b6264cdf20cff, type: 3}
-  m_Name: JokoGuide_Schedule4
+  m_Name: PakTani_Schedule 1
   m_EditorClassIdentifier: 
-  scheduleName: Joko schedule in krandon 1
-  scheduleDescription: Joko pas baru nyampe di krandon
-  spawnHour: 6
-  homeObjectTag: NPCTarget
-  homeObjectName: J_in_krandon
-  homePosition: {x: 0, y: 0}
+  scheduleName: PakTani Schedule
+  scheduleDescription: Farmer 1 - Agricultural work schedule
+  spawnHour: 5
+  homeObjectTag: House
+  homeObjectName: Entrance_petani
+  homePosition: {x: 8, y: -5}
   scheduleEvents:
   - hour: 7
     targetObjectTag: NPCTarget
-    targetObjectName: J_in_krandon
-    targetPosition: {x: 0, y: 0}
-    behavior: 0
-    shouldIdleWhenReached: 0
+    targetObjectName: WorkField1
+    targetPosition: {x: 10, y: -8}
+    behavior: 2
+    shouldIdleWhenReached: 1
     shouldDespawn: 0
-    customDialogue: []
-  moveAroundWhenIdle: 0
-  idleMovementRange: 2
-  walkSpeed: 1.5
+    customDialogue:
+    - Padi tumbuh dengan baik setelah bendungan selesai. Air mengalir lancar sekarang.
+  moveAroundWhenIdle: 1
+  idleMovementRange: 4
+  walkSpeed: 1.3
   pauseAtDestination: 2
   dialogues: []
   workStation: {fileID: 0}

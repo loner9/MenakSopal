@@ -10,26 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1bf30c825a1d3944a1b6264cdf20cff, type: 3}
-  m_Name: JokoGuide_Schedule4
+  m_Name: RadenAyuSaraswati_Konfrontasi_Schedule
   m_EditorClassIdentifier: 
-  scheduleName: Joko schedule in krandon 1
-  scheduleDescription: Joko pas baru nyampe di krandon
+  scheduleName: Raden Ayu Saraswati Schedule
+  scheduleDescription: Nurturing mother figure and herbalist
   spawnHour: 6
-  homeObjectTag: NPCTarget
-  homeObjectName: J_in_krandon
-  homePosition: {x: 0, y: 0}
+  homeObjectTag: House
+  homeObjectName: Entrance_ra
+  homePosition: {x: 3, y: 0}
   scheduleEvents:
   - hour: 7
     targetObjectTag: NPCTarget
-    targetObjectName: J_in_krandon
-    targetPosition: {x: 0, y: 0}
-    behavior: 0
-    shouldIdleWhenReached: 0
+    targetObjectName: radenAyuStand
+    targetPosition: {x: 3, y: 0}
+    behavior: 2
+    shouldIdleWhenReached: 1
     shouldDespawn: 0
-    customDialogue: []
-  moveAroundWhenIdle: 0
-  idleMovementRange: 2
-  walkSpeed: 1.5
+    customDialogue:
+    - Sudah cukupkah kamu makan hari ini? Seorang ibu selalu khawatir anaknya tidak
+      makan dengan baik.
+  moveAroundWhenIdle: 1
+  idleMovementRange: 1.5
+  walkSpeed: 1.2
   pauseAtDestination: 2
   dialogues: []
   workStation: {fileID: 0}

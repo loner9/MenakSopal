@@ -30,8 +30,22 @@ MonoBehaviour:
   unlocksQuestIDs: []
   isChainQuest: 0
   objectives:
-  - objectiveID: bring_elephant_to_river
-    description: Tuntun gajah putih ke sekitar dam
+  - objectiveID: talk_to_joko
+    description: Paman Joko ingin berbicara
+    type: 0
+    isCompleted: 0
+    isOptional: 0
+    requiredFlags: []
+    flagToSetOnComplete: 
+    targetNPC: 
+    targetItem: 
+    targetAmount: 1
+    currentAmount: 0
+    targetLocation: pemandu_jalan
+    timeDelay: 0
+    showProgress: 1
+  - objectiveID: perform_sacrifice
+    description: Selesaikan proses pengorbanan
     type: 2
     isCompleted: 0
     isOptional: 0
@@ -41,21 +55,7 @@ MonoBehaviour:
     targetItem: 
     targetAmount: 1
     currentAmount: 0
-    targetLocation: RiverShrine
-    timeDelay: 0
-    showProgress: 1
-  - objectiveID: perform_sacrifice
-    description: Selesaikan proses pengorbanan
-    type: 6
-    isCompleted: 0
-    isOptional: 0
-    requiredFlags: []
-    flagToSetOnComplete: 
-    targetNPC: 
-    targetItem: 
-    targetAmount: 1
-    currentAmount: 0
-    targetLocation: 
+    targetLocation: GajahRiver
     timeDelay: 0
     showProgress: 1
   rewards: []

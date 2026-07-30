@@ -36,12 +36,12 @@ MonoBehaviour:
     isCompleted: 0
     isOptional: 0
     requiredFlags: []
-    flagToSetOnComplete: 
+    flagToSetOnComplete: mbr_cutscene
     targetNPC: 
     targetItem: 
     targetAmount: 1
     currentAmount: 0
-    targetLocation: DesaKrandon
+    targetLocation: Padepokan
     timeDelay: 0
     showProgress: 1
   - objectiveID: face_confrontation

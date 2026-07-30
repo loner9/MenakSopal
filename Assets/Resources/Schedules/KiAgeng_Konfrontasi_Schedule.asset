@@ -10,22 +10,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1bf30c825a1d3944a1b6264cdf20cff, type: 3}
-  m_Name: JokoGuide_Schedule4
+  m_Name: KiAgeng_Konfrontasi_Schedule
   m_EditorClassIdentifier: 
-  scheduleName: Joko schedule in krandon 1
-  scheduleDescription: Joko pas baru nyampe di krandon
-  spawnHour: 6
-  homeObjectTag: NPCTarget
-  homeObjectName: J_in_krandon
+  scheduleName: Ki Ageng konfrontasi scene
+  scheduleDescription: Description of this schedule...
+  spawnHour: 5
+  homeObjectTag: House
+  homeObjectName: Entrance_kiAgeng
   homePosition: {x: 0, y: 0}
   scheduleEvents:
-  - hour: 7
+  - hour: 6
     targetObjectTag: NPCTarget
-    targetObjectName: J_in_krandon
+    targetObjectName: kiAgengStand
     targetPosition: {x: 0, y: 0}
     behavior: 0
-    shouldIdleWhenReached: 0
+    shouldIdleWhenReached: 1
     shouldDespawn: 0
+    customDialogue: []
+  - hour: 22
+    targetObjectTag: House
+    targetObjectName: Entrance_kiAgeng
+    targetPosition: {x: 0, y: 0}
+    behavior: 0
+    shouldIdleWhenReached: 1
+    shouldDespawn: 1
     customDialogue: []
   moveAroundWhenIdle: 0
   idleMovementRange: 2

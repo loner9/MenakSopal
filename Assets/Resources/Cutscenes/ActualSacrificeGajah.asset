@@ -10,59 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4e008a97b6efab4cb7858ea098cf959, type: 3}
-  m_Name: transisiSpritual
-  m_EditorClassIdentifier: 
-  cutsceneID: transisiSpritual
+  m_Name: ActualSacrificeGajah
+  m_EditorClassIdentifier: Assembly-CSharp::MenakSopal.Cutscenes.CutsceneData
+  cutsceneID: ActualSacrificeGajah
   description: 
-  triggerFlag: spiritual_vision_active
+  triggerFlag: elephant_sacrifice_complete
   requiredFlags: []
   steps:
-  - type: 3
-    stepName: 
-    targetID: 
-    secondaryTargetID: 
-    textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet:
-    - fog_active
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 21
-    stepName: 
-    targetID: 
-    secondaryTargetID: 
-    textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 30
-    stepName: 
-    targetID: 
-    secondaryTargetID: 
-    textContent: 
-    duration: 1.5
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
   - type: 28
     stepName: 
     targetID: 
@@ -78,12 +32,12 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 30
+  - type: 2
     stepName: 
     targetID: 
     secondaryTargetID: 
-    textContent: 
-    duration: 2
+    textContent: Beberapa waktu kemudian.
+    duration: 1
     delayBefore: 0
     flagsToSet: []
     flagsToRemove: []
@@ -93,9 +47,9 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 5
+  - type: 33
     stepName: 
-    targetID: SpiritualPlane
+    targetID: GajahHead
     secondaryTargetID: 
     textContent: 
     duration: 1
@@ -108,9 +62,9 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 9
+  - type: 34
     stepName: 
-    targetID: buaya_putih
+    targetID: Gajah
     secondaryTargetID: 
     textContent: 
     duration: 1
@@ -138,7 +92,22 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 20
+  - type: 13
+    stepName: 
+    targetID: KepalaGajah
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 14
     stepName: 
     targetID: 
     secondaryTargetID: 
@@ -150,12 +119,87 @@ MonoBehaviour:
     requiredFlags: []
     audioClip: {fileID: 0}
     waitForCompletion: 1
-    timeOfDay: 3
+    timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 30
+  - type: 28
     stepName: 
     targetID: 
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 34
+    stepName: 
+    targetID: GajahHead
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 33
+    stepName: 
+    targetID: BuiltDam
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 13
+    stepName: 
+    targetID: Dam
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 29
+    stepName: 
+    targetID: 
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 5
+    stepName: 
+    targetID: TempatMCFD
     secondaryTargetID: 
     textContent: 
     duration: 1
@@ -172,12 +216,11 @@ MonoBehaviour:
     stepName: 
     targetID: 
     secondaryTargetID: 
-    textContent: Hmm, sepertinya aku berhasil masuk ke alam spiritual. Aku harus
-      berhati hati...
+    textContent: Akhirnya, setelah beberapa hari dibangun, bendungan ini tidak hancur
+      lagi.
     duration: 1
     delayBefore: 0
-    flagsToSet:
-    - fight_spiritual
+    flagsToSet: []
     flagsToRemove: []
     requiredFlags: []
     audioClip: {fileID: 0}
@@ -185,11 +228,71 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 15
+  - type: 28
     stepName: 
-    targetID: can_attack
+    targetID: 
     secondaryTargetID: 
     textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 14
+    stepName: 
+    targetID: 
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 5
+    stepName: 
+    targetID: mc_in_field
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 29
+    stepName: 
+    targetID: 
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 2
+    stepName: 
+    targetID: 
+    secondaryTargetID: 
+    textContent: Beberapa minggu kemudian
     duration: 1
     delayBefore: 0
     flagsToSet: []

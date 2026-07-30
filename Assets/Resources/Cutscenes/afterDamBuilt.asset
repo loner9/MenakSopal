@@ -107,7 +107,67 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
+  - type: 33
+    stepName: 
+    targetID: BuiltDam
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
   - type: 29
+    stepName: 
+    targetID: 
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 13
+    stepName: 
+    targetID: Dam
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 30
+    stepName: 
+    targetID: 
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 14
     stepName: 
     targetID: 
     secondaryTargetID: 
@@ -186,6 +246,36 @@ MonoBehaviour:
   - type: 17
     stepName: 
     targetID: investigate_dam_destruction
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 34
+    stepName: dam
+    targetID: BuiltDam
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 33
+    stepName: dam rusak
+    targetID: BrokenDam
     secondaryTargetID: 
     textContent: 
     duration: 1

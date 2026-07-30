@@ -30,7 +30,7 @@ MonoBehaviour:
   isChainQuest: 0
   objectives:
   - objectiveID: meet_mbok_randa
-    description: Cari keberadaan mbok Randa, dan jelaskan dirimu
+    description: Berbicaralah dengan mbok randa
     type: 0
     isCompleted: 0
     isOptional: 0

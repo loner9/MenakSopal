@@ -10,59 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4e008a97b6efab4cb7858ea098cf959, type: 3}
-  m_Name: transisiSpritual
-  m_EditorClassIdentifier: 
-  cutsceneID: transisiSpritual
+  m_Name: BorrowingElephant
+  m_EditorClassIdentifier: Assembly-CSharp::MenakSopal.Cutscenes.CutsceneData
+  cutsceneID: BorrowingElephant
   description: 
-  triggerFlag: spiritual_vision_active
+  triggerFlag: mbr_terrace
   requiredFlags: []
   steps:
-  - type: 3
-    stepName: 
-    targetID: 
-    secondaryTargetID: 
-    textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet:
-    - fog_active
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 21
-    stepName: 
-    targetID: 
-    secondaryTargetID: 
-    textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 30
-    stepName: 
-    targetID: 
-    secondaryTargetID: 
-    textContent: 
-    duration: 1.5
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
   - type: 28
     stepName: 
     targetID: 
@@ -83,21 +37,6 @@ MonoBehaviour:
     targetID: 
     secondaryTargetID: 
     textContent: 
-    duration: 2
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 5
-    stepName: 
-    targetID: SpiritualPlane
-    secondaryTargetID: 
-    textContent: 
     duration: 1
     delayBefore: 0
     flagsToSet: []
@@ -110,12 +49,58 @@ MonoBehaviour:
     dialogueOverride: {fileID: 0}
   - type: 9
     stepName: 
-    targetID: buaya_putih
+    targetID: pemandu_jalan
     secondaryTargetID: 
     textContent: 
     duration: 1
     delayBefore: 0
     flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 8
+    stepName: 
+    targetID: pemandu_jalan
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 5
+    stepName: 
+    targetID: mc_in_mbrhouse
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 0}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
+  - type: 30
+    stepName: 
+    targetID: 
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet:
+    - arrived_desa_krandon
     flagsToRemove: []
     requiredFlags: []
     audioClip: {fileID: 0}
@@ -138,61 +123,15 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 20
+  - type: 10
     stepName: 
-    targetID: 
-    secondaryTargetID: 
+    targetID: pemandu_jalan
+    secondaryTargetID: KrandonTransitiion3
     textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 3
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 30
-    stepName: 
-    targetID: 
-    secondaryTargetID: 
-    textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet: []
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 1
-    stepName: 
-    targetID: 
-    secondaryTargetID: 
-    textContent: Hmm, sepertinya aku berhasil masuk ke alam spiritual. Aku harus
-      berhati hati...
     duration: 1
     delayBefore: 0
     flagsToSet:
-    - fight_spiritual
-    flagsToRemove: []
-    requiredFlags: []
-    audioClip: {fileID: 0}
-    waitForCompletion: 1
-    timeOfDay: 0
-    shakeIntensity: 1
-    dialogueOverride: {fileID: 0}
-  - type: 15
-    stepName: 
-    targetID: can_attack
-    secondaryTargetID: 
-    textContent: 
-    duration: 1
-    delayBefore: 0
-    flagsToSet: []
+    - joko_in_mbr
     flagsToRemove: []
     requiredFlags: []
     audioClip: {fileID: 0}
