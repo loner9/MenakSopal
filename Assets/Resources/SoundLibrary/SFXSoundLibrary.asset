@@ -45,3 +45,45 @@ MonoBehaviour:
     pitch: 0.1
     volumeVariance: 0
     pitchVariance: 0
+  - groupName: click
+    clips:
+    - {fileID: 8300000, guid: 8505944383b5b0646a1df4b860c9e884, type: 3}
+    volume: 1
+    pitch: 1
+    volumeVariance: 0
+    pitchVariance: 0
+  - groupName: cancel
+    clips:
+    - {fileID: 8300000, guid: d1acdf816199db048b267c310c584708, type: 3}
+    volume: 1
+    pitch: 1
+    volumeVariance: 0
+    pitchVariance: 0
+  - groupName: confirm
+    clips:
+    - {fileID: 8300000, guid: d04a33d45b1bacf42938223268a98aaf, type: 3}
+    volume: 1
+    pitch: 1
+    volumeVariance: 0
+    pitchVariance: 0
+  - groupName: attack
+    clips:
+    - {fileID: 8300000, guid: b3b7fa5e213d03b4f89553ba5ab65f3e, type: 3}
+    volume: 1
+    pitch: 1
+    volumeVariance: 0
+    pitchVariance: 0
+  - groupName: hurt
+    clips:
+    - {fileID: 8300000, guid: d04a33d45b1bacf42938223268a98aaf, type: 3}
+    volume: 1
+    pitch: 1
+    volumeVariance: 0
+    pitchVariance: 0
+  - groupName: monster_attack
+    clips:
+    - {fileID: 8300000, guid: b3b7fa5e213d03b4f89553ba5ab65f3e, type: 3}
+    volume: 1
+    pitch: 1
+    volumeVariance: 0
+    pitchVariance: 0

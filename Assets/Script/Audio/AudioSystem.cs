@@ -195,14 +195,15 @@ namespace MenakSopal.Audio
 
             AudioSource source = GetAvailableSfxSource();
 
-            // Apply variance & effective SFX volume
-            source.clip = clip;
             float baseVol = group.volume + Random.Range(-group.volumeVariance, group.volumeVariance);
-            source.volume = baseVol * GetEffectiveSFXVolume();
-            source.pitch = group.pitch + Random.Range(-group.pitchVariance, group.pitchVariance);
+            float finalVolume = Mathf.Clamp01(baseVol * GetEffectiveSFXVolume());
+            float finalPitch = group.pitch + Random.Range(-group.pitchVariance, group.pitchVariance);
 
-            source.Play();
-            StartCoroutine(ReturnToPool(source, clip.length));
+            source.pitch = finalPitch;
+            source.PlayOneShot(clip, finalVolume);
+            
+            float duration = clip.length / Mathf.Max(0.1f, Mathf.Abs(finalPitch));
+            StartCoroutine(ReturnToPool(source, duration));
         }
 
         private IEnumerator ReturnToPool(AudioSource source, float delay)

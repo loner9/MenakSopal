@@ -83,3 +83,5 @@ Assets/Aoiti/Example/2DGrid/walls.mat
 Assets/Settings/
 .claude
 Assets/TextMesh Pro/
+graphify-out/
+.agents/
