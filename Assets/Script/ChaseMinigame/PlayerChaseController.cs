@@ -4,17 +4,19 @@ using UnityEngine;
 namespace MenakSopal.ChaseMinigame
 {
     /// <summary>
-    /// Controls player lane switching (Up/Down) and discrete safety steps away from Chaser.
+    /// Controls player lane switching (Up/Down) and forward positioning relative to Chaser.
     /// </summary>
     public class PlayerChaseController : MonoBehaviour
     {
-        [Header("Lane & Movement")]
+        [Header("References")]
         [SerializeField] private LaneManager laneManager;
+        [SerializeField] private ChaserController chaserController;
+
+        [Header("Lane Setup")]
         [SerializeField] private int currentLane = 1; // 0..3
         [SerializeField] private float laneChangeSpeed = 12f;
 
-        [Header("Safety Steps (X Position)")]
-        [SerializeField] private float baseChaserX = -6f;
+        [Header("Safety Steps (X Offset from Chaser)")]
         [SerializeField] private float stepWidthX = 2.5f;
         [SerializeField] private int maxSafetySteps = 3;
         [SerializeField] private int currentSafetyStep = 3;
@@ -30,17 +32,13 @@ namespace MenakSopal.ChaseMinigame
         public int CurrentSafetyStep => currentSafetyStep;
         public int MaxSafetySteps => maxSafetySteps;
 
-        private Vector3 targetPosition;
-
         private void Start()
         {
-            if (laneManager == null)
-            {
-                laneManager = FindFirstObjectByType<LaneManager>();
-            }
+            if (laneManager == null) laneManager = FindFirstObjectByType<LaneManager>();
+            if (chaserController == null) chaserController = FindFirstObjectByType<ChaserController>();
 
             currentSafetyStep = maxSafetySteps;
-            UpdateTargetPositionImmediate();
+            UpdatePositionImmediate();
         }
 
         private void Update()
@@ -94,7 +92,7 @@ namespace MenakSopal.ChaseMinigame
         }
 
         /// <summary>
-        /// Recovers 1 safety step if pickups/buffs are added.
+        /// Recovers 1 safety step if pickups are collected.
         /// </summary>
         public void RecoverStep()
         {
@@ -110,9 +108,10 @@ namespace MenakSopal.ChaseMinigame
             if (laneManager == null) return;
 
             float targetY = laneManager.GetLaneY(currentLane);
-            float targetX = baseChaserX + (currentSafetyStep * stepWidthX);
+            float chaserX = (chaserController != null) ? chaserController.TrackX : transform.position.x;
+            float targetX = chaserX + (currentSafetyStep * stepWidthX);
 
-            targetPosition = new Vector3(targetX, targetY, transform.position.z);
+            Vector3 targetPosition = new Vector3(targetX, targetY, transform.position.z);
 
             transform.position = Vector3.Lerp(
                 transform.position,
@@ -121,18 +120,27 @@ namespace MenakSopal.ChaseMinigame
             );
         }
 
-        private void UpdateTargetPositionImmediate()
+        private void UpdatePositionImmediate()
         {
             if (laneManager == null) return;
 
             float targetY = laneManager.GetLaneY(currentLane);
-            float targetX = baseChaserX + (currentSafetyStep * stepWidthX);
+            float chaserX = (chaserController != null) ? chaserController.TrackX : transform.position.x;
+            float targetX = chaserX + (currentSafetyStep * stepWidthX);
             transform.position = new Vector3(targetX, targetY, transform.position.z);
         }
 
         public void SetInputEnabled(bool enabled)
         {
             enableInput = enabled;
+        }
+
+        public void ResetState(int initialLane = 1)
+        {
+            currentLane = initialLane;
+            currentSafetyStep = maxSafetySteps;
+            enableInput = true;
+            UpdatePositionImmediate();
         }
     }
 }

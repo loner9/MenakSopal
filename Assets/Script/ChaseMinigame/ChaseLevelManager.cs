@@ -13,80 +13,97 @@ namespace MenakSopal.ChaseMinigame
     }
 
     /// <summary>
-    /// Central Level Manager overseeing game state transitions, distance progress, and UI updates.
+    /// Central Level Manager managing progress along the X-axis track, game states, and victory/defeat.
     /// </summary>
     public class ChaseLevelManager : MonoBehaviour
     {
         [Header("References")]
         [SerializeField] private PlayerChaseController playerController;
+        [SerializeField] private ChaserController chaserController;
         [SerializeField] private ObstacleSpawner obstacleSpawner;
-        [SerializeField] private FinishLine finishLinePrefab;
+        [SerializeField] private FinishLine finishLineInstance;
 
-        [Header("Level Progress Settings")]
-        [SerializeField] private float targetDistance = 100.0f;
+        [Header("Level Track Setup")]
+        [Tooltip("Target X distance for the Finish Line at the end of the track")]
+        [SerializeField] private float finishLineX = 200.0f;
         [SerializeField] private Slider progressBarUI;
 
-        [Header("Game State")]
+        [Header("State Settings")]
+        [SerializeField] private bool autoStartOnLoad = false;
         [SerializeField] private ChaseGameState currentState = ChaseGameState.Ready;
-
-        private float currentDistance = 0f;
-        private FinishLine activeFinishLine;
 
         public event Action<ChaseGameState> OnGameStateChanged;
 
         public ChaseGameState CurrentState => currentState;
-        public float ProgressNormalized => Mathf.Clamp01(currentDistance / targetDistance);
+        public float ProgressNormalized => (chaserController != null && finishLineX > 0f)
+            ? Mathf.Clamp01(chaserController.TrackX / finishLineX)
+            : 0f;
 
         private void Start()
         {
             if (playerController == null) playerController = FindFirstObjectByType<PlayerChaseController>();
+            if (chaserController == null) chaserController = FindFirstObjectByType<ChaserController>();
             if (obstacleSpawner == null) obstacleSpawner = FindFirstObjectByType<ObstacleSpawner>();
+            if (finishLineInstance == null) finishLineInstance = FindFirstObjectByType<FinishLine>();
 
             if (playerController != null)
             {
                 playerController.OnPlayerCaught += HandlePlayerCaught;
             }
 
-            StartLevel();
+            if (finishLineInstance != null)
+            {
+                // Respect the position where the FinishLine object is placed in Scene View
+                finishLineX = finishLineInstance.transform.position.x;
+                finishLineInstance.OnPlayerCrossedFinishLine += HandleVictory;
+            }
+
+            if (autoStartOnLoad)
+            {
+                StartLevel();
+            }
+            else
+            {
+                SetState(ChaseGameState.Ready);
+            }
         }
 
         private void OnDestroy()
         {
-            if (playerController != null)
-            {
-                playerController.OnPlayerCaught -= HandlePlayerCaught;
-            }
-
-            if (activeFinishLine != null)
-            {
-                activeFinishLine.OnPlayerCrossedFinishLine -= HandleVictory;
-            }
+            if (playerController != null) playerController.OnPlayerCaught -= HandlePlayerCaught;
+            if (finishLineInstance != null) finishLineInstance.OnPlayerCrossedFinishLine -= HandleVictory;
         }
 
         private void Update()
         {
             if (currentState != ChaseGameState.Playing) return;
 
-            // Accumulate distance based on current spawner/run speed
-            float runSpeed = (obstacleSpawner != null) ? obstacleSpawner.CurrentSpeed : 8.0f;
-            currentDistance += runSpeed * Time.deltaTime;
-
             if (progressBarUI != null)
             {
                 progressBarUI.value = ProgressNormalized;
             }
 
-            // Check if distance goal reached
-            if (currentDistance >= targetDistance && activeFinishLine == null)
+            // Fallback: If player X reaches or exceeds finishLineX coordinate
+            if (playerController != null && playerController.transform.position.x >= finishLineX)
             {
-                OnTargetDistanceReached();
+                HandleVictory();
             }
         }
 
         public void StartLevel()
         {
-            currentDistance = 0f;
             SetState(ChaseGameState.Playing);
+
+            if (chaserController != null)
+            {
+                chaserController.ResetPosition(0f);
+                chaserController.StartRunning();
+            }
+
+            if (playerController != null)
+            {
+                playerController.ResetState();
+            }
 
             if (obstacleSpawner != null)
             {
@@ -94,32 +111,9 @@ namespace MenakSopal.ChaseMinigame
                 obstacleSpawner.StartSpawning();
             }
 
-            if (playerController != null)
+            if (finishLineInstance != null)
             {
-                playerController.SetInputEnabled(true);
-            }
-        }
-
-        private void OnTargetDistanceReached()
-        {
-            // Halt regular obstacle spawning
-            if (obstacleSpawner != null)
-            {
-                obstacleSpawner.StopSpawning();
-            }
-
-            // Spawn finish line
-            if (finishLinePrefab != null)
-            {
-                float speed = (obstacleSpawner != null) ? obstacleSpawner.CurrentSpeed : 8.0f;
-                activeFinishLine = Instantiate(finishLinePrefab, new Vector3(12.0f, 0f, 0f), Quaternion.identity);
-                activeFinishLine.OnPlayerCrossedFinishLine += HandleVictory;
-                activeFinishLine.Initialize(speed);
-            }
-            else
-            {
-                // Instant victory fallback if no finish line prefab assigned
-                HandleVictory();
+                finishLineInstance.ResetTrigger();
             }
         }
 
@@ -127,9 +121,10 @@ namespace MenakSopal.ChaseMinigame
         {
             SetState(ChaseGameState.Defeat);
 
+            if (chaserController != null) chaserController.StopRunning();
             if (obstacleSpawner != null)
             {
-                obstacleSpawner.StopSpawning();
+                obstacleSpawner.ClearAllObstacles();
             }
         }
 
@@ -137,14 +132,11 @@ namespace MenakSopal.ChaseMinigame
         {
             SetState(ChaseGameState.Victory);
 
-            if (playerController != null)
-            {
-                playerController.SetInputEnabled(false);
-            }
-
+            if (chaserController != null) chaserController.StopRunning();
+            if (playerController != null) playerController.SetInputEnabled(false);
             if (obstacleSpawner != null)
             {
-                obstacleSpawner.StopSpawning();
+                obstacleSpawner.ClearAllObstacles();
             }
         }
 

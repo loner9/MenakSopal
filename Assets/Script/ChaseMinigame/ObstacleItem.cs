@@ -3,33 +3,41 @@ using UnityEngine;
 namespace MenakSopal.ChaseMinigame
 {
     /// <summary>
-    /// Individual obstacle moving left across lanes.
-    /// Handles collision with player and despawning behind the chaser.
+    /// Individual obstacle instance on the track.
+    /// Supports both static track obstacles and moving obstacles.
     /// </summary>
     public class ObstacleItem : MonoBehaviour
     {
         [Header("Settings")]
-        [SerializeField] private float despawnX = -9.0f;
+        [SerializeField] private float despawnBehindChaserDistance = 5.0f;
 
-        private float moveSpeed = 8.0f;
+        private float moveSpeed = 0f; // Additional movement relative to track
         private ObstaclePool poolOwner;
+        private ChaserController chaserRef;
 
-        public void Initialize(float speed, ObstaclePool pool)
+        public void Initialize(float speed, ObstaclePool pool, ChaserController chaser)
         {
             moveSpeed = speed;
             poolOwner = pool;
+            chaserRef = chaser;
             gameObject.SetActive(true);
         }
 
         private void Update()
         {
-            // Move left
-            transform.Translate(Vector3.left * (moveSpeed * Time.deltaTime));
-
-            // Despawn check when passing left boundary
-            if (transform.position.x <= despawnX)
+            // Additional move speed (if dynamic moving obstacle)
+            if (moveSpeed != 0f)
             {
-                Despawn();
+                transform.Translate(Vector3.left * (moveSpeed * Time.deltaTime));
+            }
+
+            // Despawn check relative to Chaser's advancing track position
+            if (chaserRef != null)
+            {
+                if (transform.position.x <= chaserRef.TrackX - despawnBehindChaserDistance)
+                {
+                    Despawn();
+                }
             }
         }
 
@@ -58,11 +66,6 @@ namespace MenakSopal.ChaseMinigame
             {
                 poolOwner.ReturnObstacle(this);
             }
-        }
-
-        public void SetDespawnX(float x)
-        {
-            despawnX = x;
         }
     }
 }

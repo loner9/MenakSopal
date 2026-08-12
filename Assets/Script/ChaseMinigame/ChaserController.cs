@@ -3,7 +3,7 @@ using UnityEngine;
 namespace MenakSopal.ChaseMinigame
 {
     /// <summary>
-    /// Chaser entity that stays fixed at left X-position and smoothly follows the player's current lane.
+    /// Chaser entity that advances forward along the X-axis track and smoothly follows the player's lane.
     /// </summary>
     public class ChaserController : MonoBehaviour
     {
@@ -11,9 +11,16 @@ namespace MenakSopal.ChaseMinigame
         [SerializeField] private PlayerChaseController playerController;
         [SerializeField] private LaneManager laneManager;
 
-        [Header("Position & Tracking")]
-        [SerializeField] private float fixedXPosition = -6.0f;
+        [Header("Forward Movement")]
+        [SerializeField] private float baseRunSpeed = 8.0f;
         [SerializeField] private float followSpeed = 4.5f;
+
+        private float currentTrackX = 0f;
+        private float currentRunSpeed;
+        private bool isRunning = false;
+
+        public float TrackX => currentTrackX;
+        public float CurrentRunSpeed => currentRunSpeed;
 
         private void Start()
         {
@@ -27,29 +34,50 @@ namespace MenakSopal.ChaseMinigame
                 laneManager = FindFirstObjectByType<LaneManager>();
             }
 
-            // Sync initial position
-            if (playerController != null && laneManager != null)
-            {
-                float initialY = laneManager.GetLaneY(playerController.CurrentLane);
-                transform.position = new Vector3(fixedXPosition, initialY, transform.position.z);
-            }
+            currentRunSpeed = baseRunSpeed;
+            currentTrackX = transform.position.x;
         }
 
         private void Update()
         {
-            if (playerController == null || laneManager == null) return;
+            if (!isRunning || playerController == null || laneManager == null) return;
 
-            // Target Y is based on Player's current lane index
+            // Advance X along the track
+            currentTrackX += currentRunSpeed * Time.deltaTime;
+
+            // Smoothly follow Player's lane on Y-axis
             float targetY = laneManager.GetLaneY(playerController.CurrentLane);
-            Vector3 targetPos = new Vector3(fixedXPosition, targetY, transform.position.z);
+            Vector3 targetPos = new Vector3(currentTrackX, targetY, transform.position.z);
 
-            // Smoothly move towards the target Y lane position
             transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * followSpeed);
         }
 
-        public void SetFixedXPosition(float xPos)
+        public void StartRunning()
         {
-            fixedXPosition = xPos;
+            isRunning = true;
+        }
+
+        public void StopRunning()
+        {
+            isRunning = false;
+        }
+
+        public void SetRunSpeed(float speed)
+        {
+            currentRunSpeed = speed;
+        }
+
+        public void ResetPosition(float startX)
+        {
+            currentTrackX = startX;
+            currentRunSpeed = baseRunSpeed;
+            isRunning = false;
+
+            if (playerController != null && laneManager != null)
+            {
+                float initialY = laneManager.GetLaneY(playerController.CurrentLane);
+                transform.position = new Vector3(currentTrackX, initialY, transform.position.z);
+            }
         }
     }
 }

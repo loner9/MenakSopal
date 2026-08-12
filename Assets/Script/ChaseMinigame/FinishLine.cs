@@ -4,32 +4,18 @@ using UnityEngine;
 namespace MenakSopal.ChaseMinigame
 {
     /// <summary>
-    /// Goal object spawned at the end of a finite distance runner level.
+    /// Static or spawned finish line object positioned at the end of the track.
     /// </summary>
     public class FinishLine : MonoBehaviour
     {
-        [SerializeField] private float moveSpeed = 8f;
-        private bool isActive = false;
+        private bool isActive = true;
 
         public event Action OnPlayerCrossedFinishLine;
 
-        public void Initialize(float speed)
-        {
-            moveSpeed = speed;
-            isActive = true;
-            gameObject.SetActive(true);
-        }
-
-        private void Update()
-        {
-            if (!isActive) return;
-
-            transform.Translate(Vector3.left * (moveSpeed * Time.deltaTime));
-        }
-
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.TryGetComponent<PlayerChaseController>(out _))
+            Debug.Log("Name :" + other.name);
+            if (other.TryGetComponent<PlayerChaseController>(out _) || other.name.Contains("Player"))
             {
                 TriggerFinish();
             }
@@ -48,6 +34,18 @@ namespace MenakSopal.ChaseMinigame
             if (!isActive) return;
             isActive = false;
             OnPlayerCrossedFinishLine?.Invoke();
+        }
+
+        public void ResetTrigger()
+        {
+            isActive = true;
+        }
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(new Vector3(transform.position.x, -10f, 0f), new Vector3(transform.position.x, 10f, 0f));
+            Gizmos.DrawCube(transform.position, new Vector3(0.5f, 8f, 1f));
         }
     }
 }
