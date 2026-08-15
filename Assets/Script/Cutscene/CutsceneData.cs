@@ -125,6 +125,13 @@ namespace MenakSopal.Cutscenes
         public DialogueData dialogueOverride;
     }
 
+    public enum CutsceneSaveTiming
+    {
+        None,
+        AtStart,
+        AtEnd
+    }
+
     /// <summary>
     /// ScriptableObject that defines a complete cutscene.
     /// Create via: Create > Cutscene System > Cutscene Data
@@ -163,6 +170,10 @@ namespace MenakSopal.Cutscenes
 
         [Tooltip("Flags to set when cutscene completes")]
         public string[] flagsOnComplete;
+
+        [Header("Auto-Save Settings")]
+        [Tooltip("When should the game automatically save during this cutscene?")]
+        public CutsceneSaveTiming autoSaveTiming = CutsceneSaveTiming.None;
 
         /// <summary>
         /// Check if this cutscene can be triggered based on current game flags

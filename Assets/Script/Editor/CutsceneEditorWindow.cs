@@ -606,7 +606,7 @@ public class CutsceneEditorWindow : EditorWindow
 
             case CutsceneStep.StepType.EnableGameObject:
             case CutsceneStep.StepType.DisableGameObject:
-                step.targetID = EditorGUILayout.TextField("GameObject Tag", step.targetID);
+                step.targetID = EditorGUILayout.TextField("GameObject (Tag or Name)", step.targetID);
                 break;
 
             case CutsceneStep.StepType.TriggerEvent:

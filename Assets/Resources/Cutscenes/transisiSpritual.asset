@@ -48,6 +48,21 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
+  - type: 24
+    stepName: 
+    targetID: 
+    secondaryTargetID: 
+    textContent: 
+    duration: 1
+    delayBefore: 0
+    flagsToSet: []
+    flagsToRemove: []
+    requiredFlags: []
+    audioClip: {fileID: 8300000, guid: 67bc05f4448760d4689a2e4ce4dfe296, type: 3}
+    waitForCompletion: 1
+    timeOfDay: 0
+    shakeIntensity: 1
+    dialogueOverride: {fileID: 0}
   - type: 30
     stepName: 
     targetID: 
@@ -205,3 +220,4 @@ MonoBehaviour:
   disablePlayerInput: 1
   flagsOnStart: []
   flagsOnComplete: []
+  autoSaveTiming: 0

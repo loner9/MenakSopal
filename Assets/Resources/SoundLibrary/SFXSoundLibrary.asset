@@ -87,3 +87,10 @@ MonoBehaviour:
     pitch: 1
     volumeVariance: 0
     pitchVariance: 0
+  - groupName: eerie_music
+    clips:
+    - {fileID: 8300000, guid: 67bc05f4448760d4689a2e4ce4dfe296, type: 3}
+    volume: 1
+    pitch: 0.85
+    volumeVariance: 0
+    pitchVariance: 0

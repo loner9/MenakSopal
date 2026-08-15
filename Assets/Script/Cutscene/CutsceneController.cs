@@ -297,6 +297,11 @@ namespace MenakSopal.Cutscenes
             // Cleanup
             CleanupAfterCutscene();
 
+            if (currentCutscene.autoSaveTiming == CutsceneSaveTiming.AtEnd && GameSaveManager.Instance != null)
+            {
+                GameSaveManager.Instance.AutoSave($"Post_{currentCutscene.cutsceneID}");
+            }
+
             CutsceneEvents.InvokeCutsceneSkipped(currentCutscene);
 
             currentCutscene = null;
@@ -396,6 +401,12 @@ namespace MenakSopal.Cutscenes
 
             CutsceneEvents.InvokeCutsceneStarted(cutscene);
 
+            // Handle auto-save at cutscene start if configured
+            if (cutscene.autoSaveTiming == CutsceneSaveTiming.AtStart && GameSaveManager.Instance != null)
+            {
+                GameSaveManager.Instance.AutoSave($"Pre_{cutscene.cutsceneID}");
+            }
+
             // Execute each step
             for (int i = 0; i < cutscene.steps.Count; i++)
             {
@@ -440,6 +451,12 @@ namespace MenakSopal.Cutscenes
 
             ApplyFlagsOnComplete(cutscene);
             CleanupAfterCutscene();
+
+            // Handle auto-save at cutscene completion if configured
+            if (cutscene.autoSaveTiming == CutsceneSaveTiming.AtEnd && GameSaveManager.Instance != null)
+            {
+                GameSaveManager.Instance.AutoSave($"Post_{cutscene.cutsceneID}");
+            }
 
             CutsceneEvents.InvokeCutsceneCompleted(cutscene);
 
@@ -632,11 +649,11 @@ namespace MenakSopal.Cutscenes
 
                 // ===== GAME OBJECTS =====
                 case CutsceneStep.StepType.EnableGameObject:
-                    EnableGameObjectByTag(step.targetID, true);
+                    SetGameObjectActive(step.targetID, true);
                     break;
 
                 case CutsceneStep.StepType.DisableGameObject:
-                    EnableGameObjectByTag(step.targetID, false);
+                    SetGameObjectActive(step.targetID, false);
                     break;
 
                 // ===== CUSTOM =====
@@ -835,22 +852,57 @@ namespace MenakSopal.Cutscenes
             dayNightCycle.SetTimeOfDay(targetTime);
         }
 
+        // Reusable static buffers for non-allocating scene hierarchy searches
+        private static readonly List<GameObject> s_RootGameObjectsBuffer = new List<GameObject>();
+        private static readonly List<Transform> s_TransformBuffer = new List<Transform>();
+
         private Transform FindTargetByID(string targetID)
         {
+            if (string.IsNullOrEmpty(targetID)) return null;
+
             // First check NPCTarget tags (convention in MovePlayerTo)
             GameObject[] targets = GameObject.FindGameObjectsWithTag("NPCTarget");
             foreach (var t in targets)
             {
-                if (t.name == targetID) return t.transform;
+                if (t != null && t.name == targetID) return t.transform;
             }
 
             // Check NPC IDs
             NPC npc = FindNPCByID(targetID);
             if (npc != null) return npc.transform;
 
-            // Fallback to finding by name anywhere in scene
+            // Check active objects by name
             GameObject go = GameObject.Find(targetID);
             if (go != null) return go.transform;
+
+            // Fallback: non-allocating search across loaded scene roots for inactive objects
+            int sceneCount = SceneManager.sceneCount;
+            for (int s = 0; s < sceneCount; s++)
+            {
+                Scene scene = SceneManager.GetSceneAt(s);
+                if (!scene.isLoaded) continue;
+
+                scene.GetRootGameObjects(s_RootGameObjectsBuffer);
+                for (int r = 0; r < s_RootGameObjectsBuffer.Count; r++)
+                {
+                    GameObject root = s_RootGameObjectsBuffer[r];
+                    if (root == null) continue;
+
+                    root.GetComponentsInChildren<Transform>(true, s_TransformBuffer);
+                    for (int t = 0; t < s_TransformBuffer.Count; t++)
+                    {
+                        Transform tr = s_TransformBuffer[t];
+                        if (tr != null && tr.gameObject.name.Equals(targetID, System.StringComparison.OrdinalIgnoreCase))
+                        {
+                            s_RootGameObjectsBuffer.Clear();
+                            s_TransformBuffer.Clear();
+                            return tr;
+                        }
+                    }
+                }
+            }
+            s_RootGameObjectsBuffer.Clear();
+            s_TransformBuffer.Clear();
 
             return null;
         }
@@ -1132,13 +1184,84 @@ namespace MenakSopal.Cutscenes
             return null;
         }
 
+        /// <summary>
+        /// Enables or disables GameObjects matching the given tag or name, including inactive objects in the scene.
+        /// Uses cached non-allocating scene root traversal to avoid GC allocations and expensive full-domain queries.
+        /// </summary>
+        void SetGameObjectActive(string targetIdentifier, bool enable)
+        {
+            if (string.IsNullOrEmpty(targetIdentifier))
+            {
+                Debug.LogWarning("[Cutscene] Enable/Disable GameObject step has an empty target ID!");
+                return;
+            }
+
+            int count = 0;
+            int sceneCount = SceneManager.sceneCount;
+
+            for (int s = 0; s < sceneCount; s++)
+            {
+                Scene scene = SceneManager.GetSceneAt(s);
+                if (!scene.isLoaded) continue;
+
+                scene.GetRootGameObjects(s_RootGameObjectsBuffer);
+                for (int r = 0; r < s_RootGameObjectsBuffer.Count; r++)
+                {
+                    GameObject root = s_RootGameObjectsBuffer[r];
+                    if (root == null) continue;
+
+                    root.GetComponentsInChildren<Transform>(true, s_TransformBuffer);
+                    for (int t = 0; t < s_TransformBuffer.Count; t++)
+                    {
+                        Transform tr = s_TransformBuffer[t];
+                        if (tr == null) continue;
+
+                        GameObject go = tr.gameObject;
+                        bool isMatch = false;
+
+                        // 1. Check tag match safely (try-catch in case targetIdentifier is not a registered tag)
+                        try
+                        {
+                            if (go.CompareTag(targetIdentifier))
+                                isMatch = true;
+                        }
+                        catch
+                        {
+                            // Not a registered tag, ignore exception
+                        }
+
+                        // 2. Check name match (case-insensitive)
+                        if (!isMatch && go.name.Equals(targetIdentifier, System.StringComparison.OrdinalIgnoreCase))
+                        {
+                            isMatch = true;
+                        }
+
+                        if (isMatch)
+                        {
+                            go.SetActive(enable);
+                            count++;
+                        }
+                    }
+                }
+            }
+
+            s_RootGameObjectsBuffer.Clear();
+            s_TransformBuffer.Clear();
+
+            if (count > 0)
+            {
+                if (showDebugLogs)
+                    Debug.Log($"[Cutscene] SetActive({enable}) on {count} GameObject(s) matching '{targetIdentifier}'");
+            }
+            else
+            {
+                Debug.LogWarning($"[Cutscene] No GameObject found with tag or name '{targetIdentifier}' (including inactive objects)");
+            }
+        }
+
         void EnableGameObjectByTag(string tag, bool enable)
         {
-            GameObject obj = GameObject.FindGameObjectWithTag(tag);
-            if (obj != null)
-                obj.SetActive(enable);
-            else
-                Debug.LogWarning($"[Cutscene] GameObject with tag '{tag}' not found");
+            SetGameObjectActive(tag, enable);
         }
 
         void ShowMessage(string message)
