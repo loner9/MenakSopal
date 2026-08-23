@@ -44,6 +44,11 @@ public class EnemyAttackState : EnemyState
         base.ExitState();
 
         enemy.rb.bodyType = RigidbodyType2D.Dynamic;
+        if (attackBox != null)
+        {
+            CapsuleCollider2D collider = attackBox.GetComponent<CapsuleCollider2D>();
+            if (collider != null) collider.enabled = false;
+        }
     }
 
     public override void FrameUpdate()

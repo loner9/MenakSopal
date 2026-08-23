@@ -37,7 +37,17 @@ public class TimeSettings
     public float totalCycleDuration = 120f; // Total day/night cycle in real seconds (2 minutes default)
 
     [Range(0f, 24f)]
-    public float startTime = 6f; // 6 AM
+    public float startTime = 7f; // 7 AM default
+
+    [Header("Daylight Loop Mode")]
+    [Tooltip("If true, natural time loops within daylight hours (e.g. 7:00 to 15:00) unless story triggers night.")]
+    public bool loopDaylightOnly = true;
+
+    [Range(0f, 24f)]
+    public float daylightLoopMinHour = 7f; // When daylight loop restarts (e.g., 7 AM)
+
+    [Range(0f, 24f)]
+    public float daylightLoopMaxHour = 15f; // When daylight reaches this hour, it falls back to min hour (e.g., 3 PM)
 
     [Header("Day Period Settings")]
     [Range(6f, 18f)]
@@ -205,14 +215,43 @@ public class DayNightCycle : MonoBehaviour
     {
         while (true)
         {
-            // Calculate time increment based on total cycle duration
-            float timeIncrement = (24f / timeSettings.totalCycleDuration) * Time.deltaTime;
-            currentTime += timeIncrement;
-
-            // Wrap around 24-hour cycle
-            if (currentTime >= 24f)
+            if (timeSettings.loopDaylightOnly)
             {
-                currentTime = 0f;
+                // In daylight-only loop mode:
+                // Only advance natural time if we are within or approaching the daylight window.
+                // If time was set to Night (e.g. spiritual realm), hold the night time state until story changes it back.
+                if (currentTime >= timeSettings.daylightLoopMinHour && currentTime <= timeSettings.daylightLoopMaxHour)
+                {
+                    float timeIncrement = (24f / timeSettings.totalCycleDuration) * Time.deltaTime;
+                    currentTime += timeIncrement;
+
+                    if (currentTime >= timeSettings.daylightLoopMaxHour)
+                    {
+                        currentTime = timeSettings.daylightLoopMinHour;
+                    }
+                }
+                else if (currentTime < timeSettings.daylightLoopMinHour)
+                {
+                    float timeIncrement = (24f / timeSettings.totalCycleDuration) * Time.deltaTime;
+                    currentTime += timeIncrement;
+
+                    if (currentTime >= timeSettings.daylightLoopMaxHour)
+                    {
+                        currentTime = timeSettings.daylightLoopMinHour;
+                    }
+                }
+            }
+            else
+            {
+                // Standard 24-hour cycle progression
+                float timeIncrement = (24f / timeSettings.totalCycleDuration) * Time.deltaTime;
+                currentTime += timeIncrement;
+
+                // Wrap around 24-hour cycle
+                if (currentTime >= 24f)
+                {
+                    currentTime = 0f;
+                }
             }
 
             // Update time of day
@@ -525,7 +564,7 @@ public class DayNightCycle : MonoBehaviour
         switch (targetTimeOfDay)
         {
             case TimeOfDay.Day:
-                SetTime(12f); // Always set to noon for day
+                SetTime(timeSettings.loopDaylightOnly ? timeSettings.daylightLoopMinHour : 12f);
                 break;
             case TimeOfDay.Sunrise:
                 SetTime((timeSettings.calculatedSunriseStart + timeSettings.calculatedSunriseEnd) * 0.5f); // Middle of sunrise
@@ -594,6 +633,16 @@ public class DayNightCycle : MonoBehaviour
     // Add validation method to recalculate when settings change
     private void OnValidate()
     {
+        if (timeSettings != null)
+        {
+            timeSettings.daylightLoopMinHour = Mathf.Clamp(timeSettings.daylightLoopMinHour, 0f, 24f);
+            timeSettings.daylightLoopMaxHour = Mathf.Clamp(timeSettings.daylightLoopMaxHour, 0f, 24f);
+            if (timeSettings.daylightLoopMinHour >= timeSettings.daylightLoopMaxHour)
+            {
+                timeSettings.daylightLoopMaxHour = Mathf.Min(24f, timeSettings.daylightLoopMinHour + 1f);
+            }
+        }
+
         if (Application.isPlaying)
         {
             CalculateTransitionTimes();
@@ -629,7 +678,7 @@ public class DayNightCycle : MonoBehaviour
     /// </summary>
     public void ResetToDay()
     {
-        currentTime = 4f;
+        currentTime = timeSettings.loopDaylightOnly ? timeSettings.daylightLoopMinHour : 7f;
         currentTimeOfDay = TimeOfDay.Day;
         ResumeTime();
 

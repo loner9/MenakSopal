@@ -340,7 +340,7 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
         {
             ObjectiveAutoCompletion.Instance.OnEnemyDefeated(enemyType);
         }
-        Debug.Log($"{gameObject.name} has died!"); ;
+        Debug.Log($"{gameObject.name} has died!");
 
         // Trigger death animation if available
         if (animator != null)
@@ -354,11 +354,39 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
             StateMachine.ChangeState(null); // Stop state machine
         }
 
-        // Disable colliders and movement
-        Collider2D[] colliders = GetComponents<Collider2D>();
+        // Stop knockback if active
+        if (knockbackHandler != null)
+        {
+            knockbackHandler.StopKnockback();
+        }
+
+        // Disable all colliders (including on all child objects)
+        Collider2D[] colliders = GetComponentsInChildren<Collider2D>(true);
         foreach (var col in colliders)
         {
             col.enabled = false;
+        }
+
+        // Deactivate child GameObjects / components (hitboxes, aggro checks, UI bubbles, etc.)
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Transform child = transform.GetChild(i);
+            // If child doesn't contain an Animator/SpriteRenderer playing the death animation, deactivate it immediately
+            if (child.GetComponent<Animator>() == null && child.GetComponent<SpriteRenderer>() == null)
+            {
+                child.gameObject.SetActive(false);
+            }
+            else
+            {
+                // Disable non-visual logic behaviours on the child
+                foreach (var b in child.GetComponents<Behaviour>())
+                {
+                    if (!(b is Animator) && !(b is SpriteRenderer))
+                    {
+                        b.enabled = false;
+                    }
+                }
+            }
         }
 
         if (rb != null)
@@ -368,7 +396,6 @@ public class Enemy : MonoBehaviour, IDamageable, IEnemyMoveable, ITriggerCheckab
         }
 
         // Destroy after a delay to allow death animation
-        // Destroy(gameObject, 2f);
         DestroyEnemy();
     }
 
