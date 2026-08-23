@@ -33,9 +33,9 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 9
+  - type: 5
     stepName: 
-    targetID: pemandu_jalan
+    targetID: mc_in_krandon
     secondaryTargetID: 
     textContent: 
     duration: 1
@@ -48,9 +48,9 @@ MonoBehaviour:
     timeOfDay: 0
     shakeIntensity: 1
     dialogueOverride: {fileID: 0}
-  - type: 5
+  - type: 9
     stepName: 
-    targetID: mc_in_krandon
+    targetID: pemandu_jalan
     secondaryTargetID: 
     textContent: 
     duration: 1

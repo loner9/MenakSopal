@@ -37,11 +37,11 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
-    targetNPC: 
+    targetNPC: pemandu_jalan
     targetItem: 
     targetAmount: 1
     currentAmount: 0
-    targetLocation: pemandu_jalan
+    targetLocation: 
     timeDelay: 0
     showProgress: 1
   - objectiveID: perform_sacrifice

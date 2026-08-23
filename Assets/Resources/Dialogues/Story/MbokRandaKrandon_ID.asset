@@ -18,7 +18,7 @@ MonoBehaviour:
   - speakerName: Mbok Randa Krandon
     dialogueText: Siang. Siapa kalian datang ke gubukku yang sederhana ini, wahai
       anak muda?
-    availableTimesOfDay: 
+    availableTimesOfDay: 0000000001000000
     isRepeatable: 0
     requiredFlags: []
     flagsToAdd: []
@@ -51,7 +51,7 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Mbok Randa Krandon
     dialogueText: Padepokan Sinawang, jauh juga. Ada maksud apa kalian kesini?
-    availableTimesOfDay: 
+    availableTimesOfDay: 0000000001000000
     isRepeatable: 0
     requiredFlags: []
     flagsToAdd: []
@@ -83,7 +83,7 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Mbok Randa Krandon
     dialogueText: Untuk apa, biasanya Ki Ageng bersurat dulu kepadaku jika ada sesuatu
-    availableTimesOfDay: 
+    availableTimesOfDay: 0000000001000000
     isRepeatable: 0
     requiredFlags: []
     flagsToAdd: []
@@ -116,7 +116,7 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Mbok Randa Krandon
     dialogueText: Baiklah, karena aku kenal baik dengan Ki Ageng, bawalah gajahku.
-    availableTimesOfDay: 
+    availableTimesOfDay: 0000000001000000
     isRepeatable: 0
     requiredFlags: []
     flagsToAdd: []
@@ -149,7 +149,7 @@ MonoBehaviour:
   - speakerName: Mbok Randa Krandon
     dialogueText: Sebenarnya aku ingin ikut, tapi ada urusan lain yang mendesak.
       Jaga Gajahku dengan baik ya!!!
-    availableTimesOfDay: 
+    availableTimesOfDay: 0100000000000000
     isRepeatable: 0
     requiredFlags: []
     flagsToAdd:
@@ -183,7 +183,7 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Mbok Randa Krandon
     dialogueText: Sudah lebih dari satu bulan berlalu, dan Gajahku belum juga dikembalikan!!!
-    availableTimesOfDay: 
+    availableTimesOfDay: 0000000001000000
     isRepeatable: 0
     requiredFlags:
     - mbok_randa_angry
@@ -216,7 +216,7 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Mbok Randa Krandon
     dialogueText: Dasar bocah B******n!!!
-    availableTimesOfDay: 
+    availableTimesOfDay: 0000000001000000
     isRepeatable: 0
     requiredFlags:
     - mbok_randa_angry
@@ -249,7 +249,7 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Mbok Randa Krandon
     dialogueText: Ki Ageng!!, dimana murid badungmu itu berada!!!
-    availableTimesOfDay: 
+    availableTimesOfDay: 0000000001000000
     isRepeatable: 0
     requiredFlags:
     - mbok_in_padepokan
@@ -282,7 +282,7 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Mbok Randa Krandon
     dialogueText: Aku ingin menghukum murid badungmu itu, Menak Sopal!!!
-    availableTimesOfDay: 
+    availableTimesOfDay: 0100000000000000
     isRepeatable: 0
     requiredFlags:
     - mbok_in_padepokan_a
@@ -315,7 +315,7 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Mbok Randa Krandon
     dialogueText: Itu dia bocah badung itu, pengawal tangkap dia!!!
-    availableTimesOfDay: 
+    availableTimesOfDay: 0000000001000000
     isRepeatable: 0
     requiredFlags:
     - menak_in_padepokan

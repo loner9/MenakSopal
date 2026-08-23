@@ -18,7 +18,7 @@ MonoBehaviour:
   - speakerName: Joko
     dialogueText: Desa Krandon?, aku tahu tempat. Apa kamu perlu kesana nak?, aku
       bisa menemanimu kesana kalau perlu.
-    availableTimesOfDay: 0000000002000000
+    availableTimesOfDay: 000000000200000001000000
     isRepeatable: 0
     requiredFlags:
     - tribute_demand_received
@@ -89,10 +89,11 @@ MonoBehaviour:
     dialogueText: Oh, tentu saja nak!. Krisis air ini telah membuat gaduh kehidupan
       orang orang disini!. Pun ke sungai, air tidak sampai di tempat yang aman bagi
       kami. Bersama keahlianmu, pastinya membangun dam ini menjadi lebih aman hahaha.
-    availableTimesOfDay: 0000000002000000
+    availableTimesOfDay: 000000000200000001000000
     isRepeatable: 0
     requiredFlags:
     - committed_to_help
+    - guru_guidance_received
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0
@@ -102,7 +103,7 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Joko
     dialogueText: Ayo nak, saatnya kita bangun dam ini!
-    availableTimesOfDay: 0000000002000000
+    availableTimesOfDay: 0000000001000000
     isRepeatable: 0
     requiredFlags:
     - to_river
@@ -115,7 +116,7 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Joko
     dialogueText: Dari mana saja kau tadi nak?
-    availableTimesOfDay: 0000000002000000
+    availableTimesOfDay: 000000000200000001000000
     isRepeatable: 0
     requiredFlags:
     - finish_forest
@@ -148,10 +149,10 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Joko
     dialogueText: Baiklah, ayo kita langsung ke rumah mbok Randa kalau begitu
-    availableTimesOfDay: 0000000002000000
+    availableTimesOfDay: 000000000200000001000000
     isRepeatable: 0
     requiredFlags:
-    - 
+    - finish_forest
     flagsToAdd:
     - mbr_terrace
     flagsToRemove: []
@@ -182,9 +183,10 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Joko
     dialogueText: Nak, mengapa harus dirimu tadi berbohong?
-    availableTimesOfDay: 0000000002000000
+    availableTimesOfDay: 000000000200000001000000
     isRepeatable: 0
-    requiredFlags: []
+    requiredFlags:
+    - white_elephant_borrowed
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 1
@@ -215,9 +217,10 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Joko
     dialogueText: Baiklah kalau begitu, aku tidak ikut ikutan ya...
-    availableTimesOfDay: 0000000002000000
+    availableTimesOfDay: 000000000200000001000000
     isRepeatable: 0
-    requiredFlags: []
+    requiredFlags:
+    - white_elephant_borrowed
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0
@@ -248,7 +251,7 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Joko
     dialogueText: Aku akan menunggu disini nak, sampaikan pesanmu ke mbok randa
-    availableTimesOfDay: 0000000002000000
+    availableTimesOfDay: 000000000200000001000000
     isRepeatable: 1
     requiredFlags:
     - joko_in_mbr

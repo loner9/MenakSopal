@@ -16,9 +16,9 @@ MonoBehaviour:
   dialogueDescription: Warga yang menderita krisis air
   dialogueEntries:
   - speakerName: Pak Darmo
-    dialogueText: Tolong, nak muda! sudah berhari-hari kami tidak mendapat air bersih!
-      Sumur ini hampir kering!
-    availableTimesOfDay: 000000000200000003000000
+    dialogueText: Tolong, nak muda! sudah berhari-hari kami kesulitan mendapat air
+      bersih! Sumur ini hampir kering!
+    availableTimesOfDay: 00000000020000000300000001000000
     isRepeatable: 0
     requiredFlags: []
     flagsToAdd:
@@ -52,11 +52,10 @@ MonoBehaviour:
     isImportantDialogue: 1
     pauseAfterDialogue: 0
   - speakerName: Pak Darmo
-    dialogueText: Kalau itu, kamipun sudah mencoba nak. Namun air di sungai juga
-      sudah kering beberapa minggu ini. Air dari hulu tidak sampai ke tempat dimana
-      kami bisa mengambil air. Banyak hal hal berbahaya melebihi tempat kami biasa
-      mengambil air nak...
-    availableTimesOfDay: 000000000200000003000000
+    dialogueText: Kami sudah mencoba mengambil air, tetapi sungai mulai kering. Air
+      dari hulu tidak sampai ke tempat kami biasa mengambil air. Banyak bahaya di
+      tempat tersebut.
+    availableTimesOfDay: 000000000200000001000000
     isRepeatable: 0
     requiredFlags: []
     flagsToAdd:
@@ -73,10 +72,8 @@ MonoBehaviour:
       targetDialogueIndex: -1
       response:
         speakerName: Menak Sopal
-        responseText: Seperti itu pak rupanya. Sangat disayangkan, kami dari padepokan
-          sendiri belum bisa banyak membantu juga, karena kamipun memiliki tanggungan
-          sendiri. Terimakasih atas informasinya pak, sebisanya saya akan membantu
-          mengatasi masalah ini!
+        responseText: Kami dari padepokan belum bisa banyak membantu karena juga
+          kesulitan air. Terima kasih atas informasinya, pak.
         conversationBubbleSprite: {fileID: 0}
         pauseAfterResponse: 0
         continueToNext: 0
@@ -92,7 +89,7 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Pak Darmo
     dialogueText: Iya nak, kasihanilah orang tua renta seperti kami ini...
-    availableTimesOfDay: 0000000002000000
+    availableTimesOfDay: 0000000001000000
     isRepeatable: 0
     requiredFlags:
     - kegaduhan

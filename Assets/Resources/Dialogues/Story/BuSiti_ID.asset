@@ -30,7 +30,7 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Bu Siti
     dialogueText: Tolong, berikanlah air ini kepada kami...
-    availableTimesOfDay: 0000000002000000
+    availableTimesOfDay: 0000000001000000
     isRepeatable: 0
     requiredFlags:
     - kegaduhan

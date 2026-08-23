@@ -19,9 +19,9 @@ MonoBehaviour:
   homeObjectName: Entrance_kiAgeng
   homePosition: {x: 0, y: 0}
   scheduleEvents:
-  - hour: 6
-    targetObjectTag: NPCTarget
-    targetObjectName: HomeEntrance
+  - hour: 7
+    targetObjectTag: House
+    targetObjectName: Entrance_kiAgeng
     targetPosition: {x: 0, y: 0}
     behavior: 0
     shouldIdleWhenReached: 1

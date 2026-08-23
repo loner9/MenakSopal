@@ -157,7 +157,7 @@ MonoBehaviour:
     targetID: 
     secondaryTargetID: 
     textContent: 
-    duration: 1
+    duration: 3
     delayBefore: 0
     flagsToSet: []
     flagsToRemove: []
@@ -308,3 +308,4 @@ MonoBehaviour:
   disablePlayerInput: 1
   flagsOnStart: []
   flagsOnComplete: []
+  autoSaveTiming: 0

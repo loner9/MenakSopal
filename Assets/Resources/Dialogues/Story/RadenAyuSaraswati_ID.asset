@@ -85,9 +85,9 @@ MonoBehaviour:
     isImportantDialogue: 0
     pauseAfterDialogue: 0
   - speakerName: Raden Ayu Saraswati
-    dialogueText: Anakku telah menjadi pria sejati hari ini. Bukan karena dia memecahkan
+    dialogueText: Anakku telah beranjak dewasa hari ini. Bukan karena dia memecahkan
       masalah, tapi karena dia belajar menghadapi konsekuensi dari pilihannya.
-    availableTimesOfDay: 000000000200000003000000
+    availableTimesOfDay: 000000000100000003000000
     isRepeatable: 0
     requiredFlags:
     - story_completed

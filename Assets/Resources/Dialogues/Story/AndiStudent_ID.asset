@@ -127,7 +127,7 @@ MonoBehaviour:
   - speakerName: Andi (Murid Padepokan)
     dialogueText: hmm, Gajah Putih. Setahuku itu ada di desa Krandon, tapi aku tidak
       tahu untuk kesana...
-    availableTimesOfDay: 00000000
+    availableTimesOfDay: 0100000000000000
     isRepeatable: 1
     requiredFlags:
     - keberadaan_gajah_putih

@@ -188,3 +188,4 @@ MonoBehaviour:
   disablePlayerInput: 1
   flagsOnStart: []
   flagsOnComplete: []
+  autoSaveTiming: 0

@@ -75,7 +75,7 @@ MonoBehaviour:
     audioClip: {fileID: 0}
     waitForCompletion: 0
     timeOfDay: 0
-    shakeIntensity: 3
+    shakeIntensity: 0.5
     dialogueOverride: {fileID: 0}
   - type: 0
     stepName: 
@@ -202,3 +202,4 @@ MonoBehaviour:
   disablePlayerInput: 1
   flagsOnStart: []
   flagsOnComplete: []
+  autoSaveTiming: 0

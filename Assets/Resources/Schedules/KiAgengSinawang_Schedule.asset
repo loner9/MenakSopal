@@ -19,26 +19,17 @@ MonoBehaviour:
   homeObjectName: Entrance_kiAgeng
   homePosition: {x: 0, y: 0}
   scheduleEvents:
-  - hour: 6
-    targetObjectTag: NPCTarget
-    targetObjectName: MeditationGarden
-    targetPosition: {x: -5, y: 2}
-    behavior: 0
-    shouldIdleWhenReached: 1
-    shouldDespawn: 0
-    customDialogue:
-    - Gunung mengajarkan kita kesabaran, sungai mengajarkan kita ketekunan.
   - hour: 7
-    targetObjectTag: NPCTarget
-    targetObjectName: TeachingPavilion
+    targetObjectTag: House
+    targetObjectName: Entrance_kiAgeng
     targetPosition: {x: 0, y: 0}
     behavior: 4
     shouldIdleWhenReached: 0
     shouldDespawn: 0
     customDialogue: []
   - hour: 12
-    targetObjectTag: House
-    targetObjectName: Entrance_kiAgeng
+    targetObjectTag: NPCTarget
+    targetObjectName: TeachingPavilion
     targetPosition: {x: 2, y: 1}
     behavior: 0
     shouldIdleWhenReached: 1

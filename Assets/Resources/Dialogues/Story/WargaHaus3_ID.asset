@@ -18,10 +18,10 @@ MonoBehaviour:
   - speakerName: Karto
     dialogueText: Ah, terik sekali. Air semakin menipis tiap hari. Ada perlu apa
       nak denganku?
-    availableTimesOfDay: 
+    availableTimesOfDay: 0000000001000000
     isRepeatable: 0
     requiredFlags:
-    - committed_to_help
+    - guru_guidance_received
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 1
@@ -40,7 +40,7 @@ MonoBehaviour:
         conversationBubbleSprite: {fileID: 0}
         pauseAfterResponse: 0
         continueToNext: 1
-        nextDialogueIndex: 2
+        nextDialogueIndex: 1
       questToStart: 
       questToComplete: 
       objectiveToComplete: 
@@ -52,16 +52,36 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Karto
     dialogueText: Membangun dam?, di tengah terik matahari seperti ini?. Tentu saja!!.
-      Dirimu pasti berniat untuk membendung air agar lebih mudah diambil bukan. Tidak
-      perlu banyak bertele tele, ayo kita bangun dam ini!!!
-    availableTimesOfDay: 
+      Lagipula kalau bendungan ini berhasil kita bangun, pasti dapat mengatasi krisis
+      air ini.
+    availableTimesOfDay: 0000000001000000
     isRepeatable: 0
     requiredFlags:
-    - committed_to_help
+    - guru_guidance_received
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0
-    choices: []
+    choices:
+    - choiceText: 
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: -1
+      response:
+        speakerName: 
+        responseText: 
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 0
+        nextDialogueIndex: 0
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -72,7 +92,7 @@ MonoBehaviour:
     availableTimesOfDay: 0100000000000000
     isRepeatable: 0
     requiredFlags:
-    - 
+    - guru_guidance_received
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0
@@ -82,7 +102,7 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Karto
     dialogueText: Aku siap membantu membangun dam ini nak!
-    availableTimesOfDay: 
+    availableTimesOfDay: 0000000001000000
     isRepeatable: 0
     requiredFlags:
     - to_river
@@ -95,7 +115,7 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Karto
     dialogueText: Ayolah, kami juga memerlukan air ini!!!
-    availableTimesOfDay: 0000000002000000
+    availableTimesOfDay: 0000000001000000
     isRepeatable: 0
     requiredFlags:
     - kegaduhan
@@ -108,7 +128,7 @@ MonoBehaviour:
     pauseAfterDialogue: 0
   - speakerName: Karto
     dialogueText: Gajah putih?, sayang sekali aku tidak tahu nak...
-    availableTimesOfDay: 00000000
+    availableTimesOfDay: 0000000001000000
     isRepeatable: 1
     requiredFlags:
     - keberadaan_gajah_putih

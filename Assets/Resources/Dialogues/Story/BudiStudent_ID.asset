@@ -18,7 +18,7 @@ MonoBehaviour:
   - speakerName: Budi (Murid Padepokan)
     dialogueText: Sekarang semua bahan meterial terkumpul, mari kita selesaikan bendungan
       ini, Menak Sopal!
-    availableTimesOfDay: 000000000200000003000000
+    availableTimesOfDay: 000000000200000001000000
     isRepeatable: 0
     requiredFlags:
     - materials_collected
@@ -33,7 +33,7 @@ MonoBehaviour:
   - speakerName: Budi (Murid Padepokan)
     dialogueText: Bendungan ini terus rusak! Ada sesuatu yang tidak wajar tentang
       ini. Aku melihat riak aneh di air saat bendungan runtuh.
-    availableTimesOfDay: 000000000200000003000000
+    availableTimesOfDay: 000000000200000001000000
     isRepeatable: 0
     requiredFlags:
     - dam_broken
@@ -47,7 +47,7 @@ MonoBehaviour:
   - speakerName: Budi (Murid Padepokan)
     dialogueText: Kabar berlalu cepat nak, dan aku disini siap untuk membantu niat
       baikmu!
-    availableTimesOfDay: 000000000200000003000000
+    availableTimesOfDay: 000000000200000001000000
     isRepeatable: 0
     requiredFlags:
     - committed_to_help
@@ -62,7 +62,7 @@ MonoBehaviour:
   - speakerName: Budi (Murid Padepokan)
     dialogueText: Kalau tentang jurus, aku pasti akan memberitahumu nak. Tapi Gajah
       Putih?, aku bahkan pertama kali ini mendegarnya
-    availableTimesOfDay: 00000000
+    availableTimesOfDay: 0000000001000000
     isRepeatable: 1
     requiredFlags:
     - keberadaan_gajah_putih
