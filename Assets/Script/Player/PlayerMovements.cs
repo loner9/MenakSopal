@@ -98,7 +98,17 @@ public class PlayerMovements : MonoBehaviour, IKnockbackable
             return;
         }
 
-        moveDirection = playerActions.Movement.Move.ReadValue<Vector2>().normalized;
+        // 1. Read New Input System (Keyboard / Gamepad)
+        Vector2 inputSystemMove = playerActions.Movement.Move.ReadValue<Vector2>();
+
+        // 2. Read Control Freak 2 Touch Joystick / Axes
+        float cfX = ControlFreak2.CF2Input.GetAxis("Horizontal");
+        float cfY = ControlFreak2.CF2Input.GetAxis("Vertical");
+        Vector2 cfMove = new Vector2(cfX, cfY);
+
+        // Combine inputs (prioritize CF2 if touched/moved, otherwise use Input System)
+        Vector2 rawMove = cfMove.sqrMagnitude > 0.001f ? cfMove : inputSystemMove;
+        moveDirection = rawMove.normalized;
 
         bool isRunning;
 
@@ -108,7 +118,9 @@ public class PlayerMovements : MonoBehaviour, IKnockbackable
         }
         else
         {
-            isRunning = playerActions.Movement.Run.IsPressed();
+            isRunning = playerActions.Movement.Run.IsPressed() ||
+                        (ControlFreak2.CF2Input.activeRig != null && ControlFreak2.CF2Input.activeRig.GetButton("Run")) ||
+                        ControlFreak2.CF2Input.GetKey(KeyCode.LeftShift);
         }
 
         currentSpeed = isRunning ? runSpeed : walkSpeed;

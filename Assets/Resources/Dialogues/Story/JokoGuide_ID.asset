@@ -109,7 +109,7 @@ MonoBehaviour:
     - to_river
     flagsToAdd: []
     flagsToRemove: []
-    hasChoices: 1
+    hasChoices: 0
     choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
@@ -153,6 +153,7 @@ MonoBehaviour:
     isRepeatable: 0
     requiredFlags:
     - finish_forest
+    - mc_answer
     flagsToAdd:
     - mbr_terrace
     flagsToRemove: []
@@ -195,7 +196,8 @@ MonoBehaviour:
       requiredFlags: []
       availableTimesOfDay: 
       isRepeatable: 1
-      flagsToAdd: []
+      flagsToAdd:
+      - sopal_explain
       flagsToRemove: []
       targetDialogueIndex: 7
       response:
@@ -221,6 +223,7 @@ MonoBehaviour:
     isRepeatable: 0
     requiredFlags:
     - white_elephant_borrowed
+    - sopal_explain
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0

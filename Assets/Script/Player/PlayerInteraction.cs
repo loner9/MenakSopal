@@ -37,7 +37,10 @@ public class PlayerInteraction : MonoBehaviour
             CheckForNearbyNPCs();
             
             // Handle interaction input
-            if (Input.GetKeyDown(interactKey) && nearbyNPC != null)
+            bool interactPressed = ControlFreak2.CF2Input.GetKeyDown(interactKey) ||
+                                   (ControlFreak2.CF2Input.activeRig != null && ControlFreak2.CF2Input.activeRig.GetButtonDown("Interact"));
+
+            if (interactPressed && nearbyNPC != null)
             {
                 dialogueSystem.StartDialogue(nearbyNPC);
             }

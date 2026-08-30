@@ -710,8 +710,10 @@ PlayerSettings:
   webWasm2023: 0
   webEnableSubmoduleStrippingCompatibility: 0
   scriptingDefineSymbols:
-    Android: PWB_URP;SENTIS_ANALYTICS_ENABLED
+    Android: PWB_URP;SENTIS_ANALYTICS_ENABLED;CF_FORCE_MOBILE_MODE
     Standalone: PWB_BIRP;PWB_URP
+    Windows Store Apps: CF_FORCE_MOBILE_MODE
+    iPhone: CF_FORCE_MOBILE_MODE
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

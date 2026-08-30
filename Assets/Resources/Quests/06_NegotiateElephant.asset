@@ -43,34 +43,6 @@ MonoBehaviour:
     targetLocation: 
     timeDelay: 0
     showProgress: 1
-  - objectiveID: explain_situation
-    description: Jelaskan tentang situasi krisis air yang melanda.
-    type: 6
-    isCompleted: 0
-    isOptional: 0
-    requiredFlags: []
-    flagToSetOnComplete: explained_water_crisis
-    targetNPC: 
-    targetItem: 
-    targetAmount: 1
-    currentAmount: 0
-    targetLocation: 
-    timeDelay: 0
-    showProgress: 1
-  - objectiveID: secure_agreement
-    description: Dapatkan izin untuk "meminjam" gajah putih
-    type: 6
-    isCompleted: 0
-    isOptional: 0
-    requiredFlags: []
-    flagToSetOnComplete: 
-    targetNPC: 
-    targetItem: 
-    targetAmount: 1
-    currentAmount: 0
-    targetLocation: 
-    timeDelay: 0
-    showProgress: 1
   rewards: []
   isRepeatable: 0
   canAbandon: 1

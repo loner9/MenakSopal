@@ -88,6 +88,7 @@ public class NPCInteractionSystem : MonoBehaviour
 
     // Track used non-repeatable dialogue entries per NPC
     private Dictionary<string, HashSet<int>> usedDialogueEntries = new Dictionary<string, HashSet<int>>();
+    private Dictionary<string, HashSet<int>> queuedUsedDialogueEntries = new Dictionary<string, HashSet<int>>();
 
     // Choice response continuation tracking
     private bool hasPendingNavigation = false;
@@ -232,7 +233,9 @@ public class NPCInteractionSystem : MonoBehaviour
             CheckForNearbyNPCs();
 
             // Add detailed input debugging
-            if (Input.GetKeyDown(interactKey))
+            bool interactPressed = ControlFreak2.CF2Input.GetKeyDown(interactKey) || 
+                                   (ControlFreak2.CF2Input.activeRig != null && ControlFreak2.CF2Input.activeRig.GetButtonDown("Interact"));
+            if (interactPressed)
             {
                 Debug.Log($"[NPCInteraction] {interactKey} key pressed! currentNPC: {(currentNPC != null ? currentNPC.npcName : "NULL")}");
 
@@ -255,18 +258,23 @@ public class NPCInteractionSystem : MonoBehaviour
         }
         else if (isInDialogue && bookAnimationCoroutine == null)
         {
+            bool advancePressed = ControlFreak2.CF2Input.GetKeyDown(KeyCode.Space) ||
+                                 ControlFreak2.CF2Input.GetKeyDown(KeyCode.Return) ||
+                                 ControlFreak2.CF2Input.GetKeyDown(interactKey) ||
+                                 (ControlFreak2.CF2Input.activeRig != null && ControlFreak2.CF2Input.activeRig.GetButtonDown("Interact"));
+
             // Skip typing animation
-            if (isTyping && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(interactKey)))
+            if (isTyping && advancePressed)
             {
                 SkipTypewriter();
             }
             // Continue dialogue (only if not showing choices and not waiting for response)
-            else if (!isTyping && !isShowingChoices && !waitingForChoiceResponse && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(interactKey)))
+            else if (!isTyping && !isShowingChoices && !waitingForChoiceResponse && advancePressed)
             {
                 ContinueDialogue();
             }
             // End dialogue
-            else if (Input.GetKeyDown(KeyCode.Escape))
+            else if (ControlFreak2.CF2Input.GetKeyDown(KeyCode.Escape))
             {
                 EndDialogue();
             }
@@ -387,6 +395,7 @@ public class NPCInteractionSystem : MonoBehaviour
 
         // Clear any previously queued flags from previous dialogue
         queuedFlagsToAdd.Clear();
+        queuedUsedDialogueEntries.Clear();
 
         // Clear choice response navigation state
         hasPendingNavigation = false;
@@ -664,6 +673,7 @@ public class NPCInteractionSystem : MonoBehaviour
 
         // Clear any previously queued flags from previous dialogue
         queuedFlagsToAdd.Clear();
+        queuedUsedDialogueEntries.Clear();
 
         // Clear choice response navigation state
         hasPendingNavigation = false;
@@ -845,6 +855,9 @@ public class NPCInteractionSystem : MonoBehaviour
     {
         // Process all queued flags now that dialogue has ended
         ProcessQueuedFlags();
+
+        // Process all queued used dialogue entries now that dialogue has ended
+        ProcessQueuedUsedDialogueEntries();
 
         // Capture the NPC we were just talking to to ensure we restore THE CORRECT NPC's bubble
         // even if Update() somehow managed to change currentNPC (though we added guards now)
@@ -1459,10 +1472,10 @@ public class NPCInteractionSystem : MonoBehaviour
     {
         if (entry == null) return;
 
-        // Mark this dialogue entry as used if it's not repeatable
+        // Queue this dialogue entry to be marked as used when dialogue finishes if it's not repeatable
         if (!entry.isRepeatable && currentDialogue != null)
         {
-            MarkDialogueEntryAsUsed(currentDialogue.npcName, entry);
+            QueueDialogueEntryAsUsed(currentDialogue.npcName, entry);
         }
 
         // Queue flags to add when dialogue ends
@@ -1517,7 +1530,51 @@ public class NPCInteractionSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// Mark a dialogue entry as used for a specific NPC
+    /// Queue a dialogue entry to be marked as used when the current dialogue session ends
+    /// </summary>
+    private void QueueDialogueEntryAsUsed(string npcName, DialogueEntry entry)
+    {
+        if (string.IsNullOrEmpty(npcName) || entry == null || currentDialogue == null) return;
+
+        int entryIndex = currentDialogue.GetDialogueEntryIndex(entry);
+        if (entryIndex >= 0)
+        {
+            if (!queuedUsedDialogueEntries.ContainsKey(npcName))
+            {
+                queuedUsedDialogueEntries[npcName] = new HashSet<int>();
+            }
+            queuedUsedDialogueEntries[npcName].Add(entryIndex);
+            Debug.Log($"[NPCInteraction] Queued dialogue entry {entryIndex} as used for {npcName} (will commit when dialogue ends)");
+        }
+    }
+
+    /// <summary>
+    /// Commit all queued used dialogue entries to persistent tracking
+    /// </summary>
+    private void ProcessQueuedUsedDialogueEntries()
+    {
+        if (queuedUsedDialogueEntries.Count == 0) return;
+
+        Debug.Log($"[NPCInteraction] Processing queued used dialogue entries for {queuedUsedDialogueEntries.Count} NPCs");
+
+        foreach (var kvp in queuedUsedDialogueEntries)
+        {
+            string npcName = kvp.Key;
+            HashSet<int> entries = kvp.Value;
+            HashSet<int> targetSet = GetUsedDialogueEntries(npcName);
+
+            foreach (int index in entries)
+            {
+                targetSet.Add(index);
+                Debug.Log($"[NPCInteraction] Marked dialogue entry {index} as used for {npcName} (non-repeatable)");
+            }
+        }
+
+        queuedUsedDialogueEntries.Clear();
+    }
+
+    /// <summary>
+    /// Mark a dialogue entry as used for a specific NPC immediately
     /// </summary>
     private void MarkDialogueEntryAsUsed(string npcName, DialogueEntry entry)
     {

@@ -60,7 +60,7 @@ MonoBehaviour:
     shouldIdleWhenReached: 1
     shouldDespawn: 1
     customDialogue: []
-  moveAroundWhenIdle: 1
+  moveAroundWhenIdle: 0
   idleMovementRange: 3
   walkSpeed: 1.5
   pauseAtDestination: 2

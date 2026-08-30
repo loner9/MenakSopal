@@ -53,11 +53,11 @@ namespace MenakSopal.ChaseMinigame
 
         private void HandleInput()
         {
-            if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+            if (ControlFreak2.CF2Input.GetKeyDown(KeyCode.W) || ControlFreak2.CF2Input.GetKeyDown(KeyCode.UpArrow))
             {
                 MoveLane(-1); // Move Up (towards lane 0)
             }
-            else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+            else if (ControlFreak2.CF2Input.GetKeyDown(KeyCode.S) || ControlFreak2.CF2Input.GetKeyDown(KeyCode.DownArrow))
             {
                 MoveLane(1); // Move Down (towards lane 3)
             }

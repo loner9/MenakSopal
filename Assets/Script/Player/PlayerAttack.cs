@@ -60,7 +60,12 @@ public class PlayerAttack : MonoBehaviour
         if (player.Stats.health <= 0) return;
         // if (!CanAttack()) return;
         if (!FlagManager.HasGameFlag("can_attack")) return;
-        if (playerActions.Movement.Attack.WasPressedThisFrame() && !isAttacking && cooldownTimer <= 0f)
+
+        bool attackPressed = playerActions.Movement.Attack.WasPressedThisFrame() ||
+                             (ControlFreak2.CF2Input.activeRig != null && ControlFreak2.CF2Input.activeRig.GetButtonDown("Attack")) ||
+                             ControlFreak2.CF2Input.GetMouseButtonDown(0);
+
+        if (attackPressed && !isAttacking && cooldownTimer <= 0f)
         {
             PerformAttack();
         }

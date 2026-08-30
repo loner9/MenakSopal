@@ -73,7 +73,7 @@ MonoBehaviour:
         responseText: Baiklah, saya akan mencari gajah putih ini
         conversationBubbleSprite: {fileID: 0}
         pauseAfterResponse: 0
-        continueToNext: 1
+        continueToNext: 0
         nextDialogueIndex: -1
       questToStart: 
       questToComplete: 
@@ -158,7 +158,7 @@ MonoBehaviour:
     requiredFlags: []
     flagsToAdd: []
     flagsToRemove: []
-    hasChoices: 1
+    hasChoices: 0
     choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 1

@@ -1,0 +1,179 @@
+Converting script [1 / 23]	[\Script\CameraShakeTester.cs]
+	Fragments : 12
+		[ 0] : Line:   48	InputMethod   GetKeyDown          	(KeyCode.Alpha1)
+		[ 1] : Line:   48	InputMethod   GetKeyDown          	(KeyCode.Keypad1)
+		[ 2] : Line:   52	InputMethod   GetKeyDown          	(KeyCode.Alpha2)
+		[ 3] : Line:   52	InputMethod   GetKeyDown          	(KeyCode.Keypad2)
+		[ 4] : Line:   56	InputMethod   GetKeyDown          	(KeyCode.Alpha3)
+		[ 5] : Line:   56	InputMethod   GetKeyDown          	(KeyCode.Keypad3)
+		[ 6] : Line:   60	InputMethod   GetKeyDown          	(KeyCode.Alpha4)
+		[ 7] : Line:   60	InputMethod   GetKeyDown          	(KeyCode.Keypad4)
+		[ 8] : Line:   64	InputMethod   GetKeyDown          	(KeyCode.Alpha5)
+		[ 9] : Line:   64	InputMethod   GetKeyDown          	(KeyCode.Keypad5)
+		[10] : Line:   68	InputMethod   GetKeyDown          	(KeyCode.Escape)
+		[11] : Line:   68	InputMethod   GetKeyDown          	(KeyCode.Alpha0)
+
+Converting script [2 / 23]	[\Script\TestAoitiAStar.cs]
+	Fragments : 1
+		[ 0] : Line:   30	InputProperty mousePosition       
+
+Converting script [3 / 23]	[\Script\ChaseMinigame\PlayerChaseController.cs]
+	Fragments : 4
+		[ 0] : Line:   56	InputMethod   GetKeyDown          	(KeyCode.W)
+		[ 1] : Line:   56	InputMethod   GetKeyDown          	(KeyCode.UpArrow)
+		[ 2] : Line:   60	InputMethod   GetKeyDown          	(KeyCode.S)
+		[ 3] : Line:   60	InputMethod   GetKeyDown          	(KeyCode.DownArrow)
+
+Converting script [4 / 23]	[\Script\Cutscene\CutsceneController.cs]
+	Fragments : 2
+		[ 0] : Line:   98	InputMethod   GetKeyDown          	(skipKey)
+		[ 1] : Line:  105	InputProperty anyKeyDown          
+
+Converting script [5 / 23]	[\Script\NPC\NPCInteractionSystem.cs]
+	Fragments : 8
+		[ 0] : Line:  236	InputMethod   GetKeyDown          	(interactKey)
+		[ 1] : Line:  260	InputMethod   GetKeyDown          	(KeyCode.Space)
+		[ 2] : Line:  260	InputMethod   GetKeyDown          	(KeyCode.Return)
+		[ 3] : Line:  260	InputMethod   GetKeyDown          	(interactKey)
+		[ 4] : Line:  265	InputMethod   GetKeyDown          	(KeyCode.Space)
+		[ 5] : Line:  265	InputMethod   GetKeyDown          	(KeyCode.Return)
+		[ 6] : Line:  265	InputMethod   GetKeyDown          	(interactKey)
+		[ 7] : Line:  270	InputMethod   GetKeyDown          	(KeyCode.Escape)
+
+Converting script [6 / 23]	[\Script\Player\MonologueSystem.cs]
+	Fragments : 3
+		[ 0] : Line:   98	InputMethod   GetKeyDown          	(continueKey)
+		[ 1] : Line:   98	InputMethod   GetKeyDown          	(KeyCode.Return)
+		[ 2] : Line:  111	InputMethod   GetKeyDown          	(skipKey)
+
+Converting script [7 / 23]	[\Script\Player\PlayerHealth.cs]
+	Fragments : 1
+		[ 0] : Line:   22	InputMethod   GetKeyDown          	(KeyCode.P)
+
+Converting script [8 / 23]	[\Script\Player\PlayerInteraction.cs]
+	Fragments : 1
+		[ 0] : Line:   40	InputMethod   GetKeyDown          	(interactKey)
+
+Converting script [9 / 23]	[\Script\Shared\FlagManager.cs]
+	Fragments : 3
+		[ 0] : Line:   37	InputMethod   GetKeyDown          	(KeyCode.F1)
+		[ 1] : Line:   39	InputMethod   GetKeyDown          	(KeyCode.F2)
+		[ 2] : Line:   41	InputMethod   GetKeyDown          	(KeyCode.F3)
+
+Converting script [10 / 23]	[\Script\UI\PauseMenuManager.cs]
+	Fragments : 5
+		[ 0] : Line:   58	InputMethod   GetKeyDown          	(pauseKey)
+		[ 1] : Line:  100	Other mod.	[Cursor.lockState]
+		[ 2] : Line:  101	Other mod.	[Cursor.visible]
+		[ 3] : Line:  120	Other mod.	[Cursor.lockState]
+		[ 4] : Line:  121	Other mod.	[Cursor.visible]
+
+Converting script [11 / 23]	[\Aoiti\Example\2DGrid\MovementController2D.cs]
+	Fragments : 2
+		[ 0] : Line:   88	InputMethod   GetMouseButtonDown  	(0)
+		[ 1] : Line:   90	InputProperty mousePosition       
+
+Converting script [12 / 23]	[\Aoiti\Example\Tilemap\MoveOnTilemap.cs]
+	Fragments : 2
+		[ 0] : Line:   62	InputMethod   GetMouseButtonDown  	(1)
+		[ 1] : Line:   65	InputProperty mousePosition       
+
+Converting script [13 / 23]	[\Script\Quest\UI\QuestJournalUI.cs]
+	Fragments : 1
+		[ 0] : Line:  104	InputMethod   GetKeyDown          	(openJournalKey)
+
+Converting script [14 / 23]	[\ExternalAsset\FunkyCode\Demos - SmartLighting2D\Scripts\DemoFollowMouse.cs]
+	Fragments : 1
+		[ 0] : Line:   20	InputProperty mousePosition       
+
+Converting script [15 / 23]	[\ExternalAsset\Gif\Super_Retro_Collection\Scripts\PlayerMovement.cs]
+	Fragments : 2
+		[ 0] : Line:   36	InputMethod   GetAxisRaw          	("Horizontal")
+		[ 1] : Line:   37	InputMethod   GetAxisRaw          	("Vertical")
+
+Converting script [16 / 23]	[\Ink\Demos\Basic Demo\Scripts\QuitGameOnKeypress.cs]
+	Fragments : 1
+		[ 0] : Line:    8	InputMethod   GetKeyDown          	(key)
+
+Converting script [17 / 23]	[\ExternalAsset\Gif\Ruccho\FangAutoTile\Sample\OnMapPlayerController.cs]
+	Fragments : 4
+		[ 0] : Line:   48	InputMethod   GetKey              	(KeyCode.RightArrow)
+		[ 1] : Line:   49	InputMethod   GetKey              	(KeyCode.LeftArrow)
+		[ 2] : Line:   50	InputMethod   GetKey              	(KeyCode.UpArrow)
+		[ 3] : Line:   51	InputMethod   GetKey              	(KeyCode.DownArrow)
+
+Converting script [18 / 23]	[\ExternalAsset\SAP2D\Resources\Main\System\SAP2DAgent.cs]
+	Fragments : 2
+		[ 0] : Line:   74	InputMethod   GetMouseButtonDown  	(0)
+		[ 1] : Line:   75	InputProperty mousePosition       
+
+Converting script [19 / 23]	[\ExternalAsset\FunkyCode\Demos - SmartLighting2D\Demos - Intermediate\1 - Demo Dungeon\Scripts\DungeonPlayerController.cs]
+	Fragments : 4
+		[ 0] : Line:   19	InputMethod   GetKey              	(KeyCode.W)
+		[ 1] : Line:   23	InputMethod   GetKey              	(KeyCode.S)
+		[ 2] : Line:   27	InputMethod   GetKey              	(KeyCode.A)
+		[ 3] : Line:   31	InputMethod   GetKey              	(KeyCode.D)
+
+Converting script [20 / 23]	[\ExternalAsset\FunkyCode\Demos - SmartLighting2D\Demos - Intermediate\5 - Race\Scripts\RacerController.cs]
+	Fragments : 5
+		[ 0] : Line:   17	InputMethod   GetKey              	(KeyCode.W)
+		[ 1] : Line:   17	InputMethod   GetMouseButton      	(0)
+		[ 2] : Line:   19	InputMethod   GetKey              	(KeyCode.Space)
+		[ 3] : Line:   25	InputMethod   GetKey              	(KeyCode.D)
+		[ 4] : Line:   30	InputMethod   GetKey              	(KeyCode.A)
+
+Converting script [21 / 23]	[\ExternalAsset\SAP2D\Resources\Demos\Demo_SideView_Game\Scripts\Miner.cs]
+	Fragments : 6
+		[ 0] : Line:   36	InputMethod   GetKey              	(KeyCode.A)
+		[ 1] : Line:   42	InputMethod   GetKey              	(KeyCode.D)
+		[ 2] : Line:   50	InputMethod   GetKey              	(KeyCode.W)
+		[ 3] : Line:   56	InputMethod   GetKey              	(KeyCode.S)
+		[ 4] : Line:   63	InputMethod   GetMouseButtonDown  	(0)
+		[ 5] : Line:   75	InputProperty mousePosition       
+
+Converting script [22 / 23]	[\ExternalAsset\SAP2D\Resources\Demos\Demo_GPS_System\Cameras\Scripts\FreeLookCam.cs]
+	Fragments : 9
+		[ 0] : Line:   35	Other mod.	[Cursor.lockState]
+		[ 1] : Line:   36	Other mod.	[Cursor.visible]
+		[ 2] : Line:   47	InputMethod   GetMouseButtonUp    	(0)
+		[ 3] : Line:   49	Other mod.	[Cursor.lockState]
+		[ 4] : Line:   50	Other mod.	[Cursor.visible]
+		[ 5] : Line:   57	Other mod.	[Cursor.lockState]
+		[ 6] : Line:   58	Other mod.	[Cursor.visible]
+		[ 7] : Line:   76	InputMethod   GetAxis             	("Mouse X")
+		[ 8] : Line:   77	InputMethod   GetAxis             	("Mouse Y")
+
+Converting script [23 / 23]	[\ExternalAsset\SAP2D\Resources\Demos\Demo_GPS_System\Vehicles\Car\Scripts\CarUserControl.cs]
+	Fragments : 3
+		[ 0] : Line:   23	InputMethod   GetAxis             	("Horizontal")
+		[ 1] : Line:   24	InputMethod   GetAxis             	("Vertical")
+		[ 2] : Line:   26	InputMethod   GetAxis             	("Jump")
+
+
+23 scripts modified!
+Overwriting actual scripts...
+	[0 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\Script\CameraShakeTester.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\Script\CameraShakeTester.cs]
+	[1 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\Script\TestAoitiAStar.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\Script\TestAoitiAStar.cs]
+	[2 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\Script\ChaseMinigame\PlayerChaseController.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\Script\ChaseMinigame\PlayerChaseController.cs]
+	[3 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\Script\Cutscene\CutsceneController.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\Script\Cutscene\CutsceneController.cs]
+	[4 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\Script\NPC\NPCInteractionSystem.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\Script\NPC\NPCInteractionSystem.cs]
+	[5 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\Script\Player\MonologueSystem.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\Script\Player\MonologueSystem.cs]
+	[6 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\Script\Player\PlayerHealth.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\Script\Player\PlayerHealth.cs]
+	[7 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\Script\Player\PlayerInteraction.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\Script\Player\PlayerInteraction.cs]
+	[8 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\Script\Shared\FlagManager.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\Script\Shared\FlagManager.cs]
+	[9 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\Script\UI\PauseMenuManager.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\Script\UI\PauseMenuManager.cs]
+	[10 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\Aoiti\Example\2DGrid\MovementController2D.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\Aoiti\Example\2DGrid\MovementController2D.cs]
+	[11 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\Aoiti\Example\Tilemap\MoveOnTilemap.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\Aoiti\Example\Tilemap\MoveOnTilemap.cs]
+	[12 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\Script\Quest\UI\QuestJournalUI.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\Script\Quest\UI\QuestJournalUI.cs]
+	[13 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\ExternalAsset\FunkyCode\Demos - SmartLighting2D\Scripts\DemoFollowMouse.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\ExternalAsset\FunkyCode\Demos - SmartLighting2D\Scripts\DemoFollowMouse.cs]
+	[14 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\ExternalAsset\Gif\Super_Retro_Collection\Scripts\PlayerMovement.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\ExternalAsset\Gif\Super_Retro_Collection\Scripts\PlayerMovement.cs]
+	[15 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\Ink\Demos\Basic Demo\Scripts\QuitGameOnKeypress.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\Ink\Demos\Basic Demo\Scripts\QuitGameOnKeypress.cs]
+	[16 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\ExternalAsset\Gif\Ruccho\FangAutoTile\Sample\OnMapPlayerController.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\ExternalAsset\Gif\Ruccho\FangAutoTile\Sample\OnMapPlayerController.cs]
+	[17 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\ExternalAsset\SAP2D\Resources\Main\System\SAP2DAgent.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\ExternalAsset\SAP2D\Resources\Main\System\SAP2DAgent.cs]
+	[18 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\ExternalAsset\FunkyCode\Demos - SmartLighting2D\Demos - Intermediate\1 - Demo Dungeon\Scripts\DungeonPlayerController.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\ExternalAsset\FunkyCode\Demos - SmartLighting2D\Demos - Intermediate\1 - Demo Dungeon\Scripts\DungeonPlayerController.cs]
+	[19 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\ExternalAsset\FunkyCode\Demos - SmartLighting2D\Demos - Intermediate\5 - Race\Scripts\RacerController.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\ExternalAsset\FunkyCode\Demos - SmartLighting2D\Demos - Intermediate\5 - Race\Scripts\RacerController.cs]
+	[20 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\ExternalAsset\SAP2D\Resources\Demos\Demo_SideView_Game\Scripts\Miner.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\ExternalAsset\SAP2D\Resources\Demos\Demo_SideView_Game\Scripts\Miner.cs]
+	[21 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\ExternalAsset\SAP2D\Resources\Demos\Demo_GPS_System\Cameras\Scripts\FreeLookCam.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\ExternalAsset\SAP2D\Resources\Demos\Demo_GPS_System\Cameras\Scripts\FreeLookCam.cs]
+	[22 / 23] from  [E:/Garapan/UnityProject/MenakSopal/CF2-Data/Script-Backups/2026-08-27-21-53\Assets-After/\ExternalAsset\SAP2D\Resources\Demos\Demo_GPS_System\Vehicles\Car\Scripts\CarUserControl.cs] to [E:/Garapan/UnityProject/MenakSopal/Assets/\ExternalAsset\SAP2D\Resources\Demos\Demo_GPS_System\Vehicles\Car\Scripts\CarUserControl.cs]
+
+Overwriting COMPLETED!

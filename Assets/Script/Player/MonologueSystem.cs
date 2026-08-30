@@ -95,7 +95,9 @@ public class MonologueSystem : MonoBehaviour
     {
         if (isInMonologue)
         {
-            if (Input.GetKeyDown(continueKey) || Input.GetKeyDown(KeyCode.Return))
+            if (ControlFreak2.CF2Input.GetKeyDown(continueKey) || 
+                ControlFreak2.CF2Input.GetKeyDown(KeyCode.Return) ||
+                (ControlFreak2.CF2Input.activeRig != null && ControlFreak2.CF2Input.activeRig.GetButtonDown("Interact")))
             {
                 if (isTyping)
                 {
@@ -108,7 +110,7 @@ public class MonologueSystem : MonoBehaviour
             }
 
 
-            if (Input.GetKeyDown(skipKey))
+            if (ControlFreak2.CF2Input.GetKeyDown(skipKey))
             {
                 EndMonologue();
             }
