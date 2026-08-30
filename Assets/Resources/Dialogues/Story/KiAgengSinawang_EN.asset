@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
   m_Name: KiAgengSinawang_EN
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  m_EditorClassIdentifier: 
   npcName: Ki Ageng Sinawang
   dialogueDescription: Padepokan leader, spiritual teacher of Menak Sopal
   dialogueEntries: []

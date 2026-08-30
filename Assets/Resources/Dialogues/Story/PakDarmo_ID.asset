@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
   m_Name: PakDarmo_ID
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  m_EditorClassIdentifier: 
   npcName: Pak Darmo
   dialogueDescription: Warga yang menderita krisis air
   dialogueEntries:
@@ -29,7 +29,7 @@ MonoBehaviour:
     - choiceText: Bertanya tentang sungai
       requiredFlags: []
       availableTimesOfDay: 
-      isRepeatable: 1
+      isRepeatable: 0
       flagsToAdd:
       - river_asked
       flagsToRemove: []
@@ -47,7 +47,7 @@ MonoBehaviour:
       objectiveToComplete: 
       questForObjective: 
       isImportantChoice: 0
-      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 1
     pauseAfterDialogue: 0
@@ -66,7 +66,7 @@ MonoBehaviour:
     - choiceText: Aku paham
       requiredFlags: []
       availableTimesOfDay: 
-      isRepeatable: 1
+      isRepeatable: 0
       flagsToAdd: []
       flagsToRemove: []
       targetDialogueIndex: -1
@@ -83,7 +83,7 @@ MonoBehaviour:
       objectiveToComplete: witness_crisis
       questForObjective: water_crisis_discovery
       isImportantChoice: 0
-      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 1
     pauseAfterDialogue: 0

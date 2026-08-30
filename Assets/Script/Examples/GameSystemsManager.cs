@@ -291,6 +291,7 @@ public class GameSystemsManager : MonoBehaviour
             {
                 Debug.Log("[GameSystems] Attempting to start quest water_crisis_discovery");
                 bool started = questManager.StartQuest("water_crisis_discovery");
+                FlagManager.Instance.AddFlag("perkenalan");
                 Debug.Log($"[GameSystems] Quest start result: {started}");
             }
             else
@@ -322,6 +323,7 @@ public class GameSystemsManager : MonoBehaviour
             if (questManager != null)
             {
                 questManager.StartQuest("gather_construction_helpers");
+                FlagManager.Instance.RemoveFlag("perkenalan");
             }
         });
 

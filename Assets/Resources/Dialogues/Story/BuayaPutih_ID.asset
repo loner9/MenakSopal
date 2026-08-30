@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
   m_Name: BuayaPutih_ID
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  m_EditorClassIdentifier: 
   npcName: Buaya Putih
   dialogueDescription: Penjaga mistis, mewakili tuntutan alam dan kerjasama akhir
   dialogueEntries:
@@ -54,7 +54,8 @@ MonoBehaviour:
       yang layak. Bawakan aku kepala gajah putih, dan aku akan menghentikan kerusakanku.
     availableTimesOfDay: 000000000200000003000000
     isRepeatable: 0
-    requiredFlags: []
+    requiredFlags:
+    - 
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 1
@@ -127,7 +128,7 @@ MonoBehaviour:
     - choiceText: Menjelaskan
       requiredFlags: []
       availableTimesOfDay: 
-      isRepeatable: 1
+      isRepeatable: 0
       flagsToAdd: []
       flagsToRemove: []
       targetDialogueIndex: -1
@@ -145,7 +146,7 @@ MonoBehaviour:
       objectiveToComplete: 
       questForObjective: 
       isImportantChoice: 0
-      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 1
     pauseAfterDialogue: 0
@@ -157,7 +158,7 @@ MonoBehaviour:
     requiredFlags: []
     flagsToAdd: []
     flagsToRemove: []
-    hasChoices: 0
+    hasChoices: 1
     choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 1

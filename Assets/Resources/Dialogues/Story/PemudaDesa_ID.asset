@@ -11,14 +11,56 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
   m_Name: PemudaDesa_ID
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
-  npcName: Pemuda Desa
+  m_EditorClassIdentifier: 
+  npcName: Bayu
   dialogueDescription: Pembantu energik, quest fisik, kegiatan desa
   dialogueEntries:
-  - speakerName: Pemuda Desa
-    dialogueText: Eh! Kamu kelihatan kuat! Mau gabung kerja bakti desa? Kita selalu
-      butuh tangan tambahan!
+  - speakerName: Bayu
+    dialogueText: Hey, kamu pasti Menak Sopal. Aku Bayu, petani yang baru saja datang
+      di pemukiman ini. Senang berkenalan denganmu!
     availableTimesOfDay: 0100000000000000
+    isRepeatable: 0
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Bayu
+    dialogueText: Membangun dam untuk membendung air?. Tentu saja aku akan membantu
+      Menak Sopal!. Lagipula bertani akhir akhir ini dengan keadaan seperti ini cukup
+      menyulitkan bagiku!
+    availableTimesOfDay: 0100000000000000
+    isRepeatable: 0
+    requiredFlags:
+    - committed_to_help
+    - guru_guidance_received
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Bayu
+    dialogueText: Saatnya untuk membangun dam ini kawanku!
+    availableTimesOfDay: 0100000000000000
+    isRepeatable: 0
+    requiredFlags:
+    - to_river
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  greetings:
+  - speakerName: Pemuda Desa
+    dialogueText: Hari ini sangat terik bukan?
+    availableTimesOfDay: 000000000200000003000000
     isRepeatable: 1
     requiredFlags: []
     flagsToAdd: []
@@ -28,7 +70,18 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
-  greetings: []
+  - speakerName: Pemuda Desa
+    dialogueText: Lelah juga beraktivitas seharian...
+    availableTimesOfDay: 0200000003000000
+    isRepeatable: 1
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
   farewells: []
   defaultConversationBubble: {fileID: 0}
   loopDialogue: 0

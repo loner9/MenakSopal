@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
   m_Name: JokoGuide_ID
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  m_EditorClassIdentifier: 
   npcName: Joko
   dialogueDescription: Pemandu perjalanan ke Desa Krandon
   dialogueEntries:
@@ -30,23 +30,23 @@ MonoBehaviour:
     - choiceText: Meng-iyakan
       requiredFlags: []
       availableTimesOfDay: 
-      isRepeatable: 1
+      isRepeatable: 0
       flagsToAdd: []
       flagsToRemove: []
-      targetDialogueIndex: -1
+      targetDialogueIndex: 0
       response:
         speakerName: Menak Sopal
         responseText: Iya paman, benar sekali. Tolong bantu aku
         conversationBubbleSprite: {fileID: 0}
         pauseAfterResponse: 0
-        continueToNext: 1
-        nextDialogueIndex: -1
+        continueToNext: 0
+        nextDialogueIndex: 0
       questToStart: 
       questToComplete: 
       objectiveToComplete: 
       questForObjective: 
       isImportantChoice: 0
-      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -64,7 +64,7 @@ MonoBehaviour:
     - choiceText: Meminta bantuan
       requiredFlags: []
       availableTimesOfDay: 
-      isRepeatable: 1
+      isRepeatable: 0
       flagsToAdd: []
       flagsToRemove: []
       targetDialogueIndex: -1
@@ -109,7 +109,7 @@ MonoBehaviour:
     - to_river
     flagsToAdd: []
     flagsToRemove: []
-    hasChoices: 0
+    hasChoices: 1
     choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
@@ -153,12 +153,31 @@ MonoBehaviour:
     isRepeatable: 0
     requiredFlags:
     - finish_forest
-    - mc_answer
     flagsToAdd:
     - mbr_terrace
     flagsToRemove: []
     hasChoices: 0
-    choices: []
+    choices:
+    - choiceText: Tersesat
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 1
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: -1
+      response:
+        speakerName: Menak Sopal
+        responseText: Tadi aku sempat tersesat paman
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 5
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -176,8 +195,7 @@ MonoBehaviour:
       requiredFlags: []
       availableTimesOfDay: 
       isRepeatable: 1
-      flagsToAdd:
-      - sopal_explain
+      flagsToAdd: []
       flagsToRemove: []
       targetDialogueIndex: 7
       response:
@@ -203,11 +221,31 @@ MonoBehaviour:
     isRepeatable: 0
     requiredFlags:
     - white_elephant_borrowed
-    - sopal_explain
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0
-    choices: []
+    choices:
+    - choiceText: Menjelaskan
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 1
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: 7
+      response:
+        speakerName: Menak Sopal
+        responseText: Akan sulit jika mengatakan aku akan menyembelih gajah ini paman.
+          Tenang, aku akan bertanggung jawab penuh.
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 7
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -220,7 +258,28 @@ MonoBehaviour:
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0
-    choices: []
+    choices:
+    - choiceText: Menjelaskan
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 1
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: 7
+      response:
+        speakerName: Menak Sopal
+        responseText: Akan sulit jika mengatakan aku akan menyembelih gajah ini paman.
+          Tenang, aku akan bertanggung jawab penuh.
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 1
+        nextDialogueIndex: 7
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0

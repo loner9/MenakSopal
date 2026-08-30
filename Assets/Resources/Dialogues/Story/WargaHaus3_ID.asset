@@ -11,9 +11,9 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
   m_Name: WargaHaus3_ID
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  m_EditorClassIdentifier: 
   npcName: Karto
-  dialogueDescription: Warga desa yang diajak membantu proyek dam
+  dialogueDescription: Description of this dialogue set...
   dialogueEntries:
   - speakerName: Karto
     dialogueText: Ah, terik sekali. Air semakin menipis tiap hari. Ada perlu apa
@@ -29,7 +29,7 @@ MonoBehaviour:
     - choiceText: Meminta bantuan
       requiredFlags: []
       availableTimesOfDay: 
-      isRepeatable: 1
+      isRepeatable: 0
       flagsToAdd: []
       flagsToRemove: []
       targetDialogueIndex: -1
@@ -46,7 +46,7 @@ MonoBehaviour:
       objectiveToComplete: 
       questForObjective: 
       isImportantChoice: 0
-      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -61,7 +61,27 @@ MonoBehaviour:
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0
-    choices: []
+    choices:
+    - choiceText: 
+      requiredFlags: []
+      availableTimesOfDay: 
+      isRepeatable: 0
+      flagsToAdd: []
+      flagsToRemove: []
+      targetDialogueIndex: -1
+      response:
+        speakerName: 
+        responseText: 
+        conversationBubbleSprite: {fileID: 0}
+        pauseAfterResponse: 0
+        continueToNext: 0
+        nextDialogueIndex: 0
+      questToStart: 
+      questToComplete: 
+      objectiveToComplete: 
+      questForObjective: 
+      isImportantChoice: 0
+      choiceColor: {r: 0, g: 0, b: 0, a: 0}
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -80,7 +100,70 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
-  greetings: []
+  - speakerName: Karto
+    dialogueText: Aku siap membantu membangun dam ini nak!
+    availableTimesOfDay: 0000000001000000
+    isRepeatable: 0
+    requiredFlags:
+    - to_river
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Karto
+    dialogueText: Ayolah, kami juga memerlukan air ini!!!
+    availableTimesOfDay: 0000000001000000
+    isRepeatable: 0
+    requiredFlags:
+    - kegaduhan
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Karto
+    dialogueText: Gajah putih?, sayang sekali aku tidak tahu nak...
+    availableTimesOfDay: 0000000001000000
+    isRepeatable: 1
+    requiredFlags:
+    - keberadaan_gajah_putih
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  greetings:
+  - speakerName: Karto
+    dialogueText: Pagi Menak Sopal!
+    availableTimesOfDay: 0100000000000000
+    isRepeatable: 0
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
+  - speakerName: Karto
+    dialogueText: Hari sudah petang, saatnya beristirahat.
+    availableTimesOfDay: 0300000002000000
+    isRepeatable: 0
+    requiredFlags: []
+    flagsToAdd: []
+    flagsToRemove: []
+    hasChoices: 0
+    choices: []
+    conversationBubbleSprite: {fileID: 0}
+    isImportantDialogue: 0
+    pauseAfterDialogue: 0
   farewells: []
   defaultConversationBubble: {fileID: 0}
   loopDialogue: 0
