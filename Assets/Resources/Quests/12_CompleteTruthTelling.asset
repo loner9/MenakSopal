@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 12_CompleteTruthTelling
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: complete_truth_telling
   questTitle: The Whole Truth
   questDescription: Reveal the complete story to achieve understanding.
@@ -20,11 +20,17 @@ MonoBehaviour:
   questIcon: {fileID: 0}
   requiredFlags:
   - confronted_at_padepokan
-  flagsOnStart: []
+  flagsOnStart:
+  - telling_truth_active
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - complete_story_told
   - remorse_expressed
+  flagsToRemoveOnComplete:
+  - telling_truth_active
+  - returned_home_safely
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -36,6 +42,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: 
     targetAmount: 1
@@ -50,6 +57,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: 
     targetAmount: 1
@@ -64,6 +72,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: 
     targetAmount: 1

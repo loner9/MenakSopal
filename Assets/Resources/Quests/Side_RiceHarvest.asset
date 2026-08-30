@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: Side_RiceHarvest
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: village_rice_harvest
   questTitle: Hands of the Harvest
   questDescription: Help Pak Tani with the rice harvest. Your assistance will strengthen
@@ -22,9 +22,12 @@ MonoBehaviour:
   requiredFlags:
   - water_crisis_discovered
   flagsOnStart: []
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - village_rice_harvest_complete
+  flagsToRemoveOnComplete: []
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -36,6 +39,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: pak_tani
     targetItem: 
     targetAmount: 1
@@ -50,6 +54,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: rice_bundles
     targetAmount: 15

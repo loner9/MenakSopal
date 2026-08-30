@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 03_DamConstruction
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: dam_construction_project
   questTitle: Membangun Harapan
   questDescription: Bangun bendungan untuk membawa air ke desa yang sedang menderita.
@@ -23,11 +23,16 @@ MonoBehaviour:
   requiredFlags:
   - asked_permission_water_project
   - construction_team_assembled
-  flagsOnStart: []
+  flagsOnStart:
+  - dam_construction_in_progress
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - dam_construction_started
   - initial_dam_built
+  flagsToRemoveOnComplete:
+  - dam_construction_in_progress
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -39,6 +44,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: materials_collected
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: construction_materials
     targetAmount: 10
@@ -49,12 +55,13 @@ MonoBehaviour:
   - objectiveID: build_dam_structure
     description: Selesaikan Pembangunan Dam
     type: 0
-    isCompleted: 1
+    isCompleted: 0
     isOptional: 0
     requiredFlags:
     - materials_collected
     - materials_collected_del
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: murid_padepokan_2
     targetItem: 
     targetAmount: 1

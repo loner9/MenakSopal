@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 07_WitnessDamSuccess
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: witness_dam_success
   questTitle: Waters of Life
   questDescription: Lihat bagaimana efek dari pembangunan dam oleh masyarakat sekitar
@@ -21,11 +21,16 @@ MonoBehaviour:
   questIcon: {fileID: 0}
   requiredFlags:
   - spirit_pact_complete
-  flagsOnStart: []
+  flagsOnStart:
+  - witnessing_dam_success_active
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - dam_construction_complete
   - village_water_restored
+  flagsToRemoveOnComplete:
+  - witnessing_dam_success_active
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -37,6 +42,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: 
     targetAmount: 1
@@ -51,6 +57,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: pak_tani
     targetItem: 
     targetAmount: 1

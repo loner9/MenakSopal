@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 08_FaceMbokRandaAnger
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: face_mbok_randa_anger
   questTitle: Kebenaran
   questDescription: Kebenaran yang terungkap...
@@ -22,10 +22,15 @@ MonoBehaviour:
   - elephant_sacrifice_complete
   flagsOnStart:
   - penjaga_spawn
+  - facing_mbok_randa_active
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - mbok_randa_angry
   - truth_exposed
+  flagsToRemoveOnComplete:
+  - facing_mbok_randa_active
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -37,6 +42,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: mbr_cutscene
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: 
     targetAmount: 1
@@ -51,6 +57,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: elephant_sacrifice_revealed
+    flagsToRemoveOnComplete: []
     targetNPC: mbok_randa_krandon
     targetItem: 
     targetAmount: 1

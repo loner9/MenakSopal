@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
   m_Name: MbokRandaKrandon_ID
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
   npcName: Mbok Randa Krandon
   dialogueDescription: Pemilik gajah putih, mewakili konflik dan pemahaman akhir
   dialogueEntries:
@@ -28,7 +28,7 @@ MonoBehaviour:
     - choiceText: Menjelaskan
       requiredFlags: []
       availableTimesOfDay: 
-      isRepeatable: 0
+      isRepeatable: 1
       flagsToAdd: []
       flagsToRemove: []
       targetDialogueIndex: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
       objectiveToComplete: 
       questForObjective: 
       isImportantChoice: 0
-      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -61,7 +61,7 @@ MonoBehaviour:
     - choiceText: Meminjam Gajah
       requiredFlags: []
       availableTimesOfDay: 
-      isRepeatable: 0
+      isRepeatable: 1
       flagsToAdd: []
       flagsToRemove: []
       targetDialogueIndex: 0
@@ -77,7 +77,7 @@ MonoBehaviour:
       objectiveToComplete: 
       questForObjective: 
       isImportantChoice: 0
-      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -93,7 +93,7 @@ MonoBehaviour:
     - choiceText: Berbohong
       requiredFlags: []
       availableTimesOfDay: 
-      isRepeatable: 0
+      isRepeatable: 1
       flagsToAdd: []
       flagsToRemove: []
       targetDialogueIndex: 0
@@ -110,7 +110,7 @@ MonoBehaviour:
       objectiveToComplete: 
       questForObjective: 
       isImportantChoice: 0
-      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+      choiceColor: {r: 1, g: 1, b: 1, a: 1}
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -122,27 +122,7 @@ MonoBehaviour:
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0
-    choices:
-    - choiceText: 
-      requiredFlags: []
-      availableTimesOfDay: 
-      isRepeatable: 0
-      flagsToAdd: []
-      flagsToRemove: []
-      targetDialogueIndex: 4
-      response:
-        speakerName: 
-        responseText: 
-        conversationBubbleSprite: {fileID: 0}
-        pauseAfterResponse: 0
-        continueToNext: 0
-        nextDialogueIndex: 0
-      questToStart: 
-      questToComplete: 
-      objectiveToComplete: 
-      questForObjective: 
-      isImportantChoice: 0
-      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -157,27 +137,7 @@ MonoBehaviour:
     flagsToRemove:
     - joko_in_mbr
     hasChoices: 0
-    choices:
-    - choiceText: 
-      requiredFlags: []
-      availableTimesOfDay: 
-      isRepeatable: 0
-      flagsToAdd: []
-      flagsToRemove: []
-      targetDialogueIndex: 4
-      response:
-        speakerName: 
-        responseText: 
-        conversationBubbleSprite: {fileID: 0}
-        pauseAfterResponse: 0
-        continueToNext: 0
-        nextDialogueIndex: 0
-      questToStart: 
-      questToComplete: 
-      objectiveToComplete: 
-      questForObjective: 
-      isImportantChoice: 0
-      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -190,27 +150,7 @@ MonoBehaviour:
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0
-    choices:
-    - choiceText: 
-      requiredFlags: []
-      availableTimesOfDay: 
-      isRepeatable: 0
-      flagsToAdd: []
-      flagsToRemove: []
-      targetDialogueIndex: 6
-      response:
-        speakerName: 
-        responseText: 
-        conversationBubbleSprite: {fileID: 0}
-        pauseAfterResponse: 0
-        continueToNext: 0
-        nextDialogueIndex: 0
-      questToStart: 
-      questToComplete: 
-      objectiveToComplete: 
-      questForObjective: 
-      isImportantChoice: 0
-      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -223,27 +163,7 @@ MonoBehaviour:
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0
-    choices:
-    - choiceText: 
-      requiredFlags: []
-      availableTimesOfDay: 
-      isRepeatable: 0
-      flagsToAdd: []
-      flagsToRemove: []
-      targetDialogueIndex: 6
-      response:
-        speakerName: 
-        responseText: 
-        conversationBubbleSprite: {fileID: 0}
-        pauseAfterResponse: 0
-        continueToNext: 0
-        nextDialogueIndex: 0
-      questToStart: 
-      questToComplete: 
-      objectiveToComplete: 
-      questForObjective: 
-      isImportantChoice: 0
-      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -256,27 +176,7 @@ MonoBehaviour:
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0
-    choices:
-    - choiceText: 
-      requiredFlags: []
-      availableTimesOfDay: 
-      isRepeatable: 0
-      flagsToAdd: []
-      flagsToRemove: []
-      targetDialogueIndex: 6
-      response:
-        speakerName: 
-        responseText: 
-        conversationBubbleSprite: {fileID: 0}
-        pauseAfterResponse: 0
-        continueToNext: 0
-        nextDialogueIndex: 0
-      questToStart: 
-      questToComplete: 
-      objectiveToComplete: 
-      questForObjective: 
-      isImportantChoice: 0
-      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -289,27 +189,7 @@ MonoBehaviour:
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0
-    choices:
-    - choiceText: 
-      requiredFlags: []
-      availableTimesOfDay: 
-      isRepeatable: 0
-      flagsToAdd: []
-      flagsToRemove: []
-      targetDialogueIndex: 6
-      response:
-        speakerName: 
-        responseText: 
-        conversationBubbleSprite: {fileID: 0}
-        pauseAfterResponse: 0
-        continueToNext: 0
-        nextDialogueIndex: 0
-      questToStart: 
-      questToComplete: 
-      objectiveToComplete: 
-      questForObjective: 
-      isImportantChoice: 0
-      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -322,27 +202,7 @@ MonoBehaviour:
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0
-    choices:
-    - choiceText: 
-      requiredFlags: []
-      availableTimesOfDay: 
-      isRepeatable: 0
-      flagsToAdd: []
-      flagsToRemove: []
-      targetDialogueIndex: 6
-      response:
-        speakerName: 
-        responseText: 
-        conversationBubbleSprite: {fileID: 0}
-        pauseAfterResponse: 0
-        continueToNext: 0
-        nextDialogueIndex: 0
-      questToStart: 
-      questToComplete: 
-      objectiveToComplete: 
-      questForObjective: 
-      isImportantChoice: 0
-      choiceColor: {r: 0, g: 0, b: 0, a: 0}
+    choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0

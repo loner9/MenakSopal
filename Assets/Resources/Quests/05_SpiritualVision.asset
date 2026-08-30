@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 05_SpiritualVision
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: spiritual_vision_encounter
   questTitle: Investigasi Kerusakan Dam
   questDescription: Investigasilah sekitar area dam untuk mencari tahu hal apa yang
@@ -21,11 +21,16 @@ MonoBehaviour:
   questIcon: {fileID: 0}
   requiredFlags:
   - spiritual_interference_confirmed
-  flagsOnStart: []
+  flagsOnStart:
+  - seeking_spiritual_vision
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - river_spirit_encountered
   - tribute_demand_received
+  flagsToRemoveOnComplete:
+  - seeking_spiritual_vision
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -37,6 +42,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: spiritual_vision_active
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: 
     targetAmount: 1
@@ -52,6 +58,7 @@ MonoBehaviour:
     requiredFlags:
     - spiritual_vision_active
     flagToSetOnComplete: monsters_defeated
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: slime
     targetAmount: 3
@@ -67,6 +74,7 @@ MonoBehaviour:
     requiredFlags:
     - monsters_defeated
     flagToSetOnComplete: keberadaan_gajah_putih
+    flagsToRemoveOnComplete: []
     targetNPC: buaya_putih
     targetItem: 
     targetAmount: 1
@@ -82,6 +90,7 @@ MonoBehaviour:
     requiredFlags:
     - monsters_defeated
     flagToSetOnComplete: keberadaan_gajah
+    flagsToRemoveOnComplete: []
     targetNPC: murid_padepokan_1
     targetItem: 
     targetAmount: 1

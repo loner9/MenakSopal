@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
   m_Name: BuayaPutih_EN
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
   npcName: Buaya Putih
   dialogueDescription: Mystical guardian, represents nature's demands and final cooperation
   dialogueEntries: []

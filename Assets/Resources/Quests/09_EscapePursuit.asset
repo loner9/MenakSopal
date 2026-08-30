@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 09_EscapePursuit
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: escape_krandon_pursuit
   questTitle: Flight from Justice
   questDescription: Berlarilah dan hindari kejaran!
@@ -20,10 +20,16 @@ MonoBehaviour:
   questIcon: {fileID: 0}
   requiredFlags:
   - mbok_randa_angry
-  flagsOnStart: []
+  flagsOnStart:
+  - chase_sequence_active
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - reached_river_escape
+  flagsToRemoveOnComplete:
+  - chase_sequence_active
+  - mbok_randa_angry
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -35,6 +41,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: chase_sequence_active
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: 
     targetAmount: 1
@@ -49,6 +56,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: 
     targetAmount: 1

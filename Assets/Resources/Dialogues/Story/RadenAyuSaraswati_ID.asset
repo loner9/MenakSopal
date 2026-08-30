@@ -11,14 +11,14 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
   m_Name: RadenAyuSaraswati_ID
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
   npcName: Raden Ayu Saraswati
   dialogueDescription: Ibu Menak Sopal, sosok ibu yang mendukung
   dialogueEntries:
   - speakerName: Raden Ayu Saraswati
     dialogueText: Selamat pagi, menak sopal anakku. Ibu bermimpi tentang air yang
       mengalir tadi malam. Mungkin itu pertanda keberuntungan akan datang.
-    availableTimesOfDay: 0100000000000000
+    availableTimesOfDay: 01000000
     isRepeatable: 0
     requiredFlags: []
     flagsToAdd: []
@@ -31,7 +31,7 @@ MonoBehaviour:
   - speakerName: Raden Ayu Saraswati
     dialogueText: Ibu khawatir dengan proyek bendunganmu ini, nak. Roh-roh sungai
       tidak boleh dianggap enteng.
-    availableTimesOfDay: 0200000000000000
+    availableTimesOfDay: 02000000
     isRepeatable: 0
     requiredFlags:
     - dam_construction_started

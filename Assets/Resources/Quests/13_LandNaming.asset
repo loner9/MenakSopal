@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 13_LandNaming
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: land_naming_ceremony
   questTitle: Teranging Galih
   questDescription: Witness the naming of the land in honor of understanding.
@@ -20,11 +20,16 @@ MonoBehaviour:
   questIcon: {fileID: 0}
   requiredFlags:
   - reconciliation_complete
-  flagsOnStart: []
+  flagsOnStart:
+  - naming_land_active
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - teranging_galih_named
   - land_naming_complete
+  flagsToRemoveOnComplete:
+  - naming_land_active
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -36,6 +41,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: 
     targetAmount: 1
@@ -50,6 +56,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: mbok_randa_krandon
     targetItem: 
     targetAmount: 1

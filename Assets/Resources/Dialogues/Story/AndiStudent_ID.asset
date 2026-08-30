@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
   m_Name: AndiStudent_ID
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
   npcName: Andi (Murid Padepokan)
   dialogueDescription: Murid padepokan yang bersemangat membantu
   dialogueEntries:
@@ -62,28 +62,7 @@ MonoBehaviour:
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0
-    choices:
-    - choiceText: 
-      requiredFlags: []
-      availableTimesOfDay: 
-      isRepeatable: 1
-      flagsToAdd:
-      - student_helpers_recruited
-      flagsToRemove: []
-      targetDialogueIndex: -1
-      response:
-        speakerName: 
-        responseText: 
-        conversationBubbleSprite: {fileID: 0}
-        pauseAfterResponse: 0
-        continueToNext: 1
-        nextDialogueIndex: -1
-      questToStart: 
-      questToComplete: 
-      objectiveToComplete: gather_students
-      questForObjective: 
-      isImportantChoice: 0
-      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+    choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
@@ -99,28 +78,7 @@ MonoBehaviour:
     - dam_broken
     flagsToRemove: []
     hasChoices: 0
-    choices:
-    - choiceText: 
-      requiredFlags: []
-      availableTimesOfDay: 
-      isRepeatable: 1
-      flagsToAdd:
-      - student_helpers_recruited
-      flagsToRemove: []
-      targetDialogueIndex: -1
-      response:
-        speakerName: 
-        responseText: 
-        conversationBubbleSprite: {fileID: 0}
-        pauseAfterResponse: 0
-        continueToNext: 1
-        nextDialogueIndex: -1
-      questToStart: 
-      questToComplete: 
-      objectiveToComplete: gather_students
-      questForObjective: 
-      isImportantChoice: 0
-      choiceColor: {r: 1, g: 1, b: 1, a: 1}
+    choices: []
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0

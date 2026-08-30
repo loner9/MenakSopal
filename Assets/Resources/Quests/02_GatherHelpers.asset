@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 02_GatherHelpers
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: gather_construction_helpers
   questTitle: Mencari Bantuan
   questDescription: Cari dan rekrutlah orang orang untuk membantu dalam proyek pembangunan
@@ -22,11 +22,16 @@ MonoBehaviour:
   requiredFlags:
   - committed_to_help
   - guru_guidance_received
-  flagsOnStart: []
+  flagsOnStart:
+  - gathering_helpers_active
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - construction_team_assembled
   - helpers_recruited
+  flagsToRemoveOnComplete:
+  - gathering_helpers_active
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -34,10 +39,11 @@ MonoBehaviour:
   - objectiveID: recruit_andi
     description: Minta Andi untuk membantu dalam pembangunan.
     type: 0
-    isCompleted: 1
+    isCompleted: 0
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: murid_padepokan_1
     targetItem: 
     targetAmount: 1
@@ -48,10 +54,11 @@ MonoBehaviour:
   - objectiveID: recruit_budi
     description: Yakinkan Budi untuk bergabung dengan tim.
     type: 0
-    isCompleted: 1
+    isCompleted: 0
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: murid_padepokan_2
     targetItem: 
     targetAmount: 1
@@ -62,10 +69,11 @@ MonoBehaviour:
   - objectiveID: recruit_candra
     description: Minta persetujuan Candra untuk membantu.
     type: 0
-    isCompleted: 1
+    isCompleted: 0
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: murid_padepokan_3
     targetItem: 
     targetAmount: 1
@@ -76,10 +84,11 @@ MonoBehaviour:
   - objectiveID: recruit_yf
     description: Minta bantuan dari petani muda, Bayu
     type: 0
-    isCompleted: 1
+    isCompleted: 0
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: young_farmer
     targetItem: 
     targetAmount: 1
@@ -90,10 +99,11 @@ MonoBehaviour:
   - objectiveID: recruit_joko
     description: Mintalah Joko untuk bergabung membangun dam
     type: 0
-    isCompleted: 1
+    isCompleted: 0
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: pemandu_jalan
     targetItem: 
     targetAmount: 1
@@ -104,10 +114,11 @@ MonoBehaviour:
   - objectiveID: recruit_wh
     description: Ajak Karto untuk membantu membangun dam
     type: 0
-    isCompleted: 1
+    isCompleted: 0
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: warga_haus_3
     targetItem: 
     targetAmount: 1

@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 04_InvestigateDestruction
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: investigate_dam_destruction
   questTitle: Sabotasi Misterius
   questDescription: Temukan alasan mengapa bendungan hancur terus menerus. Ada kekuatan
@@ -21,11 +21,16 @@ MonoBehaviour:
   questIcon: {fileID: 0}
   requiredFlags:
   - initial_dam_built
-  flagsOnStart: []
+  flagsOnStart:
+  - investigating_dam_active
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - dam_repeatedly_destroyed
   - spiritual_interference_confirmed
+  flagsToRemoveOnComplete:
+  - investigating_dam_active
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -37,6 +42,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: done_examine
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: 
     targetAmount: 1
@@ -52,6 +58,7 @@ MonoBehaviour:
     requiredFlags:
     - done_examine
     flagToSetOnComplete: talked_with_witness
+    flagsToRemoveOnComplete: []
     targetNPC: murid_padepokan_2
     targetItem: 
     targetAmount: 1

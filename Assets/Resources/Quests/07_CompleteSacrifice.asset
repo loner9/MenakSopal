@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 07_CompleteSacrifice
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: complete_spirit_sacrifice
   questTitle: Persembahan Gajah Putih
   questDescription: Penuhi permintaan dari penjaga sungai
@@ -20,12 +20,18 @@ MonoBehaviour:
   questIcon: {fileID: 0}
   requiredFlags:
   - white_elephant_borrowed
-  flagsOnStart: []
+  flagsOnStart:
+  - performing_sacrifice_active
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - elephant_sacrifice_complete
   - spirit_pact_complete
   - white_elephant_taken
+  flagsToRemoveOnComplete:
+  - performing_sacrifice_active
+  - white_elephant_borrowed
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -37,6 +43,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: pemandu_jalan
     targetItem: 
     targetAmount: 1
@@ -51,6 +58,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: 
     targetAmount: 1

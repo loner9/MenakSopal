@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 09_StoryCompletion
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: story_completion
   questTitle: Lessons Learned
   questDescription: Reflect on the journey and its lessons. The story of Teranging
@@ -21,11 +21,17 @@ MonoBehaviour:
   questIcon: {fileID: 0}
   requiredFlags:
   - land_naming_complete
-  flagsOnStart: []
+  flagsOnStart:
+  - completing_story_active
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - story_completed
   - wisdom_gained
+  flagsToRemoveOnComplete:
+  - completing_story_active
+  - land_naming_complete
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -37,6 +43,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: ki_ageng_sinawang
     targetItem: 
     targetAmount: 1
@@ -51,6 +58,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: raden_ayu_saraswati
     targetItem: 
     targetAmount: 1

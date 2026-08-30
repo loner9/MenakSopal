@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 10_RiverSpiritRescue
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: river_spirit_rescue
   questTitle: Salvation from the Depths
   questDescription: Face drowning and receive unexpected rescue from the river spirit.
@@ -20,11 +20,17 @@ MonoBehaviour:
   questIcon: {fileID: 0}
   requiredFlags:
   - reached_river_escape
-  flagsOnStart: []
+  flagsOnStart:
+  - river_spirit_rescuing
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - rescued_by_crocodile
   - spirit_protection_granted
+  flagsToRemoveOnComplete:
+  - river_spirit_rescuing
+  - reached_river_escape
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -36,6 +42,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: drowning_in_river
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: 
     targetAmount: 1
@@ -50,6 +57,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: 
     targetAmount: 1

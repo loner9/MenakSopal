@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 06_FindWhiteElephant
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: find_white_elephant
   questTitle: Sacred Beast of Legend
   questDescription: Kumpulkan informasi untuk mencari keberadaan gajah putih.
@@ -20,11 +20,15 @@ MonoBehaviour:
   questIcon: {fileID: 0}
   requiredFlags:
   - accepted_spirit_demand
-  flagsOnStart: []
+  flagsOnStart:
+  - seeking_white_elephant
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - seeking_white_elephant
   - ready_for_journey
+  flagsToRemoveOnComplete: []
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -36,6 +40,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: heard_white_elephant_legend
+    flagsToRemoveOnComplete: []
     targetNPC: pemandu_jalan
     targetItem: 
     targetAmount: 1
@@ -50,6 +55,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: krandon_location_discovered
+    flagsToRemoveOnComplete: []
     targetNPC: pemandu_jalan
     targetItem: 
     targetAmount: 1
@@ -64,6 +70,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: pemandu_jalan
     targetItem: 
     targetAmount: 1

@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 06_NegotiateElephant
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: negotiate_elephant_loan
   questTitle: '"Meminjam" Gajah Putih'
   questDescription: Berbicaralah dengan mbok Randa agar bisa meminjamkan gajah putihnya
@@ -20,11 +20,16 @@ MonoBehaviour:
   questIcon: {fileID: 0}
   requiredFlags:
   - arrived_desa_krandon
-  flagsOnStart: []
+  flagsOnStart:
+  - negotiating_with_mbok_randa
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - white_elephant_borrowed
   - mbok_randa_trusts_player
+  flagsToRemoveOnComplete:
+  - negotiating_with_mbok_randa
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -36,6 +41,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: mbok_randa
     targetItem: 
     targetAmount: 1

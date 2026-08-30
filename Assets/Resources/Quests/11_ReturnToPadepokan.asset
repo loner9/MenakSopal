@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 11_ReturnToPadepokan
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: return_to_padepokan
   questTitle: Homecoming
   questDescription: Return safely to the padepokan after the ordeal.
@@ -20,11 +20,17 @@ MonoBehaviour:
   questIcon: {fileID: 0}
   requiredFlags:
   - rescued_by_crocodile
-  flagsOnStart: []
+  flagsOnStart:
+  - returning_to_padepokan
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - returned_home_safely
   - story_events_reported
+  flagsToRemoveOnComplete:
+  - returning_to_padepokan
+  - rescued_by_crocodile
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -36,6 +42,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: 
     targetAmount: 1
@@ -50,6 +57,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: ki_ageng_sinawang
     targetItem: 
     targetAmount: 1
@@ -64,6 +72,7 @@ MonoBehaviour:
     isOptional: 1
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: raden_ayu_saraswati
     targetItem: 
     targetAmount: 1

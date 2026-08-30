@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 01_WaterCrisisDiscovery
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: water_crisis_discovery
   questTitle: Derita Sumur Tua
   questDescription: Selidiki laporan tentang penderitaan warga desa di sumur tua.
@@ -22,10 +22,17 @@ MonoBehaviour:
   questIcon: {fileID: 0}
   requiredFlags:
   - story_started
-  flagsOnStart: []
+  flagsOnStart:
+  - water_crisis_discovery_active
+  - pre_crisis_dialogue_active
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - water_crisis_discovered
+  flagsToRemoveOnComplete:
+  - water_crisis_discovery_active
+  - pre_crisis_dialogue_active
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -33,10 +40,11 @@ MonoBehaviour:
   - objectiveID: witness_crisis
     description: Pergi ke sumur desa, dan pahami konflik yang terjadi
     type: 6
-    isCompleted: 1
+    isCompleted: 0
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: Anak Gembala
     targetItem: 
     targetAmount: 1
@@ -47,10 +55,11 @@ MonoBehaviour:
   - objectiveID: talk_to_villagers
     description: Berbincang dengan warga yang terdampak
     type: 0
-    isCompleted: 1
+    isCompleted: 0
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: warga_haus_1
     targetItem: 
     targetAmount: 1

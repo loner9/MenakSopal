@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
   m_Name: BudiStudent_ID
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
   npcName: Budi (Murid Padepokan)
   dialogueDescription: Murid yang mengamati fenomena aneh
   dialogueEntries:

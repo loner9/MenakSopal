@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 02_SeekGuidance
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: seek_guru_guidance
   questTitle: Kebijksanaan dari guru
   questDescription: Konsultasikan dengan Ki Ageng Sinawang mengenai krisis air di
@@ -21,10 +21,15 @@ MonoBehaviour:
   questIcon: {fileID: 0}
   requiredFlags:
   - water_crisis_discovered
-  flagsOnStart: []
+  flagsOnStart:
+  - seek_guru_guidance_active
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - guru_guidance_received
+  flagsToRemoveOnComplete:
+  - seek_guru_guidance_active
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -32,10 +37,11 @@ MonoBehaviour:
   - objectiveID: consult_ki_ageng
     description: Bicaralah dengan Ki Ageng Sinawang tentang krisis yang terjadi.
     type: 0
-    isCompleted: 1
+    isCompleted: 0
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: 
+    flagsToRemoveOnComplete: []
     targetNPC: ki_ageng_sinawang
     targetItem: 
     targetAmount: 1
@@ -50,6 +56,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: asked_permission_water_project
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: 
     targetAmount: 1
@@ -57,13 +64,7 @@ MonoBehaviour:
     targetLocation: 
     timeDelay: 0
     showProgress: 1
-  rewards:
-  - type: 4
-    itemID: 
-    amount: 0
-    flagsToAdd:
-    - 
-    customRewardDescription: 
+  rewards: []
   isRepeatable: 0
   canAbandon: 1
   autoComplete: 1

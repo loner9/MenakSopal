@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d2a20ec38407884b8641abebeb9372e, type: 3}
   m_Name: 05_JourneyToKrandon
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: journey_to_krandon
   questTitle: Perjalanan ke Desa Krandon
   questDescription: Pergilah ke desa Krandon dengan selamat untuk mendapatkan Gajah
@@ -21,10 +21,16 @@ MonoBehaviour:
   questIcon: {fileID: 0}
   requiredFlags:
   - tribute_demand_received
-  flagsOnStart: []
+  flagsOnStart:
+  - journeying_to_krandon
+  flagsToRemoveOnStart: []
   flagsOnComplete:
   - arrived_desa_krandon
+  flagsToRemoveOnComplete:
+  - journeying_to_krandon
+  - seeking_white_elephant
   flagsOnFail: []
+  flagsToRemoveOnFail: []
   prerequisiteQuestIDs: []
   unlocksQuestIDs: []
   isChainQuest: 0
@@ -36,6 +42,7 @@ MonoBehaviour:
     isOptional: 0
     requiredFlags: []
     flagToSetOnComplete: path_obtained
+    flagsToRemoveOnComplete: []
     targetNPC: pemandu_jalan
     targetItem: 
     targetAmount: 1
@@ -51,6 +58,7 @@ MonoBehaviour:
     requiredFlags:
     - path_obtained
     flagToSetOnComplete: finish_forest
+    flagsToRemoveOnComplete: []
     targetNPC: 
     targetItem: 
     targetAmount: 1
