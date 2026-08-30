@@ -6,7 +6,7 @@ using System.IO;
 #if UNITY_EDITOR
 
 /// <summary>
-/// Generates DialogueData ScriptableObjects for story NPCs based on the Indonesian documentation
+/// Generates DialogueData ScriptableObjects for story NPCs based on the in-game assets and narrative flow
 /// Run this from Tools -> Trenggalek Game -> Generate Story Dialogue Data
 /// </summary>
 public class StoryDialogueDataGenerator : EditorWindow
@@ -154,11 +154,12 @@ public class StoryDialogueDataGenerator : EditorWindow
         dialogueEntries.Add(new DialogueEntry
         {
             speakerName = "Ki Ageng Sinawang",
-            dialogueText = "Ah, Menak Sopal. Aku merasakan hatimu gelisah hari ini. Angin bercerita tentang perubahan yang akan datang ke tanah kita.",
+            dialogueText = "Ah, Menak Sopal. Kekeringan ini membuat kita dan para warga dalam selimut kegelisahan. Bercengkeramalah dengan warga desa, mereka membutuhkan bantuanmu...",
             availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunrise, TimeOfDay.Day },
             requiredFlags = new string[] { "story_started" },
-            flagsToRemove = new string[] { "game_started" },
-            isRepeatable = true,
+            flagsToAdd = new string[] { "story_started", "first_contact" },
+            flagsToRemove = new string[] { },
+            isRepeatable = false,
             isImportantDialogue = false
         });
         
@@ -166,30 +167,29 @@ public class StoryDialogueDataGenerator : EditorWindow
         var crisisDialogue = new DialogueEntry
         {
             speakerName = "Ki Ageng Sinawang",
-            dialogueText = "Penderitaan rakyat kita memberatkan hatimu, muridku. Terkadang perbuatan mulia yang terbesar memerlukan pengorbanan yang besar pula.",
+            dialogueText = "Penderitaan warga disekitar kita memberatkan hatimu, muridku. Terkadang perbuatan mulia yang terbesar memerlukan pengorbanan yang besar pula.",
             availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunrise, TimeOfDay.Day, TimeOfDay.Sunset },
             requiredFlags = new string[] { "water_crisis_discovered" },
+            isRepeatable = false,
             hasChoices = true,
             choices = new DialogueChoice[]
             {
                 new DialogueChoice
                 {
-                    choiceText = "Guru, saya ingin membantu mengatasi kekurangan air ini",
+                    choiceText = "Ingin membantu",
                     flagsToAdd = new string[] { "asked_permission_water_project" },
-                    questToStart = "dam_construction_project",
+                    targetDialogueIndex = 3,
+                    questToStart = "gather_construction_helpers",
+                    objectiveToComplete = "receive_permission",
+                    questForObjective = "seek_guru_guidance",
+                    isRepeatable = true,
+                    choiceColor = new Color(1f, 1f, 1f, 1f),
                     response = new DialogueResponse
                     {
-                        speakerName = "Ki Ageng Sinawang",
-                        responseText = "Belas kasihanmu menghormati ajaran kita. Pergilah, tapi ingatlah - kebijaksanaan sejati terletak pada pemahaman semua konsekuensi dari tindakan kita."
-                    }
-                },
-                new DialogueChoice
-                {
-                    choiceText = "Menurut Guru, apa yang harus saya lakukan?",
-                    response = new DialogueResponse
-                    {
-                        speakerName = "Ki Ageng Sinawang",
-                        responseText = "Jawabannya ada dalam dirimu, nak. Dengarkan hatimu, tapi tempa dengan kebijaksanaan. Jalan seorang penolong tidak pernah sederhana."
+                        speakerName = "Menak Sopal",
+                        responseText = "Ki Ageng, atas izinmu, izinkanlah aku untuk membantu tentang masalah ini. Diriku terpanggil untuk membantu tentang masalah ini",
+                        continueToNext = true,
+                        nextDialogueIndex = 3
                     }
                 }
             }
@@ -203,11 +203,47 @@ public class StoryDialogueDataGenerator : EditorWindow
             dialogueText = "Kamu telah belajar bahwa bahkan niat mulia pun dapat menyebabkan rasa sakit. Tapi dari rasa sakit ini, pemahaman tumbuh. Desa kini memiliki air, dan kamu memiliki kebijaksanaan.",
             availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise, TimeOfDay.Sunset, TimeOfDay.Night },
             requiredFlags = new string[] { "story_completed", "reconciliation_complete" },
-            isRepeatable = true,
+            isRepeatable = false,
+            isImportantDialogue = true
+        });
+
+        // Izin Diberikan
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Ki Ageng Sinawang",
+            dialogueText = "Belas kasihanmu menghormati ajaran kita, muridku. Bergegaslah, restuku membersamai niat baikmu.",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise, TimeOfDay.Sunset, TimeOfDay.Night },
+            requiredFlags = new string[] { "asked_permission_water_project" },
+            isRepeatable = false,
             isImportantDialogue = true
         });
         
         dialogueData.dialogueEntries = dialogueEntries.ToArray();
+
+        dialogueData.greetings = new DialogueEntry[]
+        {
+            new DialogueEntry
+            {
+                speakerName = "Ki Ageng Sinawang",
+                dialogueText = "Pagi, muridku",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunrise },
+                isRepeatable = true
+            },
+            new DialogueEntry
+            {
+                speakerName = "Ki Ageng Sinawang",
+                dialogueText = "Berlatihlah dengan sungguh sungguh nak",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day },
+                isRepeatable = true
+            },
+            new DialogueEntry
+            {
+                speakerName = "Ki Ageng Sinawang",
+                dialogueText = "Hmmm...",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Night },
+                isRepeatable = true
+            }
+        };
         
         return dialogueData;
     }
@@ -217,10 +253,7 @@ public class StoryDialogueDataGenerator : EditorWindow
         var dialogueData = ScriptableObject.CreateInstance<DialogueData>();
         dialogueData.npcName = "Ki Ageng Sinawang";
         dialogueData.dialogueDescription = "Padepokan leader, spiritual teacher of Menak Sopal";
-        
-        // Basic English implementation
         dialogueData.dialogueEntries = new DialogueEntry[0];
-        
         return dialogueData;
     }
     
@@ -259,10 +292,10 @@ public class StoryDialogueDataGenerator : EditorWindow
         dialogueEntries.Add(new DialogueEntry
         {
             speakerName = "Raden Ayu Saraswati",
-            dialogueText = "Selamat pagi, menak sopal anakku. Semoga pagi ini membawa keberuntungan.",
+            dialogueText = "Selamat pagi, menak sopal anakku. Ibu bermimpi tentang air yang mengalir tadi malam. Mungkin itu pertanda keberuntungan akan datang.",
             availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunrise },
             requiredFlags = new string[] { },
-            isRepeatable = true
+            isRepeatable = false
         });
         
         // Kekhawatiran Seorang Ibu
@@ -272,25 +305,34 @@ public class StoryDialogueDataGenerator : EditorWindow
             dialogueText = "Ibu khawatir dengan proyek bendunganmu ini, nak. Roh-roh sungai tidak boleh dianggap enteng.",
             availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunset },
             requiredFlags = new string[] { "dam_construction_started" },
+            isRepeatable = false,
             hasChoices = true,
             choices = new DialogueChoice[]
             {
                 new DialogueChoice
                 {
                     choiceText = "Jangan khawatir, Ibu. Saya akan berhati-hati",
+                    isRepeatable = true,
+                    choiceColor = new Color(1f, 1f, 1f, 1f),
                     response = new DialogueResponse
                     {
                         speakerName = "Raden Ayu Saraswati",
-                        responseText = "Ayahmu dulu memiliki semangat yang sama. Ingatlah saja, keberanian tanpa kebijaksanaan adalah kecerobohan."
+                        responseText = "Ayahmu dulu memiliki semangat yang sama. Ingatlah saja, keberanian tanpa kebijaksanaan adalah kecerobohan.",
+                        continueToNext = true,
+                        nextDialogueIndex = -1
                     }
                 },
                 new DialogueChoice
                 {
                     choiceText = "Apakah Ibu melihat pertanda tentang sungai?",
+                    isRepeatable = true,
+                    choiceColor = new Color(1f, 1f, 1f, 1f),
                     response = new DialogueResponse
                     {
                         speakerName = "Raden Ayu Saraswati",
-                        responseText = "Burung-burung gelisah di dekat air. Dan pelita kelahiranmu berkedip-kedip tadi malam - ada sesuatu yang bergerak di alam spiritual."
+                        responseText = "Burung-burung gelisah di dekat air. Dan pelita kelahiranmu berkedip-kedip tadi malam - ada sesuatu yang bergerak di alam spiritual.",
+                        continueToNext = true,
+                        nextDialogueIndex = -1
                     }
                 }
             }
@@ -301,14 +343,40 @@ public class StoryDialogueDataGenerator : EditorWindow
         dialogueEntries.Add(new DialogueEntry
         {
             speakerName = "Raden Ayu Saraswati",
-            dialogueText = "Anakku telah menjadi pria sejati hari ini. Bukan karena dia memecahkan masalah, tapi karena dia belajar menghadapi konsekuensi dari pilihannya.",
-            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Night },
+            dialogueText = "Anakku telah beranjak dewasa hari ini. Bukan karena dia memecahkan masalah, tapi karena dia belajar menghadapi konsekuensi dari pilihannya.",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise, TimeOfDay.Night },
             requiredFlags = new string[] { "story_completed" },
-            isRepeatable = true,
+            isRepeatable = false,
             isImportantDialogue = true
         });
         
         dialogueData.dialogueEntries = dialogueEntries.ToArray();
+
+        dialogueData.greetings = new DialogueEntry[]
+        {
+            new DialogueEntry
+            {
+                speakerName = "Raden Ayu Saraswati",
+                dialogueText = "Pagi, anakku...",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunrise },
+                isRepeatable = true
+            },
+            new DialogueEntry
+            {
+                speakerName = "Raden Ayu Saraswati",
+                dialogueText = "Hari ini begitu terik, dan keadaan air ini...",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day },
+                isRepeatable = true
+            },
+            new DialogueEntry
+            {
+                speakerName = "Raden Ayu Saraswati",
+                dialogueText = "Segeralah beristirahat, menak sopal...",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Night },
+                isRepeatable = true
+            }
+        };
+
         return dialogueData;
     }
     
@@ -317,10 +385,7 @@ public class StoryDialogueDataGenerator : EditorWindow
         var dialogueData = ScriptableObject.CreateInstance<DialogueData>();
         dialogueData.npcName = "Raden Ayu Saraswati";
         dialogueData.dialogueDescription = "Menak Sopal's mother, supportive maternal figure";
-        
-        // Basic English implementation
         dialogueData.dialogueEntries = new DialogueEntry[0];
-        
         return dialogueData;
     }
     
@@ -355,74 +420,157 @@ public class StoryDialogueDataGenerator : EditorWindow
         
         var dialogueEntries = new List<DialogueEntry>();
         
-        // Pertemuan Pertama - Sambutan Mencurigakan
-        var firstMeeting = new DialogueEntry
+        // 0. Pertemuan Pertama
+        dialogueEntries.Add(new DialogueEntry
         {
             speakerName = "Mbok Randa Krandon",
-            dialogueText = "Pemuda dari padepokan? Apa yang membawamu sejauh ini dari rumah, nak?",
-            requiredFlags = new string[] { "arrived_desa_krandon" },
+            dialogueText = "Siang. Siapa kalian datang ke gubukku yang sederhana ini, wahai anak muda?",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { },
+            isRepeatable = false,
             hasChoices = true,
             choices = new DialogueChoice[]
             {
                 new DialogueChoice
                 {
-                    choiceText = "Saya datang mencari gajah putih Mbok",
-                    flagsToAdd = new string[] { "requested_elephant_directly" },
+                    choiceText = "Menjelaskan",
+                    targetDialogueIndex = 0,
                     response = new DialogueResponse
                     {
-                        speakerName = "Mbok Randa Krandon",
-                        responseText = "Gajahku? Itu permintaan yang aneh. Mengapa murid padepokan membutuhkan gajah berhargaku?"
-                    }
-                },
-                new DialogueChoice
-                {
-                    choiceText = "Saya datang membawa salam dari Ki Ageng Sinawang",
-                    response = new DialogueResponse
-                    {
-                        speakerName = "Mbok Randa Krandon",
-                        responseText = "Ah, Ki Ageng! Aku mengenalnya ketika dia masih guru muda. Orang baik. Apa yang dia butuhkan?"
+                        speakerName = "Menak Sopal",
+                        responseText = "Kami dari Padepokan Sinawang mbok. Saya Menak Sopal, dan itu rekan saya, paman Joko.",
+                        continueToNext = true,
+                        nextDialogueIndex = 1
                     }
                 }
             }
-        };
-        dialogueEntries.Add(firstMeeting);
+        });
         
-        // Penemuan Pengkhianatan
-        var betrayalDiscovery = new DialogueEntry
+        // 1. Maksud Kedatangan
+        dialogueEntries.Add(new DialogueEntry
         {
             speakerName = "Mbok Randa Krandon",
-            dialogueText = "KAMU! Kamu menipu aku! Di mana gajah putihku? Apa yang telah kamu lakukan padanya?",
-            requiredFlags = new string[] { "elephant_sacrifice_revealed" },
-            isImportantDialogue = true,
+            dialogueText = "Padepokan Sinawang, jauh juga. Ada maksud apa kalian kesini?",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { },
+            isRepeatable = false,
             hasChoices = true,
             choices = new DialogueChoice[]
             {
                 new DialogueChoice
                 {
-                    choiceText = "Saya bisa menjelaskan semuanya...",
-                    flagsToAdd = new string[] { "attempted_explanation" },
+                    choiceText = "Meminjam Gajah",
+                    targetDialogueIndex = 0,
                     response = new DialogueResponse
                     {
-                        speakerName = "Mbok Randa Krandon",
-                        responseText = "Menjelaskan? MENJELASKAN?! Kamu mengambil gajah kesayanganku dan... dan... Aku tidak seharusnya mempercayai murid padepokan!"
+                        speakerName = "Menak Sopal",
+                        responseText = "Begini mbok, kami ingin meminjam Gajah Putih panjengengan.",
+                        continueToNext = true,
+                        nextDialogueIndex = 2
                     }
                 }
             }
-        };
-        dialogueEntries.Add(betrayalDiscovery);
+        });
         
-        // // Rekonsiliasi Selesai
-        // dialogueEntries.Add(new DialogueEntry
-        // {
-        //     speakerName = "Mbok Randa Krandon",
-        //     dialogueText = "Jika tanah ini makmur dari pengorbanan gajahku, maka biarlah disebut 'Teranging Galih' - terangnya pemahaman.",
-        //     availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Night },
-        //     requiredFlags = new string[] { "reconciliation_complete" },
-        //     flagsToAdd = new string[] { "teranging_galih_named" },
-        //     isImportantDialogue = true
-        // });
+        // 2. Alasan Peminjaman
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Mbok Randa Krandon",
+            dialogueText = "Untuk apa, biasanya Ki Ageng bersurat dulu kepadaku jika ada sesuatu",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { },
+            isRepeatable = false,
+            hasChoices = true,
+            choices = new DialogueChoice[]
+            {
+                new DialogueChoice
+                {
+                    choiceText = "Berbohong",
+                    targetDialogueIndex = 0,
+                    response = new DialogueResponse
+                    {
+                        speakerName = "Menak Sopal",
+                        responseText = "Umm, anu mbok di, di dekat padepokan ada festival. Kami ingin menggunakan Gajah Putih untuk pertunjukan. Hanya 3 hari saja...",
+                        continueToNext = true,
+                        nextDialogueIndex = 3
+                    }
+                }
+            }
+        });
+
+        // 3. Izin Mbok Randa
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Mbok Randa Krandon",
+            dialogueText = "Baiklah, karena aku kenal baik dengan Ki Ageng, bawalah gajahku.",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { },
+            isRepeatable = false
+        });
+
+        // 4. Pesan Mbok Randa
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Mbok Randa Krandon",
+            dialogueText = "Sebenarnya aku ingin ikut, tapi ada urusan lain yang mendesak. Jaga Gajahku dengan baik ya!!!",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunrise, TimeOfDay.Day },
+            requiredFlags = new string[] { },
+            flagsToAdd = new string[] { "white_elephant_borrowed" },
+            flagsToRemove = new string[] { "joko_in_mbr" },
+            isRepeatable = false
+        });
+
+        // 5. Kemarahan Mbok Randa 1
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Mbok Randa Krandon",
+            dialogueText = "Sudah lebih dari satu bulan berlalu, dan Gajahku belum juga dikembalikan!!!",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "mbok_randa_angry" },
+            isRepeatable = false
+        });
+
+        // 6. Kemarahan Mbok Randa 2
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Mbok Randa Krandon",
+            dialogueText = "Dasar bocah B******n!!!",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "mbok_randa_angry" },
+            isRepeatable = false
+        });
+
+        // 7. Mbok Randa di Padepokan 1
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Mbok Randa Krandon",
+            dialogueText = "Ki Ageng!!, dimana murid badungmu itu berada!!!",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "mbok_in_padepokan" },
+            isRepeatable = false
+        });
+
+        // 8. Mbok Randa di Padepokan 2
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Mbok Randa Krandon",
+            dialogueText = "Aku ingin menghukum murid badungmu itu, Menak Sopal!!!",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunrise, TimeOfDay.Day },
+            requiredFlags = new string[] { "mbok_in_padepokan_a" },
+            isRepeatable = false
+        });
+
+        // 9. Mbok Randa Memanggil Pengawal
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Mbok Randa Krandon",
+            dialogueText = "Itu dia bocah badung itu, pengawal tangkap dia!!!",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "menak_in_padepokan" },
+            isRepeatable = false
+        });
         
-        // dialogueData.dialogueEntries = dialogueEntries.ToArray();
+        dialogueData.dialogueEntries = dialogueEntries.ToArray();
         
         return dialogueData;
     }
@@ -432,10 +580,7 @@ public class StoryDialogueDataGenerator : EditorWindow
         var dialogueData = ScriptableObject.CreateInstance<DialogueData>();
         dialogueData.npcName = "Mbok Randa Krandon";
         dialogueData.dialogueDescription = "White elephant owner, represents conflict and eventual understanding";
-        
-        // Basic English implementation
         dialogueData.dialogueEntries = new DialogueEntry[0];
-        
         return dialogueData;
     }
     
@@ -470,81 +615,120 @@ public class StoryDialogueDataGenerator : EditorWindow
         
         var dialogueEntries = new List<DialogueEntry>();
         
-        // Kontak Spiritual Pertama
-        var firstContact = new DialogueEntry
+        // 0. Kontak Pertama
+        dialogueEntries.Add(new DialogueEntry
         {
             speakerName = "Buaya Putih",
-            dialogueText = "Siapa yang berani mengganggu air kuno tanpa meminta izin dari penjaganya?",
+            dialogueText = "Siapa yang berani beraninya mengganggu istirahatku!",
             availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Night },
             requiredFlags = new string[] { "spiritual_vision_active" },
+            isRepeatable = false,
             isImportantDialogue = true,
             hasChoices = true,
             choices = new DialogueChoice[]
             {
                 new DialogueChoice
                 {
-                    choiceText = "Saya Menak Sopal. Saya berusaha membantu rakyat saya",
+                    choiceText = "Menak Sopal",
+                    isRepeatable = true,
+                    choiceColor = new Color(1f, 1f, 1f, 1f),
                     response = new DialogueResponse
                     {
-                        speakerName = "Buaya Putih",
-                        responseText = "Membantu? Dengan membangun bendungan di sungaiKU? Niatmu mungkin murni, tapi caramu menunjukkan ketidakhormatan."
-                    }
-                },
-                new DialogueChoice
-                {
-                    choiceText = "Roh agung, saya tidak bermaksud menyinggung",
-                    flagsToAdd = new string[] { "showed_respect_to_spirit" },
-                    response = new DialogueResponse
-                    {
-                        speakerName = "Buaya Putih",
-                        responseText = "Penghormatan ditunjukkan melalui tindakan, bukan kata-kata. Kamu membangun tanpa bertanya, mengambil tanpa memberi."
+                        speakerName = "Menak Sopal",
+                        responseText = "Aku, Menak Sopal. Murid dari padepokan Sinawang!. Hendak mencari alasan bendunganku hancur berkali kali",
+                        continueToNext = true,
+                        nextDialogueIndex = 4
                     }
                 }
             }
-        };
-        dialogueEntries.Add(firstContact);
+        });
         
-        // Tuntutan
-        var demand = new DialogueEntry
+        // 1. Tuntutan Kepala Gajah Putih
+        dialogueEntries.Add(new DialogueEntry
         {
             speakerName = "Buaya Putih",
             dialogueText = "Jika kamu ingin bendunganmu berdiri, kamu harus menawarkan persembahan yang layak. Bawakan aku kepala gajah putih, dan aku akan menghentikan kerusakanku.",
             availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Night },
-            requiredFlags = new string[] { "first_contact_complete" },
+            requiredFlags = new string[] { },
+            isRepeatable = false,
             isImportantDialogue = true,
             hasChoices = true,
             choices = new DialogueChoice[]
             {
                 new DialogueChoice
                 {
-                    choiceText = "Saya akan mencari gajah putih ini",
+                    choiceText = "Menerima",
                     flagsToAdd = new string[] { "accepted_spirit_demand" },
-                    questToStart = "find_white_elephant"
+                    isRepeatable = true,
+                    choiceColor = new Color(1f, 1f, 1f, 1f),
+                    response = new DialogueResponse
+                    {
+                        speakerName = "Menak Sopal",
+                        responseText = "Baiklah, saya akan mencari gajah putih ini"
+                    }
                 }
             }
-        };
-        dialogueEntries.Add(demand);
+        });
         
-        // Setelah Pengorbanan
+        // 2. Perjanjian Selesai
         dialogueEntries.Add(new DialogueEntry
         {
             speakerName = "Buaya Putih",
-            dialogueText = "Persembahan itu dapat diterima. Bendunganmu akan berdiri, dan air akan mengalir sesuai kebutuhan. Keseimbangan telah dipulihkan.",
+            dialogueText = "Permintaanku telah terpenuhi. Bendunganmu akan berdiri, dan aku tak akan menggagu lagi.",
             availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Night },
             requiredFlags = new string[] { "elephant_sacrifice_complete" },
-            isImportantDialogue = true,
-            flagsToAdd = new string[] { "spirit_pact_complete" }
+            flagsToAdd = new string[] { "spirit_pact_complete" },
+            isRepeatable = true,
+            isImportantDialogue = true
         });
         
-        // Penyelamatan
+        // 3. Penyelamatan di Sungai
         dialogueEntries.Add(new DialogueEntry
         {
             speakerName = "Buaya Putih",
             dialogueText = "Anak muda yang menghormati cara-cara kuno, aku tidak akan membiarkanmu tenggelam. Hatimu yang murni telah mendapat perlindunganku.",
             availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Night },
             requiredFlags = new string[] { "drowning_in_river" },
+            flagsToAdd = new string[] { "rescued_by_crocodile" },
+            isRepeatable = true,
+            isImportantDialogue = true
+        });
+
+        // 4. Konfrontasi Spiritual
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Buaya Putih",
+            dialogueText = "Hmm, jadi muara gemuruh gaduh dari tempat istirahatku akhir akhir ini adalah ulahmu!. Berulang kali ku redam namun tak kunjung padam juga, apa kau ingin menantangku nak?!",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Night },
+            requiredFlags = new string[] { },
+            isRepeatable = true,
             isImportantDialogue = true,
-            flagsToAdd = new string[] { "rescued_by_crocodile" }
+            hasChoices = true,
+            choices = new DialogueChoice[]
+            {
+                new DialogueChoice
+                {
+                    choiceText = "Menjelaskan",
+                    response = new DialogueResponse
+                    {
+                        speakerName = "Menak Sopal",
+                        responseText = "Tidak, aku tidak berniat menggagumu wahai penunggu tempat ini. Aku hanya ingin membantu hajat banyak orang dengan membangun bendungan ini.",
+                        continueToNext = true,
+                        nextDialogueIndex = 1
+                    }
+                }
+            }
+        });
+
+        // 5. Kesepakatan Lanjutan
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Buaya Putih",
+            dialogueText = "Begitu rupanya. Kali ini aku sedang dalam suasana baik. Tapi ingat, lain kali izinlah terlebih dahulu dimanapun kau berpijak. ",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Night },
+            requiredFlags = new string[] { },
+            isRepeatable = true,
+            isImportantDialogue = true
         });
         
         dialogueData.dialogueEntries = dialogueEntries.ToArray();
@@ -557,10 +741,7 @@ public class StoryDialogueDataGenerator : EditorWindow
         var dialogueData = ScriptableObject.CreateInstance<DialogueData>();
         dialogueData.npcName = "Buaya Putih";
         dialogueData.dialogueDescription = "Mystical guardian, represents nature's demands and final cooperation";
-        
-        // Basic English implementation
         dialogueData.dialogueEntries = new DialogueEntry[0];
-        
         return dialogueData;
     }
     
@@ -607,6 +788,12 @@ public class StoryDialogueDataGenerator : EditorWindow
             string pathBuSiti = Path.Combine(outputPath, "BuSiti_ID.asset");
             AssetDatabase.CreateAsset(buSitiData, pathBuSiti);
             Debug.Log($"✅ Created: {pathBuSiti}");
+
+            // Warga Haus 3 - Karto
+            var kartoData = CreateWargaHaus3_Indonesian();
+            string pathKarto = Path.Combine(outputPath, "WargaHaus3_ID.asset");
+            AssetDatabase.CreateAsset(kartoData, pathKarto);
+            Debug.Log($"✅ Created: {pathKarto}");
         }
     }
     
@@ -655,7 +842,6 @@ public class StoryDialogueDataGenerator : EditorWindow
     
     private void GenerateOtherVillageNPCs()
     {
-        // Generate the remaining village NPCs from the documentation
         var npcList = new Dictionary<string, System.Func<DialogueData>>
         {
             {"AnakGembala_ID.asset", () => CreateAnakGembala_Indonesian()},
@@ -689,25 +875,92 @@ public class StoryDialogueDataGenerator : EditorWindow
         
         var dialogueEntries = new List<DialogueEntry>();
         
+        // 0. Rekrut Murid
         dialogueEntries.Add(new DialogueEntry
         {
             speakerName = "Andi (Murid Padepokan)",
-            dialogueText = "Menak Sopal! Aku dengar tentang proyek bendunganmu. Bisakah kami membantu? Kami kuat dan bersemangat melayani masyarakat!",
+            dialogueText = "Menak Sopal! Aku dengar tentang rencana pembangungan bendungan. Bisakah aku ikut membantumu?",
             availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunrise, TimeOfDay.Day },
-            requiredFlags = new string[] { "dam_construction_started" },
+            requiredFlags = new string[] { "committed_to_help", "guru_guidance_received" },
+            isRepeatable = false,
             hasChoices = true,
             choices = new DialogueChoice[]
             {
                 new DialogueChoice
                 {
-                    choiceText = "Ya, saya butuh bantuan mengangkut batu dan kayu",
+                    choiceText = "Tentu",
                     flagsToAdd = new string[] { "student_helpers_recruited" },
-                    questToStart = "gather_construction_materials"
+                    objectiveToComplete = "gather_students",
+                    isRepeatable = true,
+                    choiceColor = new Color(1f, 1f, 1f, 1f),
+                    response = new DialogueResponse
+                    {
+                        responseText = "Benar sekali kak Andi, bantuanmu akan sangat membantu ku!",
+                        continueToNext = true,
+                        nextDialogueIndex = -1
+                    }
                 }
             }
         });
+
+        // 1. Di Sungai
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Andi (Murid Padepokan)",
+            dialogueText = "Hmm, tempat ini memang agak berbahaya. Aku akan membangun pagar dan membersihkan tempat ini agar lebih aman. Jika ada sesuatu berkabar saja ya!",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunrise, TimeOfDay.Day },
+            requiredFlags = new string[] { "npc_to_river" },
+            isRepeatable = false
+        });
+
+        // 2. Komentar Bendungan
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Andi (Murid Padepokan)",
+            dialogueText = "Syukurlah bendungan ini akhirnya selesai kita bangun. Walau entah mengapa tadi bangunan ini roboh terus menerus. Semoga kali ini kita benar benar menyelesaikan bangunan ini, Menak Sopal...",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunrise, TimeOfDay.Day },
+            requiredFlags = new string[] { "andi_comment_after_dam" },
+            flagsToAdd = new string[] { "dam_broken" },
+            isRepeatable = false
+        });
+
+        // 3. Info Gajah Putih
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Andi (Murid Padepokan)",
+            dialogueText = "hmm, Gajah Putih. Setahuku itu ada di desa Krandon, tapi aku tidak tahu untuk kesana...",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunrise, TimeOfDay.Day },
+            requiredFlags = new string[] { "keberadaan_gajah_putih" },
+            isRepeatable = true
+        });
         
         dialogueData.dialogueEntries = dialogueEntries.ToArray();
+
+        dialogueData.greetings = new DialogueEntry[]
+        {
+            new DialogueEntry
+            {
+                speakerName = "Andi (Murid Padepokan)",
+                dialogueText = "Pagi menak sopal!",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunrise },
+                isRepeatable = true
+            },
+            new DialogueEntry
+            {
+                speakerName = "Andi (Murid Padepokan)",
+                dialogueText = "Terik matahari bukan alasan untuk bermalas malasan!",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day },
+                isRepeatable = true
+            },
+            new DialogueEntry
+            {
+                speakerName = "Andi (Murid Padepokan)",
+                dialogueText = "Ah, malam menak sopal",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Night },
+                isRepeatable = true
+            }
+        };
+
         return dialogueData;
     }
     
@@ -719,15 +972,74 @@ public class StoryDialogueDataGenerator : EditorWindow
         
         var dialogueEntries = new List<DialogueEntry>();
         
+        // 0. Bahan Terkumpul
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Budi (Murid Padepokan)",
+            dialogueText = "Sekarang semua bahan meterial terkumpul, mari kita selesaikan bendungan ini, Menak Sopal!",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "materials_collected" },
+            flagsToAdd = new string[] { "dam_dialog_built" },
+            isRepeatable = false
+        });
+
+        // 1. Dam Rusak
         dialogueEntries.Add(new DialogueEntry
         {
             speakerName = "Budi (Murid Padepokan)",
             dialogueText = "Bendungan ini terus rusak! Ada sesuatu yang tidak wajar tentang ini. Aku melihat riak aneh di air saat bendungan runtuh.",
-            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Night },
-            requiredFlags = new string[] { "dam_repeatedly_destroyed" }
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "dam_broken" },
+            isRepeatable = false
+        });
+
+        // 2. Siap Membantu
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Budi (Murid Padepokan)",
+            dialogueText = "Kabar berlalu cepat nak, dan aku disini siap untuk membantu niat baikmu!",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "committed_to_help", "guru_guidance_received" },
+            isRepeatable = false
+        });
+
+        // 3. Info Gajah Putih
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Budi (Murid Padepokan)",
+            dialogueText = "Kalau tentang jurus, aku pasti akan memberitahumu nak. Tapi Gajah Putih?, aku bahkan pertama kali ini mendegarnya",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "keberadaan_gajah_putih" },
+            isRepeatable = true
         });
         
         dialogueData.dialogueEntries = dialogueEntries.ToArray();
+
+        dialogueData.greetings = new DialogueEntry[]
+        {
+            new DialogueEntry
+            {
+                speakerName = "Budi (Murid Padepokan)",
+                dialogueText = "Pagi saudara seperguruanku!",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunrise },
+                isRepeatable = true
+            },
+            new DialogueEntry
+            {
+                speakerName = "Budi (Murid Padepokan)",
+                dialogueText = "Hari ini begitu terik, aku jadi semakin bersemangat. Bukankah seperti itu adik tingkat?!!",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day },
+                isRepeatable = true
+            },
+            new DialogueEntry
+            {
+                speakerName = "Budi (Murid Padepokan)",
+                dialogueText = "Aku begitu lelah, menak sopal...",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Night },
+                isRepeatable = true
+            }
+        };
+
         return dialogueData;
     }
     
@@ -739,15 +1051,53 @@ public class StoryDialogueDataGenerator : EditorWindow
         
         var dialogueEntries = new List<DialogueEntry>();
         
+        // 0. Dukungan
         dialogueEntries.Add(new DialogueEntry
         {
             speakerName = "Candra (Murid Padepokan)",
             dialogueText = "Kakak Menak, kami percaya pada visimu. Jika kakak bilang bendungan ini akan membantu orang, maka kami akan bekerja siang malam untuk membangunnya!",
-            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset },
-            requiredFlags = new string[] { "students_permission_granted" }
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "committed_to_help", "guru_guidance_received" },
+            isRepeatable = false
+        });
+
+        // 1. Gajah Putih
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Candra (Murid Padepokan)",
+            dialogueText = "Gajah Putih?, aku kurang tahu kak...",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "keberadaan_gajah_putih" },
+            isRepeatable = false
         });
         
         dialogueData.dialogueEntries = dialogueEntries.ToArray();
+
+        dialogueData.greetings = new DialogueEntry[]
+        {
+            new DialogueEntry
+            {
+                speakerName = "Candra (Murid Padepokan)",
+                dialogueText = "Selamat pagi kak Menak Sopal",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunrise },
+                isRepeatable = true
+            },
+            new DialogueEntry
+            {
+                speakerName = "Candra (Murid Padepokan)",
+                dialogueText = "Ah, terik sekali. Rasanya aku ingin tidur tiduran sajaa",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day },
+                isRepeatable = true
+            },
+            new DialogueEntry
+            {
+                speakerName = "Candra (Murid Padepokan)",
+                dialogueText = "Malam kak Menak Sopal",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Night },
+                isRepeatable = true
+            }
+        };
+
         return dialogueData;
     }
     
@@ -759,14 +1109,71 @@ public class StoryDialogueDataGenerator : EditorWindow
         
         var dialogueEntries = new List<DialogueEntry>();
         
+        // 0. Permintaan Tolong
         dialogueEntries.Add(new DialogueEntry
         {
             speakerName = "Pak Darmo",
-            dialogueText = "Tolong, anak muda! sudah berhari-hari kami tidak mendapat air bersih! Sumur ini hampir kering!",
-            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Night },
+            dialogueText = "Tolong, nak muda! sudah berhari-hari kami kesulitan mendapat air bersih! Sumur ini hampir kering!",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Night, TimeOfDay.Sunrise },
             requiredFlags = new string[] { },
             flagsToAdd = new string[] { "water_crisis_discovered" },
-            isImportantDialogue = true
+            isRepeatable = false,
+            isImportantDialogue = true,
+            hasChoices = true,
+            choices = new DialogueChoice[]
+            {
+                new DialogueChoice
+                {
+                    choiceText = "Bertanya tentang sungai",
+                    flagsToAdd = new string[] { "river_asked" },
+                    response = new DialogueResponse
+                    {
+                        speakerName = "Menak Sopal",
+                        responseText = "Saya dengar ada sungai disekitar desa ini pak, mengapa tidak mengambil air dari sana??",
+                        continueToNext = true,
+                        nextDialogueIndex = 1
+                    }
+                }
+            }
+        });
+
+        // 1. Jawaban Pak Darmo tentang Sungai
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Pak Darmo",
+            dialogueText = "Kami sudah mencoba mengambil air, tetapi sungai mulai kering. Air dari hulu tidak sampai ke tempat kami biasa mengambil air. Banyak bahaya di tempat tersebut.",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { },
+            flagsToAdd = new string[] { "water_crisis_discovered" },
+            isRepeatable = false,
+            isImportantDialogue = true,
+            hasChoices = true,
+            choices = new DialogueChoice[]
+            {
+                new DialogueChoice
+                {
+                    choiceText = "Aku paham",
+                    objectiveToComplete = "witness_crisis",
+                    questForObjective = "water_crisis_discovery",
+                    response = new DialogueResponse
+                    {
+                        speakerName = "Menak Sopal",
+                        responseText = "Kami dari padepokan belum bisa banyak membantu karena juga kesulitan air. Terima kasih atas informasinya, pak.",
+                        continueToNext = false,
+                        nextDialogueIndex = -1
+                    }
+                }
+            }
+        });
+
+        // 2. Ratapan
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Pak Darmo",
+            dialogueText = "Iya nak, kasihanilah orang tua renta seperti kami ini...",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "kegaduhan" },
+            isRepeatable = false
         });
         
         dialogueData.dialogueEntries = dialogueEntries.ToArray();
@@ -785,8 +1192,91 @@ public class StoryDialogueDataGenerator : EditorWindow
         {
             speakerName = "Bu Siti",
             dialogueText = "Krisis air ini benar benar membuat kami kesusahan nak",
-            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset },
-            requiredFlags = new string[] { "water_crisis_discovered" }
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunrise, TimeOfDay.Day, TimeOfDay.Sunset },
+            requiredFlags = new string[] { "water_crisis_discovered" },
+            isRepeatable = false
+        });
+
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Bu Siti",
+            dialogueText = "Tolong, berikanlah air ini kepada kami...",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "kegaduhan" },
+            isRepeatable = false
+        });
+        
+        dialogueData.dialogueEntries = dialogueEntries.ToArray();
+
+        dialogueData.greetings = new DialogueEntry[]
+        {
+            new DialogueEntry
+            {
+                speakerName = "Bu Siti",
+                dialogueText = "Krisis air ini benar benar mengganggu kami, nak",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunset, TimeOfDay.Day },
+                isRepeatable = false
+            },
+            new DialogueEntry
+            {
+                speakerName = "Bu Siti",
+                dialogueText = "Pagi, nak",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise },
+                isRepeatable = true
+            }
+        };
+
+        return dialogueData;
+    }
+
+    private DialogueData CreateWargaHaus3_Indonesian()
+    {
+        var dialogueData = ScriptableObject.CreateInstance<DialogueData>();
+        dialogueData.npcName = "Karto";
+        dialogueData.dialogueDescription = "Warga desa yang diajak membantu proyek dam";
+        
+        var dialogueEntries = new List<DialogueEntry>();
+        
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Karto",
+            dialogueText = "Ah, terik sekali. Air semakin menipis tiap hari. Ada perlu apa nak denganku?",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "guru_guidance_received" },
+            isRepeatable = false,
+            hasChoices = true,
+            choices = new DialogueChoice[]
+            {
+                new DialogueChoice
+                {
+                    choiceText = "Meminta bantuan",
+                    response = new DialogueResponse
+                    {
+                        speakerName = "Menak Sopal",
+                        responseText = "Begini kang, apakah dirimu bersedia untuk membantuku dalam membangun dam ...",
+                        continueToNext = true,
+                        nextDialogueIndex = 1
+                    }
+                }
+            }
+        });
+
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Karto",
+            dialogueText = "Membangun dam?, di tengah terik matahari seperti ini?. Tentu saja!!. Lagipula kalau bendungan ini berhasil kita bangun, pasti dapat mengatasi krisis air ini.",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "guru_guidance_received" },
+            isRepeatable = false
+        });
+
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Karto",
+            dialogueText = "Cukup kisah asmaraku saja yang kering, tak perlu sumber sumber air disekitar pemukiman ini yang kering. Hal ini membuatku benar benar frustasi nak!",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Sunrise, TimeOfDay.Day },
+            requiredFlags = new string[] { "guru_guidance_received" },
+            isRepeatable = false
         });
         
         dialogueData.dialogueEntries = dialogueEntries.ToArray();
@@ -807,6 +1297,7 @@ public class StoryDialogueDataGenerator : EditorWindow
             dialogueText = "Itu dia! Itu pemuda yang mencuri gajah Mbok Randa! Jangan biarkan dia kabur!",
             availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Night },
             requiredFlags = new string[] { "chase_sequence_active" },
+            isRepeatable = true,
             isImportantDialogue = true
         });
         
@@ -817,31 +1308,182 @@ public class StoryDialogueDataGenerator : EditorWindow
     private DialogueData CreatePemanduJalan_Indonesian()
     {
         var dialogueData = ScriptableObject.CreateInstance<DialogueData>();
-        dialogueData.npcName = "Joko (Penunjuk Jalan Desa)";
+        dialogueData.npcName = "Joko";
         dialogueData.dialogueDescription = "Pemandu perjalanan ke Desa Krandon";
         
         var dialogueEntries = new List<DialogueEntry>();
         
-        var guideOffer = new DialogueEntry
+        // 0. Penawaran Pemandu
+        dialogueEntries.Add(new DialogueEntry
         {
-            speakerName = "Joko (Penunjuk Jalan Desa)",
-            dialogueText = "Aku tahu jalan ke Desa Krandon, anak muda. Perjalanan dua hari melewati hutan.",
-            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset },
-            requiredFlags = new string[] { "seeking_white_elephant" },
+            speakerName = "Joko",
+            dialogueText = "Desa Krandon?, aku tahu tempat. Apa kamu perlu kesana nak?, aku bisa menemanimu kesana kalau perlu.",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "tribute_demand_received" },
+            flagsToRemove = new string[] { "keberadaan_gajah_putih" },
+            isRepeatable = false,
             hasChoices = true,
             choices = new DialogueChoice[]
             {
                 new DialogueChoice
                 {
-                    choiceText = "Tolong tunjukkan jalan ke rumah Mbok Randa",
-                    flagsToAdd = new string[] { "guide_hired" },
-                    questToStart = "journey_to_krandon"
+                    choiceText = "Meng-iyakan",
+                    response = new DialogueResponse
+                    {
+                        speakerName = "Menak Sopal",
+                        responseText = "Iya paman, benar sekali. Tolong bantu aku"
+                    }
                 }
             }
-        };
-        dialogueEntries.Add(guideOffer);
+        });
+
+        // 1. Meminta Bantuan Dam
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Joko",
+            dialogueText = "Hei nak, kau seperti dalam masalah. Ada hal yang bisa ku bantu?",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "committed_to_help", "guru_guidance_received" },
+            isRepeatable = false,
+            hasChoices = true,
+            choices = new DialogueChoice[]
+            {
+                new DialogueChoice
+                {
+                    choiceText = "Meminta bantuan",
+                    questToStart = "journey_to_krandon",
+                    choiceColor = new Color(1f, 1f, 1f, 1f),
+                    response = new DialogueResponse
+                    {
+                        speakerName = "Menak Sopal",
+                        responseText = "Paman Joko, bersediakah engkau untuk membantuku dalam membangun dam untuk membantu krisis air di pemukiman ini?",
+                        continueToNext = true,
+                        nextDialogueIndex = 2
+                    }
+                }
+            }
+        });
+
+        // 2. Persetujuan Joko
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Joko",
+            dialogueText = "Oh, tentu saja nak!. Krisis air ini telah membuat gaduh kehidupan orang orang disini!. Pun ke sungai, air tidak sampai di tempat yang aman bagi kami. Bersama keahlianmu, pastinya membangun dam ini menjadi lebih aman hahaha.",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "committed_to_help", "guru_guidance_received" },
+            isRepeatable = false
+        });
+
+        // 3. Menuju Sungai
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Joko",
+            dialogueText = "Ayo nak, saatnya kita bangun dam ini!",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "to_river" },
+            isRepeatable = false
+        });
+
+        // 4. Setelah Hutan
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Joko",
+            dialogueText = "Dari mana saja kau tadi nak?",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "finish_forest" },
+            isRepeatable = false,
+            hasChoices = true,
+            choices = new DialogueChoice[]
+            {
+                new DialogueChoice
+                {
+                    choiceText = "Tersesat",
+                    isRepeatable = true,
+                    choiceColor = new Color(1f, 1f, 1f, 1f),
+                    response = new DialogueResponse
+                    {
+                        speakerName = "Menak Sopal",
+                        responseText = "Tadi aku sempat tersesat paman",
+                        continueToNext = true,
+                        nextDialogueIndex = 5
+                    }
+                }
+            }
+        });
+
+        // 5. Ke Teras Mbok Randa
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Joko",
+            dialogueText = "Baiklah, ayo kita langsung ke rumah mbok Randa kalau begitu",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "finish_forest", "mc_answer" },
+            flagsToAdd = new string[] { "mbr_terrace" },
+            isRepeatable = false
+        });
+
+        // 6. Pertanyaan Kebohongan
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Joko",
+            dialogueText = "Nak, mengapa harus dirimu tadi berbohong?",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "white_elephant_borrowed" },
+            isRepeatable = false,
+            hasChoices = true,
+            choices = new DialogueChoice[]
+            {
+                new DialogueChoice
+                {
+                    choiceText = "Menjelaskan",
+                    flagsToAdd = new string[] { "sopal_explain" },
+                    targetDialogueIndex = 7,
+                    isRepeatable = true,
+                    choiceColor = new Color(1f, 1f, 1f, 1f),
+                    response = new DialogueResponse
+                    {
+                        speakerName = "Menak Sopal",
+                        responseText = "Akan sulit jika mengatakan aku akan menyembelih gajah ini paman. Tenang, aku akan bertanggung jawab penuh.",
+                        continueToNext = true,
+                        nextDialogueIndex = 7
+                    }
+                }
+            }
+        });
+
+        // 7. Respon Pasrah Joko
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Joko",
+            dialogueText = "Baiklah kalau begitu, aku tidak ikut ikutan ya...",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "white_elephant_borrowed", "sopal_explain" },
+            isRepeatable = false
+        });
+
+        // 8. Menunggu di Teras
+        dialogueEntries.Add(new DialogueEntry
+        {
+            speakerName = "Joko",
+            dialogueText = "Aku akan menunggu disini nak, sampaikan pesanmu ke mbok randa",
+            availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunset, TimeOfDay.Sunrise },
+            requiredFlags = new string[] { "joko_in_mbr" },
+            isRepeatable = true
+        });
         
         dialogueData.dialogueEntries = dialogueEntries.ToArray();
+
+        dialogueData.greetings = new DialogueEntry[]
+        {
+            new DialogueEntry
+            {
+                speakerName = "Joko",
+                dialogueText = "Ah, halo nak",
+                availableTimesOfDay = new TimeOfDay[] { TimeOfDay.Day, TimeOfDay.Sunrise, TimeOfDay.Sunset },
+                isRepeatable = false
+            }
+        };
+
         return dialogueData;
     }
     
@@ -926,7 +1568,6 @@ public class StoryDialogueDataGenerator : EditorWindow
         return dialogueData;
     }
     
-    // Additional Village NPCs (simplified implementations)
     private DialogueData CreateAnakGembala_Indonesian()
     {
         var dialogueData = ScriptableObject.CreateInstance<DialogueData>();

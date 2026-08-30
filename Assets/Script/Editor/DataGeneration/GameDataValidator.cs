@@ -903,25 +903,35 @@ public class GameDataValidator : EditorWindow
         
         foreach (var quest in quests)
         {
-            if (quest.requiredFlags != null)
+            void TrackFlags(string[] flags, string tag)
             {
-                foreach (string flag in quest.requiredFlags)
+                if (flags == null) return;
+                foreach (string flag in flags)
                 {
+                    if (string.IsNullOrEmpty(flag)) continue;
                     allFlags.Add(flag);
                     if (!flagUsages.ContainsKey(flag))
                         flagUsages[flag] = new List<string>();
-                    flagUsages[flag].Add($"Quest:{quest.questID}:Required");
+                    flagUsages[flag].Add($"Quest:{quest.questID}:{tag}");
                 }
             }
-            
-            if (quest.flagsOnComplete != null)
+
+            TrackFlags(quest.requiredFlags, "Required");
+            TrackFlags(quest.flagsOnStart, "Start");
+            TrackFlags(quest.flagsToRemoveOnStart, "RemoveOnStart");
+            TrackFlags(quest.flagsOnComplete, "Complete");
+            TrackFlags(quest.flagsToRemoveOnComplete, "RemoveOnComplete");
+            TrackFlags(quest.flagsOnFail, "Fail");
+            TrackFlags(quest.flagsToRemoveOnFail, "RemoveOnFail");
+
+            if (quest.objectives != null)
             {
-                foreach (string flag in quest.flagsOnComplete)
+                foreach (var obj in quest.objectives)
                 {
-                    allFlags.Add(flag);
-                    if (!flagUsages.ContainsKey(flag))
-                        flagUsages[flag] = new List<string>();
-                    flagUsages[flag].Add($"Quest:{quest.questID}:Complete");
+                    TrackFlags(obj.requiredFlags, $"Obj:{obj.objectiveID}:Required");
+                    if (!string.IsNullOrEmpty(obj.flagToSetOnComplete))
+                        TrackFlags(new[] { obj.flagToSetOnComplete }, $"Obj:{obj.objectiveID}:Complete");
+                    TrackFlags(obj.flagsToRemoveOnComplete, $"Obj:{obj.objectiveID}:RemoveOnComplete");
                 }
             }
         }

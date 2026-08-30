@@ -376,8 +376,11 @@ public class QuestDesignerWindow : EditorWindow
 
         DrawFlagArrayField("Required Flags", ref selectedQuest.requiredFlags);
         DrawFlagArrayField("Flags on Start", ref selectedQuest.flagsOnStart);
+        DrawFlagArrayField("Remove on Start", ref selectedQuest.flagsToRemoveOnStart);
         DrawFlagArrayField("Flags on Complete", ref selectedQuest.flagsOnComplete);
+        DrawFlagArrayField("Remove on Complete", ref selectedQuest.flagsToRemoveOnComplete);
         DrawFlagArrayField("Flags on Fail", ref selectedQuest.flagsOnFail);
+        DrawFlagArrayField("Remove on Fail", ref selectedQuest.flagsToRemoveOnFail);
 
         EditorGUILayout.EndVertical();
     }
@@ -483,6 +486,9 @@ public class QuestDesignerWindow : EditorWindow
         }
 
         obj.isOptional = EditorGUILayout.Toggle("Optional", obj.isOptional);
+        DrawFlagArrayField("Required Flags", ref obj.requiredFlags);
+        obj.flagToSetOnComplete = EditorGUILayout.TextField("Flag on Complete", obj.flagToSetOnComplete);
+        DrawFlagArrayField("Remove on Complete", ref obj.flagsToRemoveOnComplete);
 
         EditorGUILayout.EndVertical();
     }
