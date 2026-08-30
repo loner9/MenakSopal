@@ -137,34 +137,6 @@ public class StoryFlagManager : EditorWindow
             mutuallyExclusive = new string[] { },
             phase = "Phase 1: Discovery"
         });
-
-        flags.Add(new StoryFlagDefinition
-        {
-            flagName = "pre_crisis_dialogue_active",
-            category = "Dialogue State",
-            description = "Active before water crisis is discovered, enables intro dialogue",
-            setBy = "Game start / Quest start",
-            dependencies = new string[] { "story_started" },
-            unlocks = new string[] { "Pre-crisis NPC intro dialogues" },
-            isPlayerChoice = false,
-            isPermanent = false,
-            mutuallyExclusive = new string[] { "water_crisis_discovered" },
-            phase = "Phase 1: Discovery"
-        });
-
-        flags.Add(new StoryFlagDefinition
-        {
-            flagName = "water_crisis_discovery_active",
-            category = "Quest Phase",
-            description = "Water crisis discovery quest is in progress",
-            setBy = "Quest start: water_crisis_discovery",
-            dependencies = new string[] { "story_started" },
-            unlocks = new string[] { "Villager plea dialogues" },
-            isPlayerChoice = false,
-            isPermanent = false,
-            mutuallyExclusive = new string[] { "water_crisis_discovered" },
-            phase = "Phase 1: Discovery"
-        });
         
         flags.Add(new StoryFlagDefinition
         {

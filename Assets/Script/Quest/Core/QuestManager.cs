@@ -163,15 +163,6 @@ public class QuestManager : MonoBehaviour
             }
         }
 
-        // Remove start flags
-        if (quest.flagsToRemoveOnStart != null)
-        {
-            foreach (string flag in quest.flagsToRemoveOnStart)
-            {
-                RemoveGameFlag(flag);
-            }
-        }
-
         // Initialize objectives
         foreach (var objective in quest.objectives)
         {
@@ -217,15 +208,6 @@ public class QuestManager : MonoBehaviour
             foreach (string flag in quest.flagsOnComplete)
             {
                 AddGameFlag(flag);
-            }
-        }
-
-        // Remove completion flags
-        if (quest.flagsToRemoveOnComplete != null)
-        {
-            foreach (string flag in quest.flagsToRemoveOnComplete)
-            {
-                RemoveGameFlag(flag);
             }
         }
 
@@ -275,15 +257,6 @@ public class QuestManager : MonoBehaviour
             }
         }
 
-        // Remove failure flags
-        if (quest.flagsToRemoveOnFail != null)
-        {
-            foreach (string flag in quest.flagsToRemoveOnFail)
-            {
-                RemoveGameFlag(flag);
-            }
-        }
-
         OnQuestFailed?.Invoke(quest);
         QuestEvents.InvokeQuestFailed(quest);
 
@@ -328,15 +301,6 @@ public class QuestManager : MonoBehaviour
         if (!string.IsNullOrEmpty(objective.flagToSetOnComplete))
         {
             AddGameFlag(objective.flagToSetOnComplete);
-        }
-
-        // Remove objective completion flags
-        if (objective.flagsToRemoveOnComplete != null)
-        {
-            foreach (string flag in objective.flagsToRemoveOnComplete)
-            {
-                RemoveGameFlag(flag);
-            }
         }
 
         OnObjectiveCompleted?.Invoke(quest, objective);
@@ -458,8 +422,6 @@ public class QuestManager : MonoBehaviour
     {
         if (interactionSystem != null)
             return interactionSystem.GetGameFlags();
-        if (FlagManager.Instance != null)
-            return FlagManager.Instance.GetAllFlags();
 
         return new List<string>();
     }
@@ -468,16 +430,6 @@ public class QuestManager : MonoBehaviour
     {
         if (interactionSystem != null)
             interactionSystem.AddGameFlag(flag);
-        else if (FlagManager.Instance != null)
-            FlagManager.Instance.AddFlag(flag);
-    }
-
-    private void RemoveGameFlag(string flag)
-    {
-        if (interactionSystem != null)
-            interactionSystem.RemoveGameFlag(flag);
-        else if (FlagManager.Instance != null)
-            FlagManager.Instance.RemoveFlag(flag);
     }
 
     #endregion

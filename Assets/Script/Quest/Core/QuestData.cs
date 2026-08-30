@@ -44,7 +44,6 @@ public class QuestObjective
     [Header("Conditions")]
     public string[] requiredFlags;
     public string flagToSetOnComplete;
-    public string[] flagsToRemoveOnComplete;
 
     [Header("Target Settings")]
     public string targetNPC;        // For TalkToNPC objectives
@@ -135,11 +134,8 @@ public class QuestData : ScriptableObject
     [Header("Quest Flow")]
     public string[] requiredFlags;          // Flags needed to start this quest
     public string[] flagsOnStart;           // Flags set when quest starts
-    public string[] flagsToRemoveOnStart;   // Flags removed when quest starts
     public string[] flagsOnComplete;        // Flags set when quest completes
-    public string[] flagsToRemoveOnComplete;// Flags removed when quest completes
     public string[] flagsOnFail;            // Flags set when quest fails
-    public string[] flagsToRemoveOnFail;    // Flags removed when quest fails
 
     [Header("Quest Chain")]
     [Tooltip("Quest IDs that must be completed before this quest can start")]

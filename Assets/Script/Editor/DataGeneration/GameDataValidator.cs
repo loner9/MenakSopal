@@ -903,35 +903,25 @@ public class GameDataValidator : EditorWindow
         
         foreach (var quest in quests)
         {
-            void TrackFlags(string[] flags, string tag)
+            if (quest.requiredFlags != null)
             {
-                if (flags == null) return;
-                foreach (string flag in flags)
+                foreach (string flag in quest.requiredFlags)
                 {
-                    if (string.IsNullOrEmpty(flag)) continue;
                     allFlags.Add(flag);
                     if (!flagUsages.ContainsKey(flag))
                         flagUsages[flag] = new List<string>();
-                    flagUsages[flag].Add($"Quest:{quest.questID}:{tag}");
+                    flagUsages[flag].Add($"Quest:{quest.questID}:Required");
                 }
             }
-
-            TrackFlags(quest.requiredFlags, "Required");
-            TrackFlags(quest.flagsOnStart, "Start");
-            TrackFlags(quest.flagsToRemoveOnStart, "RemoveOnStart");
-            TrackFlags(quest.flagsOnComplete, "Complete");
-            TrackFlags(quest.flagsToRemoveOnComplete, "RemoveOnComplete");
-            TrackFlags(quest.flagsOnFail, "Fail");
-            TrackFlags(quest.flagsToRemoveOnFail, "RemoveOnFail");
-
-            if (quest.objectives != null)
+            
+            if (quest.flagsOnComplete != null)
             {
-                foreach (var obj in quest.objectives)
+                foreach (string flag in quest.flagsOnComplete)
                 {
-                    TrackFlags(obj.requiredFlags, $"Obj:{obj.objectiveID}:Required");
-                    if (!string.IsNullOrEmpty(obj.flagToSetOnComplete))
-                        TrackFlags(new[] { obj.flagToSetOnComplete }, $"Obj:{obj.objectiveID}:Complete");
-                    TrackFlags(obj.flagsToRemoveOnComplete, $"Obj:{obj.objectiveID}:RemoveOnComplete");
+                    allFlags.Add(flag);
+                    if (!flagUsages.ContainsKey(flag))
+                        flagUsages[flag] = new List<string>();
+                    flagUsages[flag].Add($"Quest:{quest.questID}:Complete");
                 }
             }
         }

@@ -154,21 +154,6 @@ public class DialogueData : ScriptableObject
             }
         }
         
-        // Prioritize entries with required flags (specific quest conditions) over generic ones
-        available.Sort((a, b) =>
-        {
-            int aFlags = a.requiredFlags != null ? a.requiredFlags.Length : 0;
-            int bFlags = b.requiredFlags != null ? b.requiredFlags.Length : 0;
-            
-            if (aFlags != bFlags)
-                return bFlags.CompareTo(aFlags);
-                
-            if (a.isImportantDialogue != b.isImportantDialogue)
-                return b.isImportantDialogue.CompareTo(a.isImportantDialogue);
-                
-            return 0;
-        });
-        
         return available.ToArray();
     }
     

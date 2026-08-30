@@ -242,12 +242,8 @@ public class StoryDashboardWindow : EditorWindow
                 usages.Add($"Quest '{quest.questTitle}' requires");
             if (quest.flagsOnStart?.Contains(flagName) == true)
                 usages.Add($"Quest '{quest.questTitle}' sets on start");
-            if (quest.flagsToRemoveOnStart?.Contains(flagName) == true)
-                usages.Add($"Quest '{quest.questTitle}' removes on start");
             if (quest.flagsOnComplete?.Contains(flagName) == true)
                 usages.Add($"Quest '{quest.questTitle}' sets on complete");
-            if (quest.flagsToRemoveOnComplete?.Contains(flagName) == true)
-                usages.Add($"Quest '{quest.questTitle}' removes on complete");
         }
 
         // Check dialogues
@@ -485,11 +481,8 @@ public class StoryDashboardWindow : EditorWindow
             // Track flags
             TrackFlags(quest.requiredFlags);
             TrackFlags(quest.flagsOnStart);
-            TrackFlags(quest.flagsToRemoveOnStart);
             TrackFlags(quest.flagsOnComplete);
-            TrackFlags(quest.flagsToRemoveOnComplete);
             TrackFlags(quest.flagsOnFail);
-            TrackFlags(quest.flagsToRemoveOnFail);
 
             // Check prerequisite references
             if (quest.prerequisiteQuestIDs != null)

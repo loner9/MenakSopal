@@ -93,35 +93,33 @@ public class QuestDataGenerator : EditorWindow
     
     private void GenerateMainStoryQuests()
     {
-        // Phase 1: Discovery & Commitment
+        // Chapter 1-2: Discovery Phase
         GenerateWaterCrisisQuest();
-        
-        // Phase 2: Planning & Assembly
         GenerateSeekGuidanceQuest();
+        
+        // Chapter 3: Construction Phase
+        GenerateDamConstructionQuest();
         GenerateGatherHelpersQuest();
         
-        // Phase 3: Dam Building & Destruction
-        GenerateDamConstructionQuest();
+        // Chapter 4: Opposition Phase
         GenerateInvestigateDamDestructionQuest();
-        
-        // Phase 4: Spiritual Encounter & Spirit Demand
         GenerateSpiritualVisionQuest();
         
-        // Phase 5: Journey to Krandon & White Elephant
+        // Chapter 5-6: Quest Phase
         GenerateFindWhiteElephantQuest();
         GenerateJourneyToKrandonQuest();
         GenerateNegotiateElephantQuest();
         
-        // Phase 6: Ritual Sacrifice & Water Restoration
+        // Chapter 7: Sacrifice Phase
         GenerateCompleteSacrificeQuest();
         GenerateWitnessDamSuccessQuest();
         
-        // Phase 7: Exposure, Flight & Spirit Rescue
+        // Chapter 8: Reckoning Phase
         GenerateFaceMbokRandaAngerQuest();
         GenerateEscapePursuitQuest();
         GenerateRiverSpiritRescueQuest();
         
-        // Phase 8: Truth, Reconciliation & Legacy
+        // Chapter 9: Resolution Phase
         GenerateReturnToPadepokanQuest();
         GenerateCompleteTruthTellingQuest();
         GenerateAchieveReconciliationQuest();
@@ -133,41 +131,33 @@ public class QuestDataGenerator : EditorWindow
     {
         var quest = ScriptableObject.CreateInstance<QuestData>();
         quest.questID = "water_crisis_discovery";
-        quest.questTitle = "Derita Sumur Tua";
-        quest.questDescription = "Selidiki laporan tentang penderitaan warga desa di sumur tua. Warga desa sangat membutuhkan air, dan teriakan mereka meminta pertolongan tidak boleh diabaikan.";
+        quest.questTitle = "Keresahan di Masa Kemarau";
+        quest.questDescription = "Selidiki laporan tentang penderitaan warga desa di sumur tua. Masyarakat sangat membutuhkan air, dan suara mereka meminta pertolongan tidak boleh diabaikan..";
         quest.questType = QuestType.Main;
         quest.questLevel = 1;
         
         // Prerequisites
         quest.requiredFlags = new string[] { "story_started" };
-        quest.flagsOnStart = new string[] { "water_crisis_discovery_active", "pre_crisis_dialogue_active" };
-        quest.flagsToRemoveOnStart = new string[] { };
+        quest.flagsOnStart = new string[] { };
         quest.flagsOnComplete = new string[] { "water_crisis_discovered" };
-        quest.flagsToRemoveOnComplete = new string[] { "water_crisis_discovery_active", "pre_crisis_dialogue_active" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
         
         // Objectives
         quest.objectives = new List<QuestObjective>
         {
             new QuestObjective
             {
-                objectiveID = "witness_crisis",
-                description = "Pergi ke sumur desa, dan pahami konflik yang terjadi",
-                type = ObjectiveType.Custom,
-                targetNPC = "Anak Gembala",
-                targetAmount = 1,
-                showProgress = true,
+                objectiveID = "reach_village_well",
+                description = "Pergi ke sumur desa",
+                type = ObjectiveType.VisitLocation,
+                targetLocation = "VillageWell",
                 isOptional = false
             },
             new QuestObjective
             {
                 objectiveID = "talk_to_villagers",
-                description = "Berbincang dengan warga yang terdampak",
+                description = "Bicaralah dengan para penduduk desa yang menderita.",
                 type = ObjectiveType.TalkToNPC,
                 targetNPC = "warga_haus_1",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             }
         };
@@ -179,13 +169,11 @@ public class QuestDataGenerator : EditorWindow
             {
                 type = QuestRewardType.Flags,
                 flagsToAdd = new string[] { "committed_to_help" },
-                customRewardDescription = "Moral commitment to help the villagers"
+                customRewardDescription = "Komitmen moral untuk membantu warga desa"
             }
         };
         
         quest.autoComplete = true;
-        quest.canAbandon = true;
-        quest.showInJournal = true;
         quest.trackByDefault = true;
         quest.questColor = new Color(0.2f, 0.6f, 1f); // Blue for main quests
         
@@ -196,181 +184,78 @@ public class QuestDataGenerator : EditorWindow
     {
         var quest = ScriptableObject.CreateInstance<QuestData>();
         quest.questID = "seek_guru_guidance";
-        quest.questTitle = "Kebijksanaan dari guru";
-        quest.questDescription = "Konsultasikan dengan Ki Ageng Sinawang mengenai krisis air di desa. Kebijaksanaannya akan membimbing mu ke jalan yang benar.";
+        quest.questTitle = "Kebijaksanaan Guru";
+        quest.questDescription = "Konsultasikan dengan Ki Ageng Sinawang mengenai krisis air di desa. Kebijaksanaan guru spiritualmu akan membimbing dirimu ke jalan yang benar.";
         quest.questType = QuestType.Main;
         quest.questLevel = 1;
         
         quest.requiredFlags = new string[] { "water_crisis_discovered" };
-        quest.flagsOnStart = new string[] { "seek_guru_guidance_active" };
-        quest.flagsToRemoveOnStart = new string[] { };
         quest.flagsOnComplete = new string[] { "guru_guidance_received" };
-        quest.flagsToRemoveOnComplete = new string[] { "seek_guru_guidance_active" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
         
         quest.objectives = new List<QuestObjective>
         {
             new QuestObjective
             {
                 objectiveID = "consult_ki_ageng",
-                description = "Bicaralah dengan Ki Ageng Sinawang tentang krisis yang terjadi.",
+                description = "Bicaralah dengan Ki Ageng Sinawang mengenai krisis tersebut.",
                 type = ObjectiveType.TalkToNPC,
                 targetNPC = "ki_ageng_sinawang",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             },
             new QuestObjective
             {
                 objectiveID = "receive_permission",
-                description = "Minta izin untuk membantu mengatasi masalah yang terjadi.",
+                description = "Ask for permission to help with the water project",
                 type = ObjectiveType.Custom,
                 flagToSetOnComplete = "asked_permission_water_project",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             }
         };
         
         quest.autoComplete = true;
-        quest.canAbandon = true;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
         quest.questColor = new Color(0.2f, 0.6f, 1f);
         
         SaveQuest(quest, "02_SeekGuidance");
-    }
-
-    private void GenerateGatherHelpersQuest() 
-    {
-        var quest = ScriptableObject.CreateInstance<QuestData>();
-        quest.questID = "gather_construction_helpers";
-        quest.questTitle = "Mencari Bantuan";
-        quest.questDescription = "Cari dan rekrutlah orang orang untuk membantu dalam proyek pembangunan bendungan.";
-        quest.questType = QuestType.Main;
-        quest.questLevel = 2;
-        
-        quest.requiredFlags = new string[] { "committed_to_help", "guru_guidance_received" };
-        quest.flagsOnStart = new string[] { "gathering_helpers_active" };
-        quest.flagsToRemoveOnStart = new string[] { };
-        quest.flagsOnComplete = new string[] { "construction_team_assembled", "helpers_recruited" };
-        quest.flagsToRemoveOnComplete = new string[] { "gathering_helpers_active" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
-        
-        quest.objectives = new List<QuestObjective>
-        {
-            new QuestObjective
-            {
-                objectiveID = "recruit_andi",
-                description = "Minta Andi untuk membantu dalam pembangunan.",
-                type = ObjectiveType.TalkToNPC,
-                targetNPC = "murid_padepokan_1",
-                targetAmount = 1,
-                showProgress = true,
-                isOptional = false
-            },
-            new QuestObjective
-            {
-                objectiveID = "recruit_budi", 
-                description = "Yakinkan Budi untuk bergabung dengan tim.",
-                type = ObjectiveType.TalkToNPC,
-                targetNPC = "murid_padepokan_2",
-                targetAmount = 1,
-                showProgress = true,
-                isOptional = false
-            },
-            new QuestObjective
-            {
-                objectiveID = "recruit_candra",
-                description = "Minta persetujuan Candra untuk membantu.",
-                type = ObjectiveType.TalkToNPC,
-                targetNPC = "murid_padepokan_3",
-                targetAmount = 1,
-                showProgress = true,
-                isOptional = false
-            },
-            new QuestObjective
-            {
-                objectiveID = "recruit_yf",
-                description = "Minta bantuan dari petani muda, Bayu",
-                type = ObjectiveType.TalkToNPC,
-                targetNPC = "young_farmer",
-                targetAmount = 1,
-                showProgress = true,
-                isOptional = false
-            },
-            new QuestObjective
-            {
-                objectiveID = "recruit_joko",
-                description = "Mintalah Joko untuk bergabung membangun dam",
-                type = ObjectiveType.TalkToNPC,
-                targetNPC = "pemandu_jalan",
-                targetAmount = 1,
-                showProgress = true,
-                isOptional = false
-            },
-            new QuestObjective
-            {
-                objectiveID = "recruit_wh",
-                description = "Ajak Karto untuk membantu membangun dam",
-                type = ObjectiveType.TalkToNPC,
-                targetNPC = "warga_haus_3",
-                targetAmount = 1,
-                showProgress = true,
-                isOptional = false
-            }
-        };
-        
-        quest.autoComplete = true;
-        quest.canAbandon = true;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
-        quest.questColor = new Color(0.2f, 0.8f, 0.4f); // Green for teamwork
-        
-        SaveQuest(quest, "02_GatherHelpers");
     }
     
     private void GenerateDamConstructionQuest()
     {
         var quest = ScriptableObject.CreateInstance<QuestData>();
         quest.questID = "dam_construction_project";
-        quest.questTitle = "Membangun Harapan";
-        quest.questDescription = "Bangun bendungan untuk membawa air ke desa yang sedang menderita. Proyek ambisius ini akan membutuhkan kerja sama tim, sumber daya, dan tekad yang kuat.";
+        quest.questTitle = "Building Hope";
+        quest.questDescription = "Construct a dam to bring water to the suffering village. This ambitious project will require teamwork, resources, and determination.";
         quest.questType = QuestType.Main;
         quest.questLevel = 2;
         
-        quest.requiredFlags = new string[] { "asked_permission_water_project", "construction_team_assembled" };
-        quest.flagsOnStart = new string[] { "dam_construction_in_progress" };
-        quest.flagsToRemoveOnStart = new string[] { };
+        quest.requiredFlags = new string[] { "asked_permission_water_project" };
         quest.flagsOnComplete = new string[] { "dam_construction_started", "initial_dam_built" };
-        quest.flagsToRemoveOnComplete = new string[] { "dam_construction_in_progress" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
         
         quest.objectives = new List<QuestObjective>
         {
             new QuestObjective
             {
+                objectiveID = "gather_students",
+                description = "Recruit padepokan students to help",
+                type = ObjectiveType.TalkToNPC,
+                targetNPC = "murid_padepokan_1",
+                flagToSetOnComplete = "students_recruited",
+                isOptional = false
+            },
+            new QuestObjective
+            {
                 objectiveID = "collect_materials",
-                description = "Kumpulkan bebatuan dan kayu",
+                description = "Gather stones and wood for construction",
                 type = ObjectiveType.CollectItems,
                 targetItem = "construction_materials",
                 targetAmount = 10,
-                flagToSetOnComplete = "materials_collected",
                 showProgress = true,
                 isOptional = false
             },
             new QuestObjective
             {
                 objectiveID = "build_dam_structure",
-                description = "Selesaikan Pembangunan Dam",
-                type = ObjectiveType.TalkToNPC,
-                targetNPC = "murid_padepokan_2",
-                requiredFlags = new string[] { "materials_collected", "materials_collected_del" },
-                targetAmount = 1,
-                showProgress = true,
+                description = "Complete the dam construction",
+                type = ObjectiveType.Custom,
                 isOptional = false
             }
         };
@@ -386,9 +271,6 @@ public class QuestDataGenerator : EditorWindow
         };
         
         quest.autoComplete = true;
-        quest.canAbandon = true;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
         quest.questColor = new Color(0.2f, 0.6f, 1f);
         
         SaveQuest(quest, "03_DamConstruction");
@@ -398,50 +280,43 @@ public class QuestDataGenerator : EditorWindow
     {
         var quest = ScriptableObject.CreateInstance<QuestData>();
         quest.questID = "investigate_dam_destruction";
-        quest.questTitle = "Sabotasi Misterius";
-        quest.questDescription = "Temukan alasan mengapa bendungan hancur terus menerus. Ada kekuatan tak kasat mata yang berperan, dan kebenaran harus diungkap.";
+        quest.questTitle = "Mysterious Sabotage";
+        quest.questDescription = "Discover why the dam keeps being destroyed overnight. Something supernatural is at work, and the truth must be uncovered.";
         quest.questType = QuestType.Main;
         quest.questLevel = 3;
         
         quest.requiredFlags = new string[] { "initial_dam_built" };
-        quest.flagsOnStart = new string[] { "investigating_dam_active" };
-        quest.flagsToRemoveOnStart = new string[] { };
         quest.flagsOnComplete = new string[] { "dam_repeatedly_destroyed", "spiritual_interference_confirmed" };
-        quest.flagsToRemoveOnComplete = new string[] { "investigating_dam_active" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
         
         quest.objectives = new List<QuestObjective>
         {
             new QuestObjective
             {
                 objectiveID = "examine_destruction",
-                description = "Selidiki lokasi bendungan yang hancur",
+                description = "Investigate the destroyed dam site",
                 type = ObjectiveType.VisitLocation,
                 targetLocation = "DamSite",
-                flagToSetOnComplete = "done_examine",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             },
             new QuestObjective
             {
                 objectiveID = "talk_to_witnesses",
-                description = "Diskusikan kepada murid padepokan tentang apa yang terjadi",
+                description = "Question students about what they saw",
                 type = ObjectiveType.TalkToNPC,
                 targetNPC = "murid_padepokan_2",
-                requiredFlags = new string[] { "done_examine" },
-                flagToSetOnComplete = "talked_with_witness",
-                targetAmount = 1,
-                showProgress = true,
+                isOptional = false
+            },
+            new QuestObjective
+            {
+                objectiveID = "consult_shaman",
+                description = "Seek spiritual guidance from village shaman",
+                type = ObjectiveType.TalkToNPC,
+                targetNPC = "dukun_kampung",
                 isOptional = false
             }
         };
         
         quest.autoComplete = true;
-        quest.canAbandon = true;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
         quest.questColor = new Color(0.6f, 0.2f, 0.8f); // Purple for supernatural elements
         
         SaveQuest(quest, "04_InvestigateDestruction");
@@ -451,130 +326,38 @@ public class QuestDataGenerator : EditorWindow
     {
         var quest = ScriptableObject.CreateInstance<QuestData>();
         quest.questID = "spiritual_vision_encounter";
-        quest.questTitle = "Investigasi Kerusakan Dam";
-        quest.questDescription = "Investigasilah sekitar area dam untuk mencari tahu hal apa yang menyebabkan gagalnya dam dibangun";
+        quest.questTitle = "Communion with the River Spirit";
+        quest.questDescription = "Enter spiritual communion to understand the supernatural opposition. Face the ancient guardian of the waters.";
         quest.questType = QuestType.Main;
         quest.questLevel = 4;
         
         quest.requiredFlags = new string[] { "spiritual_interference_confirmed" };
-        quest.flagsOnStart = new string[] { "seeking_spiritual_vision" };
-        quest.flagsToRemoveOnStart = new string[] { };
         quest.flagsOnComplete = new string[] { "river_spirit_encountered", "tribute_demand_received" };
-        quest.flagsToRemoveOnComplete = new string[] { "seeking_spiritual_vision" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
         
         quest.objectives = new List<QuestObjective>
         {
             new QuestObjective
             {
                 objectiveID = "perform_ritual",
-                description = "Bersemedilah di sekitar dam",
-                type = ObjectiveType.VisitLocation,
-                targetLocation = "DamSite",
+                description = "Complete the spiritual ritual with village shaman",
+                type = ObjectiveType.Custom,
                 flagToSetOnComplete = "spiritual_vision_active",
-                targetAmount = 1,
-                showProgress = true,
-                isOptional = false
-            },
-            new QuestObjective
-            {
-                objectiveID = "defeat_monster",
-                description = "Kalahkan Rintangan!",
-                type = ObjectiveType.DefeatEnemies,
-                targetItem = "slime",
-                targetAmount = 3,
-                requiredFlags = new string[] { "spiritual_vision_active" },
-                flagToSetOnComplete = "monsters_defeated",
-                showProgress = true,
                 isOptional = false
             },
             new QuestObjective
             {
                 objectiveID = "confront_river_spirit",
-                description = "Berbicaralah dengan penunggu sungai",
+                description = "Face the guardian of the river",
                 type = ObjectiveType.TalkToNPC,
-                targetNPC = "buaya_putih",
-                requiredFlags = new string[] { "monsters_defeated" },
-                flagToSetOnComplete = "keberadaan_gajah_putih",
-                targetAmount = 1,
-                showProgress = true,
-                isOptional = false
-            },
-            new QuestObjective
-            {
-                objectiveID = "locate_white_elephant",
-                description = "Cari tahu keberadaan Gajah Putih",
-                type = ObjectiveType.TalkToNPC,
-                targetNPC = "murid_padepokan_1",
-                requiredFlags = new string[] { "monsters_defeated" },
-                flagToSetOnComplete = "keberadaan_gajah",
-                targetAmount = 1,
-                showProgress = true,
+                targetNPC = "buaya_putih_spirit",
                 isOptional = false
             }
         };
         
         quest.autoComplete = true;
-        quest.canAbandon = true;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
         quest.questColor = new Color(0.6f, 0.2f, 0.8f);
         
         SaveQuest(quest, "05_SpiritualVision");
-    }
-
-    private void GenerateJourneyToKrandonQuest() 
-    {
-        var quest = ScriptableObject.CreateInstance<QuestData>();
-        quest.questID = "journey_to_krandon";
-        quest.questTitle = "Perjalanan ke Desa Krandon";
-        quest.questDescription = "Pergilah ke desa Krandon dengan selamat untuk mendapatkan Gajah Putih";
-        quest.questType = QuestType.Main;
-        quest.questLevel = 5;
-        
-        quest.requiredFlags = new string[] { "tribute_demand_received" };
-        quest.flagsOnStart = new string[] { "journeying_to_krandon" };
-        quest.flagsToRemoveOnStart = new string[] { };
-        quest.flagsOnComplete = new string[] { "arrived_desa_krandon" };
-        quest.flagsToRemoveOnComplete = new string[] { "journeying_to_krandon", "seeking_white_elephant" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
-        
-        quest.objectives = new List<QuestObjective>
-        {
-            new QuestObjective
-            {
-                objectiveID = "looking_for_way",
-                description = "Cari tahu untuk ke desa Krandon",
-                type = ObjectiveType.TalkToNPC,
-                targetNPC = "pemandu_jalan",
-                flagToSetOnComplete = "path_obtained",
-                targetAmount = 1,
-                showProgress = true,
-                isOptional = false
-            },
-            new QuestObjective
-            {
-                objectiveID = "forest_travel",
-                description = "Telusuri hutan dengan aman",
-                type = ObjectiveType.VisitLocation,
-                targetLocation = "ForestPathFinal",
-                requiredFlags = new string[] { "path_obtained" },
-                flagToSetOnComplete = "finish_forest",
-                targetAmount = 1,
-                showProgress = true,
-                isOptional = false
-            }
-        };
-        
-        quest.autoComplete = true;
-        quest.canAbandon = false;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
-        quest.questColor = new Color(0.6f, 0.4f, 0.2f); // Brown for travel
-        
-        SaveQuest(quest, "05_JourneyToKrandon");
     }
     
     private void GenerateFindWhiteElephantQuest()
@@ -582,29 +365,22 @@ public class QuestDataGenerator : EditorWindow
         var quest = ScriptableObject.CreateInstance<QuestData>();
         quest.questID = "find_white_elephant";
         quest.questTitle = "Sacred Beast of Legend";
-        quest.questDescription = "Kumpulkan informasi untuk mencari keberadaan gajah putih.";
+        quest.questDescription = "Locate the legendary white elephant required by the river spirit. This sacred creature holds the key to appeasing the supernatural forces.";
         quest.questType = QuestType.Main;
         quest.questLevel = 5;
         
         quest.requiredFlags = new string[] { "accepted_spirit_demand" };
-        quest.flagsOnStart = new string[] { "seeking_white_elephant" };
-        quest.flagsToRemoveOnStart = new string[] { };
         quest.flagsOnComplete = new string[] { "seeking_white_elephant", "ready_for_journey" };
-        quest.flagsToRemoveOnComplete = new string[] { };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
         
         quest.objectives = new List<QuestObjective>
         {
             new QuestObjective
             {
                 objectiveID = "gather_information",
-                description = "Pelajari dimana keberadaan gajah putih",
+                description = "Learn about white elephant legends",
                 type = ObjectiveType.TalkToNPC,
-                targetNPC = "pemandu_jalan",
+                targetNPC = "nenek_bijak",
                 flagToSetOnComplete = "heard_white_elephant_legend",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             },
             new QuestObjective
@@ -614,8 +390,6 @@ public class QuestDataGenerator : EditorWindow
                 type = ObjectiveType.TalkToNPC,
                 targetNPC = "pemandu_jalan",
                 flagToSetOnComplete = "krandon_location_discovered",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             },
             new QuestObjective
@@ -624,156 +398,307 @@ public class QuestDataGenerator : EditorWindow
                 description = "Secure guide to Desa Krandon",
                 type = ObjectiveType.TalkToNPC,
                 targetNPC = "pemandu_jalan",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             }
         };
         
         quest.autoComplete = true;
-        quest.canAbandon = true;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
         quest.questColor = new Color(1f, 0.8f, 0.2f); // Gold for legendary quest
         
         SaveQuest(quest, "06_FindWhiteElephant");
-    }
-
-    private void GenerateNegotiateElephantQuest() 
-    {
-        var quest = ScriptableObject.CreateInstance<QuestData>();
-        quest.questID = "negotiate_elephant_loan";
-        quest.questTitle = "\"Meminjam\" Gajah Putih";
-        quest.questDescription = "Berbicaralah dengan mbok Randa agar bisa meminjamkan gajah putihnya";
-        quest.questType = QuestType.Main;
-        quest.questLevel = 6;
-        
-        quest.requiredFlags = new string[] { "arrived_desa_krandon" };
-        quest.flagsOnStart = new string[] { "negotiating_with_mbok_randa" };
-        quest.flagsToRemoveOnStart = new string[] { };
-        quest.flagsOnComplete = new string[] { "white_elephant_borrowed", "mbok_randa_trusts_player" };
-        quest.flagsToRemoveOnComplete = new string[] { "negotiating_with_mbok_randa" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
-        
-        quest.objectives = new List<QuestObjective>
-        {
-            new QuestObjective
-            {
-                objectiveID = "meet_mbok_randa",
-                description = "Berbicaralah dengan mbok randa",
-                type = ObjectiveType.TalkToNPC,
-                targetNPC = "mbok_randa",
-                targetAmount = 1,
-                showProgress = true,
-                isOptional = false
-            }
-        };
-        
-        quest.autoComplete = false; // Requires dialogue completion
-        quest.canAbandon = true;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
-        quest.questColor = new Color(0.8f, 0.6f, 0.8f); // Purple for negotiation
-        
-        SaveQuest(quest, "06_NegotiateElephant");
     }
     
     private void GenerateCompleteSacrificeQuest()
     {
         var quest = ScriptableObject.CreateInstance<QuestData>();
         quest.questID = "complete_spirit_sacrifice";
-        quest.questTitle = "Persembahan Gajah Putih";
-        quest.questDescription = "Penuhi permintaan dari penjaga sungai";
+        quest.questTitle = "The Sacred Offering";
+        quest.questDescription = "Complete the river spirit's demanded sacrifice. This terrible choice will weigh heavily on your conscience, but it may be the only way to save the village.";
         quest.questType = QuestType.Main;
         quest.questLevel = 7;
         
         quest.requiredFlags = new string[] { "white_elephant_borrowed" };
-        quest.flagsOnStart = new string[] { "performing_sacrifice_active" };
-        quest.flagsToRemoveOnStart = new string[] { };
         quest.flagsOnComplete = new string[] { "elephant_sacrifice_complete", "spirit_pact_complete", "white_elephant_taken" };
-        quest.flagsToRemoveOnComplete = new string[] { "performing_sacrifice_active", "white_elephant_borrowed" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
         
         quest.objectives = new List<QuestObjective>
         {
             new QuestObjective
             {
-                objectiveID = "talk_to_joko",
-                description = "Paman Joko ingin berbicara",
-                type = ObjectiveType.TalkToNPC,
-                targetNPC = "pemandu_jalan",
-                targetAmount = 1,
-                showProgress = true,
+                objectiveID = "bring_elephant_to_river",
+                description = "Lead the white elephant to the river shrine",
+                type = ObjectiveType.VisitLocation,
+                targetLocation = "RiverShrine",
                 isOptional = false
             },
             new QuestObjective
             {
                 objectiveID = "perform_sacrifice",
-                description = "Selesaikan proses pengorbanan",
-                type = ObjectiveType.VisitLocation,
-                targetLocation = "GajahRiver",
-                targetAmount = 1,
-                showProgress = true,
+                description = "Complete the spiritual ritual",
+                type = ObjectiveType.Custom,
                 isOptional = false
             }
         };
         
         quest.autoComplete = false; // Requires manual completion due to moral weight
-        quest.canAbandon = true;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
         quest.questColor = new Color(0.8f, 0.2f, 0.2f); // Red for moral crisis
         
         SaveQuest(quest, "07_CompleteSacrifice");
     }
-
+    
+    private void GenerateAchieveReconciliationQuest()
+    {
+        var quest = ScriptableObject.CreateInstance<QuestData>();
+        quest.questID = "achieve_reconciliation";
+        quest.questTitle = "Healing the Wounds";
+        quest.questDescription = "Work toward mutual understanding and peace with Mbok Randa. Through truth and genuine remorse, healing is possible.";
+        quest.questType = QuestType.Main;
+        quest.questLevel = 9;
+        
+        quest.requiredFlags = new string[] { "sincere_apology_given" };
+        quest.flagsOnComplete = new string[] { "reconciliation_complete", "mutual_understanding_achieved" };
+        
+        quest.objectives = new List<QuestObjective>
+        {
+            new QuestObjective
+            {
+                objectiveID = "demonstrate_remorse",
+                description = "Show continued commitment to making amends",
+                type = ObjectiveType.Custom,
+                isOptional = false
+            },
+            new QuestObjective
+            {
+                objectiveID = "accept_consequences",
+                description = "Accept responsibility for all actions",
+                type = ObjectiveType.Custom,
+                isOptional = false
+            },
+            new QuestObjective
+            {
+                objectiveID = "find_mutual_understanding",
+                description = "Reach peace with Mbok Randa",
+                type = ObjectiveType.TalkToNPC,
+                targetNPC = "mbok_randa_krandon",
+                isOptional = false
+            }
+        };
+        
+        quest.autoComplete = true;
+        quest.questColor = new Color(0.2f, 0.8f, 0.4f); // Green for resolution
+        
+        SaveQuest(quest, "08_AchieveReconciliation");
+    }
+    
+    private void GenerateStoryCompletionQuest()
+    {
+        var quest = ScriptableObject.CreateInstance<QuestData>();
+        quest.questID = "story_completion";
+        quest.questTitle = "Lessons Learned";
+        quest.questDescription = "Reflect on the journey and its lessons. The story of Teranging Galih - the brightness of understanding - has come to its conclusion.";
+        quest.questType = QuestType.Main;
+        quest.questLevel = 10;
+        
+        quest.requiredFlags = new string[] { "land_naming_complete" };
+        quest.flagsOnComplete = new string[] { "story_completed", "wisdom_gained" };
+        
+        quest.objectives = new List<QuestObjective>
+        {
+            new QuestObjective
+            {
+                objectiveID = "final_guru_wisdom",
+                description = "Receive final wisdom from Ki Ageng Sinawang",
+                type = ObjectiveType.TalkToNPC,
+                targetNPC = "ki_ageng_sinawang",
+                isOptional = false
+            },
+            new QuestObjective
+            {
+                objectiveID = "mother_pride",
+                description = "Share the conclusion with Raden Ayu Saraswati",
+                type = ObjectiveType.TalkToNPC,
+                targetNPC = "raden_ayu_saraswati",
+                isOptional = false
+            }
+        };
+        
+        quest.rewards = new List<QuestReward>
+        {
+            new QuestReward
+            {
+                type = QuestRewardType.Custom,
+                customRewardDescription = "Complete understanding of the folklore and moral growth"
+            }
+        };
+        
+        quest.autoComplete = true;
+        quest.questColor = new Color(1f, 0.8f, 0.2f); // Gold for completion
+        
+        SaveQuest(quest, "09_StoryCompletion");
+    }
+    
+    // Additional quest generation methods...
+    private void GenerateGatherHelpersQuest() 
+    {
+        var quest = ScriptableObject.CreateInstance<QuestData>();
+        quest.questID = "gather_construction_helpers";
+        quest.questTitle = "Assembling the Team";
+        quest.questDescription = "Recruit padepokan students to help with the dam construction project.";
+        quest.questType = QuestType.Main;
+        quest.questLevel = 2;
+        
+        quest.requiredFlags = new string[] { "students_permission_granted" };
+        quest.flagsOnComplete = new string[] { "construction_team_assembled", "helpers_recruited" };
+        
+        quest.objectives = new List<QuestObjective>
+        {
+            new QuestObjective
+            {
+                objectiveID = "recruit_andi",
+                description = "Ask Andi to help with construction",
+                type = ObjectiveType.TalkToNPC,
+                targetNPC = "murid_padepokan_1",
+                isOptional = false
+            },
+            new QuestObjective
+            {
+                objectiveID = "recruit_budi", 
+                description = "Convince Budi to join the team",
+                type = ObjectiveType.TalkToNPC,
+                targetNPC = "murid_padepokan_2",
+                isOptional = false
+            },
+            new QuestObjective
+            {
+                objectiveID = "recruit_candra",
+                description = "Get Candra's agreement to help",
+                type = ObjectiveType.TalkToNPC,
+                targetNPC = "murid_padepokan_3",
+                isOptional = false
+            }
+        };
+        
+        quest.autoComplete = true;
+        quest.questColor = new Color(0.2f, 0.8f, 0.4f); // Green for teamwork
+        
+        SaveQuest(quest, "02_GatherHelpers");
+    }
+    
+    private void GenerateJourneyToKrandonQuest() 
+    {
+        var quest = ScriptableObject.CreateInstance<QuestData>();
+        quest.questID = "journey_to_krandon";
+        quest.questTitle = "Path to the Sacred Beast";
+        quest.questDescription = "Travel safely to Desa Krandon where the white elephant lives.";
+        quest.questType = QuestType.Main;
+        quest.questLevel = 5;
+        
+        quest.requiredFlags = new string[] { "ready_for_journey" };
+        quest.flagsOnComplete = new string[] { "arrived_desa_krandon" };
+        
+        quest.objectives = new List<QuestObjective>
+        {
+            new QuestObjective
+            {
+                objectiveID = "forest_travel",
+                description = "Navigate the forest path safely",
+                type = ObjectiveType.VisitLocation,
+                targetLocation = "ForestPath",
+                isOptional = false
+            },
+            new QuestObjective
+            {
+                objectiveID = "arrive_krandon",
+                description = "Reach Desa Krandon safely",
+                type = ObjectiveType.VisitLocation,
+                targetLocation = "DesaKrandon", 
+                isOptional = false
+            }
+        };
+        
+        quest.autoComplete = true;
+        quest.questColor = new Color(0.6f, 0.4f, 0.2f); // Brown for travel
+        
+        SaveQuest(quest, "05_JourneyToKrandon");
+    }
+    
+    private void GenerateNegotiateElephantQuest() 
+    {
+        var quest = ScriptableObject.CreateInstance<QuestData>();
+        quest.questID = "negotiate_elephant_loan";
+        quest.questTitle = "Convincing the Owner";
+        quest.questDescription = "Persuade Mbok Randa to lend her precious white elephant.";
+        quest.questType = QuestType.Main;
+        quest.questLevel = 6;
+        
+        quest.requiredFlags = new string[] { "arrived_desa_krandon" };
+        quest.flagsOnComplete = new string[] { "white_elephant_borrowed", "mbok_randa_trusts_player" };
+        
+        quest.objectives = new List<QuestObjective>
+        {
+            new QuestObjective
+            {
+                objectiveID = "meet_mbok_randa",
+                description = "Introduce yourself to the elephant's owner",
+                type = ObjectiveType.TalkToNPC,
+                targetNPC = "mbok_randa_krandon",
+                isOptional = false
+            },
+            new QuestObjective
+            {
+                objectiveID = "explain_situation",
+                description = "Explain the water crisis situation",
+                type = ObjectiveType.Custom,
+                flagToSetOnComplete = "explained_water_crisis",
+                isOptional = false
+            },
+            new QuestObjective
+            {
+                objectiveID = "secure_agreement",
+                description = "Obtain permission to borrow the elephant",
+                type = ObjectiveType.Custom,
+                isOptional = false
+            }
+        };
+        
+        quest.autoComplete = false; // Requires dialogue completion
+        quest.questColor = new Color(0.8f, 0.6f, 0.8f); // Purple for negotiation
+        
+        SaveQuest(quest, "06_NegotiateElephant");
+    }
+    
     private void GenerateWitnessDamSuccessQuest() 
     {
         var quest = ScriptableObject.CreateInstance<QuestData>();
         quest.questID = "witness_dam_success";
         quest.questTitle = "Waters of Life";
-        quest.questDescription = "Lihat bagaimana efek dari pembangunan dam oleh masyarakat sekitar padepokan";
+        quest.questDescription = "See the positive results of the successful dam after the spirit sacrifice.";
         quest.questType = QuestType.Main;
         quest.questLevel = 7;
         
         quest.requiredFlags = new string[] { "spirit_pact_complete" };
-        quest.flagsOnStart = new string[] { "witnessing_dam_success_active" };
-        quest.flagsToRemoveOnStart = new string[] { };
         quest.flagsOnComplete = new string[] { "dam_construction_complete", "village_water_restored" };
-        quest.flagsToRemoveOnComplete = new string[] { "witnessing_dam_success_active" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
         
         quest.objectives = new List<QuestObjective>
         {
             new QuestObjective
             {
                 objectiveID = "check_village_well",
-                description = "Pastikan air di sumur telah diisi oleh warga",
+                description = "Confirm water has returned to the village",
                 type = ObjectiveType.VisitLocation,
                 targetLocation = "VillageWell",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             },
             new QuestObjective
             {
                 objectiveID = "speak_with_farmers",
-                description = "Lihat bagaimana air membantu kebun warga sekitar",
+                description = "See how the water helps agriculture",
                 type = ObjectiveType.TalkToNPC,
                 targetNPC = "pak_tani",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             }
         };
         
         quest.autoComplete = true;
-        quest.canAbandon = true;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
         quest.questColor = new Color(0.2f, 0.6f, 1f); // Blue for water success
         
         SaveQuest(quest, "07_WitnessDamSuccess");
@@ -783,49 +708,36 @@ public class QuestDataGenerator : EditorWindow
     {
         var quest = ScriptableObject.CreateInstance<QuestData>();
         quest.questID = "face_mbok_randa_anger";
-        quest.questTitle = "Kebenaran";
-        quest.questDescription = "Kebenaran yang terungkap...";
+        quest.questTitle = "The Price of Deception";
+        quest.questDescription = "Confront Mbok Randa's fury over the white elephant's fate.";
         quest.questType = QuestType.Main;
         quest.questLevel = 8;
         
         quest.requiredFlags = new string[] { "elephant_sacrifice_complete" };
-        quest.flagsOnStart = new string[] { "penjaga_spawn", "facing_mbok_randa_active" };
-        quest.flagsToRemoveOnStart = new string[] { };
         quest.flagsOnComplete = new string[] { "mbok_randa_angry", "truth_exposed" };
-        quest.flagsToRemoveOnComplete = new string[] { "facing_mbok_randa_active" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
         
         quest.objectives = new List<QuestObjective>
         {
             new QuestObjective
             {
                 objectiveID = "return_to_krandon",
-                description = "Kembalilah ke padepokan",
+                description = "Return to face Mbok Randa's questions",
                 type = ObjectiveType.VisitLocation,
-                targetLocation = "Padepokan",
-                flagToSetOnComplete = "mbr_cutscene",
-                targetAmount = 1,
-                showProgress = true,
+                targetLocation = "DesaKrandon",
                 isOptional = false
             },
             new QuestObjective
             {
                 objectiveID = "face_confrontation",
-                description = "Jelaskan hal hal kepada Mbok Randa",
+                description = "Endure Mbok Randa's anger and accusations",
                 type = ObjectiveType.TalkToNPC,
                 targetNPC = "mbok_randa_krandon",
                 flagToSetOnComplete = "elephant_sacrifice_revealed",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             }
         };
         
         quest.autoComplete = true;
-        quest.canAbandon = true;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
         quest.questColor = new Color(0.8f, 0.2f, 0.2f); // Red for anger/confrontation
         
         SaveQuest(quest, "08_FaceMbokRandaAnger");
@@ -836,17 +748,12 @@ public class QuestDataGenerator : EditorWindow
         var quest = ScriptableObject.CreateInstance<QuestData>();
         quest.questID = "escape_krandon_pursuit";
         quest.questTitle = "Flight from Justice";
-        quest.questDescription = "Berlarilah dan hindari kejaran!";
+        quest.questDescription = "Escape the angry villagers of Krandon pursuing you.";
         quest.questType = QuestType.Main;
         quest.questLevel = 9;
         
         quest.requiredFlags = new string[] { "mbok_randa_angry" };
-        quest.flagsOnStart = new string[] { "chase_sequence_active" };
-        quest.flagsToRemoveOnStart = new string[] { };
         quest.flagsOnComplete = new string[] { "reached_river_escape" };
-        quest.flagsToRemoveOnComplete = new string[] { "chase_sequence_active", "mbok_randa_angry" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
         
         quest.objectives = new List<QuestObjective>
         {
@@ -856,8 +763,6 @@ public class QuestDataGenerator : EditorWindow
                 description = "Avoid capture by the angry villagers",
                 type = ObjectiveType.Custom,
                 flagToSetOnComplete = "chase_sequence_active",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             },
             new QuestObjective
@@ -866,16 +771,11 @@ public class QuestDataGenerator : EditorWindow
                 description = "Make it to the river crossing",
                 type = ObjectiveType.VisitLocation,
                 targetLocation = "RiverCrossing",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             }
         };
         
         quest.autoComplete = true;
-        quest.canAbandon = true;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
         quest.questColor = new Color(0.6f, 0.3f, 0.1f); // Dark brown for escape
         
         SaveQuest(quest, "09_EscapePursuit");
@@ -891,12 +791,7 @@ public class QuestDataGenerator : EditorWindow
         quest.questLevel = 10;
         
         quest.requiredFlags = new string[] { "reached_river_escape" };
-        quest.flagsOnStart = new string[] { "river_spirit_rescuing" };
-        quest.flagsToRemoveOnStart = new string[] { };
         quest.flagsOnComplete = new string[] { "rescued_by_crocodile", "spirit_protection_granted" };
-        quest.flagsToRemoveOnComplete = new string[] { "river_spirit_rescuing", "reached_river_escape" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
         
         quest.objectives = new List<QuestObjective>
         {
@@ -906,8 +801,6 @@ public class QuestDataGenerator : EditorWindow
                 description = "Try to cross the dangerous river",
                 type = ObjectiveType.Custom,
                 flagToSetOnComplete = "drowning_in_river",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             },
             new QuestObjective
@@ -915,16 +808,11 @@ public class QuestDataGenerator : EditorWindow
                 objectiveID = "receive_spirit_aid",
                 description = "Be rescued by the white crocodile spirit",
                 type = ObjectiveType.Custom,
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             }
         };
         
         quest.autoComplete = true;
-        quest.canAbandon = true;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
         quest.questColor = new Color(0.4f, 0.8f, 0.9f); // Light blue for spirit rescue
         
         SaveQuest(quest, "10_RiverSpiritRescue");
@@ -940,12 +828,7 @@ public class QuestDataGenerator : EditorWindow
         quest.questLevel = 11;
         
         quest.requiredFlags = new string[] { "rescued_by_crocodile" };
-        quest.flagsOnStart = new string[] { "returning_to_padepokan" };
-        quest.flagsToRemoveOnStart = new string[] { };
         quest.flagsOnComplete = new string[] { "returned_home_safely", "story_events_reported" };
-        quest.flagsToRemoveOnComplete = new string[] { "returning_to_padepokan", "rescued_by_crocodile" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
         
         quest.objectives = new List<QuestObjective>
         {
@@ -955,8 +838,6 @@ public class QuestDataGenerator : EditorWindow
                 description = "Arrive safely at the padepokan",
                 type = ObjectiveType.VisitLocation,
                 targetLocation = "Padepokan",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             },
             new QuestObjective
@@ -965,8 +846,6 @@ public class QuestDataGenerator : EditorWindow
                 description = "Tell Ki Ageng what happened",
                 type = ObjectiveType.TalkToNPC,
                 targetNPC = "ki_ageng_sinawang",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             },
             new QuestObjective
@@ -975,16 +854,11 @@ public class QuestDataGenerator : EditorWindow
                 description = "Find solace with Raden Ayu Saraswati",
                 type = ObjectiveType.TalkToNPC,
                 targetNPC = "raden_ayu_saraswati",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = true
             }
         };
         
         quest.autoComplete = true;
-        quest.canAbandon = true;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
         quest.questColor = new Color(0.9f, 0.7f, 0.4f); // Warm yellow for homecoming
         
         SaveQuest(quest, "11_ReturnToPadepokan");
@@ -1000,12 +874,7 @@ public class QuestDataGenerator : EditorWindow
         quest.questLevel = 12;
         
         quest.requiredFlags = new string[] { "confronted_at_padepokan" };
-        quest.flagsOnStart = new string[] { "telling_truth_active" };
-        quest.flagsToRemoveOnStart = new string[] { };
         quest.flagsOnComplete = new string[] { "complete_story_told", "remorse_expressed" };
-        quest.flagsToRemoveOnComplete = new string[] { "telling_truth_active", "returned_home_safely" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
         
         quest.objectives = new List<QuestObjective>
         {
@@ -1014,8 +883,6 @@ public class QuestDataGenerator : EditorWindow
                 objectiveID = "explain_water_crisis",
                 description = "Describe the village's desperate situation",
                 type = ObjectiveType.Custom,
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             },
             new QuestObjective
@@ -1023,8 +890,6 @@ public class QuestDataGenerator : EditorWindow
                 objectiveID = "explain_spirit_demands",
                 description = "Reveal the river spirit's ultimatum",
                 type = ObjectiveType.Custom,
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             },
             new QuestObjective
@@ -1032,77 +897,14 @@ public class QuestDataGenerator : EditorWindow
                 objectiveID = "express_remorse",
                 description = "Show genuine regret for the deception",
                 type = ObjectiveType.Custom,
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             }
         };
         
         quest.autoComplete = false; // Requires careful dialogue choices
-        quest.canAbandon = true;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
         quest.questColor = new Color(0.9f, 0.9f, 0.3f); // Yellow for truth/honesty
         
         SaveQuest(quest, "12_CompleteTruthTelling");
-    }
-
-    private void GenerateAchieveReconciliationQuest()
-    {
-        var quest = ScriptableObject.CreateInstance<QuestData>();
-        quest.questID = "achieve_reconciliation";
-        quest.questTitle = "Healing the Wounds";
-        quest.questDescription = "Work toward mutual understanding and peace with Mbok Randa. Through truth and genuine remorse, healing is possible.";
-        quest.questType = QuestType.Main;
-        quest.questLevel = 9;
-        
-        quest.requiredFlags = new string[] { "sincere_apology_given" };
-        quest.flagsOnStart = new string[] { "seeking_reconciliation_active" };
-        quest.flagsToRemoveOnStart = new string[] { };
-        quest.flagsOnComplete = new string[] { "reconciliation_complete", "mutual_understanding_achieved" };
-        quest.flagsToRemoveOnComplete = new string[] { "seeking_reconciliation_active", "sincere_apology_given" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
-        
-        quest.objectives = new List<QuestObjective>
-        {
-            new QuestObjective
-            {
-                objectiveID = "demonstrate_remorse",
-                description = "Show continued commitment to making amends",
-                type = ObjectiveType.Custom,
-                targetAmount = 1,
-                showProgress = true,
-                isOptional = false
-            },
-            new QuestObjective
-            {
-                objectiveID = "accept_consequences",
-                description = "Accept responsibility for all actions",
-                type = ObjectiveType.Custom,
-                targetAmount = 1,
-                showProgress = true,
-                isOptional = false
-            },
-            new QuestObjective
-            {
-                objectiveID = "find_mutual_understanding",
-                description = "Reach peace with Mbok Randa",
-                type = ObjectiveType.TalkToNPC,
-                targetNPC = "mbok_randa_krandon",
-                targetAmount = 1,
-                showProgress = true,
-                isOptional = false
-            }
-        };
-        
-        quest.autoComplete = true;
-        quest.canAbandon = true;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
-        quest.questColor = new Color(0.2f, 0.8f, 0.4f); // Green for resolution
-        
-        SaveQuest(quest, "08_AchieveReconciliation");
     }
     
     private void GenerateLandNamingQuest() 
@@ -1110,108 +912,37 @@ public class QuestDataGenerator : EditorWindow
         var quest = ScriptableObject.CreateInstance<QuestData>();
         quest.questID = "land_naming_ceremony";
         quest.questTitle = "Teranging Galih";
-        quest.questDescription = "Witness the naming of the land in honor of understanding.";
+        quest.questDescription = "Saksikan penamaan tanah ini untuk menghargai kebesaran hati Mbok randa.";
         quest.questType = QuestType.Main;
         quest.questLevel = 13;
         
         quest.requiredFlags = new string[] { "reconciliation_complete" };
-        quest.flagsOnStart = new string[] { "naming_land_active" };
-        quest.flagsToRemoveOnStart = new string[] { };
         quest.flagsOnComplete = new string[] { "teranging_galih_named", "land_naming_complete" };
-        quest.flagsToRemoveOnComplete = new string[] { "naming_land_active" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
         
         quest.objectives = new List<QuestObjective>
         {
             new QuestObjective
             {
                 objectiveID = "attend_ceremony",
-                description = "Participate in the land naming ceremony",
+                description = "Berpatisipasi di balai padepokan",
                 type = ObjectiveType.VisitLocation,
                 targetLocation = "VillageCenter",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             },
             new QuestObjective
             {
                 objectiveID = "hear_mbok_randa_declaration",
-                description = "Listen to Mbok Randa's pronouncement",
+                description = "Dengarkan deklarasi Ki Ageng Sinawang",
                 type = ObjectiveType.TalkToNPC,
-                targetNPC = "mbok_randa_krandon",
-                targetAmount = 1,
-                showProgress = true,
+                targetNPC = "ki_ageng_sinawang",
                 isOptional = false
             }
         };
         
         quest.autoComplete = true;
-        quest.canAbandon = true;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
         quest.questColor = new Color(1f, 0.8f, 0.2f); // Gold for the naming/legacy
         
         SaveQuest(quest, "13_LandNaming");
-    }
-
-    private void GenerateStoryCompletionQuest()
-    {
-        var quest = ScriptableObject.CreateInstance<QuestData>();
-        quest.questID = "story_completion";
-        quest.questTitle = "Lessons Learned";
-        quest.questDescription = "Reflect on the journey and its lessons. The story of Teranging Galih - the brightness of understanding - has come to its conclusion.";
-        quest.questType = QuestType.Main;
-        quest.questLevel = 10;
-        
-        quest.requiredFlags = new string[] { "land_naming_complete" };
-        quest.flagsOnStart = new string[] { "completing_story_active" };
-        quest.flagsToRemoveOnStart = new string[] { };
-        quest.flagsOnComplete = new string[] { "story_completed", "wisdom_gained" };
-        quest.flagsToRemoveOnComplete = new string[] { "completing_story_active", "land_naming_complete" };
-        quest.flagsOnFail = new string[] { };
-        quest.flagsToRemoveOnFail = new string[] { };
-        
-        quest.objectives = new List<QuestObjective>
-        {
-            new QuestObjective
-            {
-                objectiveID = "final_guru_wisdom",
-                description = "Receive final wisdom from Ki Ageng Sinawang",
-                type = ObjectiveType.TalkToNPC,
-                targetNPC = "ki_ageng_sinawang",
-                targetAmount = 1,
-                showProgress = true,
-                isOptional = false
-            },
-            new QuestObjective
-            {
-                objectiveID = "mother_pride",
-                description = "Share the conclusion with Raden Ayu Saraswati",
-                type = ObjectiveType.TalkToNPC,
-                targetNPC = "raden_ayu_saraswati",
-                targetAmount = 1,
-                showProgress = true,
-                isOptional = false
-            }
-        };
-        
-        quest.rewards = new List<QuestReward>
-        {
-            new QuestReward
-            {
-                type = QuestRewardType.Custom,
-                customRewardDescription = "Complete understanding of the folklore and moral growth"
-            }
-        };
-        
-        quest.autoComplete = true;
-        quest.canAbandon = true;
-        quest.showInJournal = true;
-        quest.trackByDefault = true;
-        quest.questColor = new Color(1f, 0.8f, 0.2f); // Gold for completion
-        
-        SaveQuest(quest, "09_StoryCompletion");
     }
     
     #endregion
@@ -1237,12 +968,7 @@ public class QuestDataGenerator : EditorWindow
         riceHarvestQuest.questLevel = 2;
         
         riceHarvestQuest.requiredFlags = new string[] { "water_crisis_discovered" };
-        riceHarvestQuest.flagsOnStart = new string[] { };
-        riceHarvestQuest.flagsToRemoveOnStart = new string[] { };
         riceHarvestQuest.flagsOnComplete = new string[] { "village_rice_harvest_complete" };
-        riceHarvestQuest.flagsToRemoveOnComplete = new string[] { };
-        riceHarvestQuest.flagsOnFail = new string[] { };
-        riceHarvestQuest.flagsToRemoveOnFail = new string[] { };
         
         riceHarvestQuest.objectives = new List<QuestObjective>
         {
@@ -1252,8 +978,6 @@ public class QuestDataGenerator : EditorWindow
                 description = "Speak with Pak Tani about helping with harvest",
                 type = ObjectiveType.TalkToNPC,
                 targetNPC = "pak_tani",
-                targetAmount = 1,
-                showProgress = true,
                 isOptional = false
             },
             new QuestObjective
@@ -1279,10 +1003,7 @@ public class QuestDataGenerator : EditorWindow
         };
         
         riceHarvestQuest.isRepeatable = true;
-        riceHarvestQuest.canAbandon = true;
         riceHarvestQuest.autoComplete = true;
-        riceHarvestQuest.showInJournal = true;
-        riceHarvestQuest.trackByDefault = true;
         riceHarvestQuest.questColor = new Color(0.4f, 0.8f, 0.2f); // Green for village quests
         
         SaveQuest(riceHarvestQuest, "Side_RiceHarvest");
