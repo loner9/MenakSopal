@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ee7b598c5ab3ff4ca2f90f31e9bc917, type: 3}
   m_Name: BuSiti_ID
   m_EditorClassIdentifier: 
-  npcName: Bu Siti
+  npcName: Bu Sarti
   dialogueDescription: Warga yang terkena dampak krisis air
   dialogueEntries:
-  - speakerName: Bu Siti
+  - speakerName: Bu Sarti
     dialogueText: Krisis air ini benar benar membuat kami kesusahan nak
     availableTimesOfDay: 010000000000000002000000
     isRepeatable: 0
@@ -28,7 +28,7 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
-  - speakerName: Bu Siti
+  - speakerName: Bu Sarti
     dialogueText: Tolong, berikanlah air ini kepada kami...
     availableTimesOfDay: 0000000001000000
     isRepeatable: 0
@@ -42,7 +42,7 @@ MonoBehaviour:
     isImportantDialogue: 0
     pauseAfterDialogue: 0
   greetings:
-  - speakerName: Bu Siti
+  - speakerName: Bu Sarti
     dialogueText: Krisis air ini benar benar mengganggu kami, nak
     availableTimesOfDay: 0200000000000000
     isRepeatable: 0
@@ -54,7 +54,7 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
-  - speakerName: Bu Siti
+  - speakerName: Bu Sarti
     dialogueText: Pagi, nak
     availableTimesOfDay: 0000000001000000
     isRepeatable: 1

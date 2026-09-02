@@ -20,7 +20,8 @@ MonoBehaviour:
       di pemukiman ini. Senang berkenalan denganmu!
     availableTimesOfDay: 0100000000000000
     isRepeatable: 0
-    requiredFlags: []
+    requiredFlags:
+    - perkenalan
     flagsToAdd: []
     flagsToRemove: []
     hasChoices: 0
@@ -58,7 +59,7 @@ MonoBehaviour:
     isImportantDialogue: 0
     pauseAfterDialogue: 0
   greetings:
-  - speakerName: Pemuda Desa
+  - speakerName: Bayu
     dialogueText: Hari ini sangat terik bukan?
     availableTimesOfDay: 000000000200000003000000
     isRepeatable: 1
@@ -70,7 +71,7 @@ MonoBehaviour:
     conversationBubbleSprite: {fileID: 0}
     isImportantDialogue: 0
     pauseAfterDialogue: 0
-  - speakerName: Pemuda Desa
+  - speakerName: Bayu
     dialogueText: Lelah juga beraktivitas seharian...
     availableTimesOfDay: 0200000003000000
     isRepeatable: 1
